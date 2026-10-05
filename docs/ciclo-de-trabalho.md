@@ -39,9 +39,11 @@ Cada gravação que substitui o XML dispara backup — ver [backups.md](./backup
 
 ## 4. Reimportar (manual)
 
-1. Na Plataforma: **Importar XML**.
-2. Selecione o XML gerado (o mesmo arquivo editado ou um `-o` explícito).
-3. **Revise** o que a UI propõe incorporar e **salve**.
+1. Na Plataforma: **Importar** → **Importar XML**.
+2. **Passo 1 — enviar arquivo:** selecione o XML editado (DTD do Currículo Lattes) e **Enviar**.
+3. Siga o assistente, **revise** alterações propostas e **salve** / envie ao CNPq.
+
+Detalhes: [importacao-lattes.md](./importacao-lattes.md).
 
 A UI pode **mesclar** dados; não trate como “substituir 100% do servidor”. Detalhes: [importacao-lattes.md](./importacao-lattes.md).
 

@@ -83,7 +83,7 @@ Integração com skills de IA (contrato, allowlist, backup): [docs/integracao-ia
 
 | Origem | Quem obtém o XML | Este toolkit |
 | --- | --- | --- |
-| Export manual na Plataforma Lattes | Você | Parse + edit + serialize |
+| Export manual na Plataforma Lattes | Você | Parse + edit + serialize → **Importar XML** (você, na UI) |
 | ZIP do Extrator institucional | Instituição credenciada | Idem + cliente SOAP opcional |
 | Download público / scraping | — | **Não suportado** |
 

@@ -7,7 +7,7 @@
 - XML exportado manualmente na Plataforma Lattes
 - ZIP/XML obtido por processo institucional (Extrator)
 
-Fluxo típico: **exportar (manual) → parse → editar → serialize → importar (manual)**. Exportar e importar na Plataforma **não** são automatizados por este projeto.
+Fluxo de produto: **exportar (manual) → parse → editar → serialize → Importar XML na Plataforma (manual, por você)**. Este projeto **prepara o arquivo**; exportar e **Importar XML** na UI **não** são automatizados pela biblioteca. Guia da UI: [importacao-lattes.md](./importacao-lattes.md).
 
 ## O que a biblioteca faz
 
@@ -20,14 +20,15 @@ Fluxo típico: **exportar (manual) → parse → editar → serialize → import
 - Preservação de nós desconhecidos em `unmapped`
 - Patches com allowlist (`applyCurriculumPatches`) para integrações de IA
 - (Opcional) Cliente SOAP para instituições com Extrator Lattes
+- XML pronto para você usar em **Importar XML** na Plataforma (envio e revisão na UI)
 
 ## O que a biblioteca não faz
 
 | Não faz | Por quê |
 | --- | --- |
 | Baixar currículo pela web pública | CAPTCHA, termo de uso, fragilidade |
-| Login / importar XML na Plataforma por você | Fora de escopo; use o site do CNPq manualmente |
-| Upload automático do XML ao CNPq | Fora de escopo |
+| Login automático ou clicar **Enviar** no Importar XML por você | Fora de escopo; você faz na Plataforma após editar o arquivo |
+| Upload automático / bot na UI do CNPq | Fora de escopo |
 | Consulta por CPF na v1 | Dado pessoal (LGPD) |
 | Validação XSD completa | Schema grande e mutável; use `unmapped` + testes |
 | Garantir 100% do schema | Best-effort; CNPq adiciona tags |
