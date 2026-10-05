@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+  name="WSCurriculo"
+  targetNamespace="http://servico.curriculo.ws.cnpq.br/"
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://servico.curriculo.ws.cnpq.br/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <types>
+    <xsd:schema targetNamespace="http://servico.curriculo.ws.cnpq.br/">
+      <xsd:element name="getCurriculoCompactado">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="id" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getCurriculoCompactadoResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="return" type="xsd:base64Binary"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getDataAtualizacaoCV">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="id" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getDataAtualizacaoCVResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="return" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </types>
+  <message name="getCurriculoCompactadoRequest">
+    <part name="parameters" element="tns:getCurriculoCompactado"/>
+  </message>
+  <message name="getCurriculoCompactadoResponse">
+    <part name="parameters" element="tns:getCurriculoCompactadoResponse"/>
+  </message>
+  <message name="getDataAtualizacaoCVRequest">
+    <part name="parameters" element="tns:getDataAtualizacaoCV"/>
+  </message>
+  <message name="getDataAtualizacaoCVResponse">
+    <part name="parameters" element="tns:getDataAtualizacaoCVResponse"/>
+  </message>
+  <portType name="WSCurriculo">
+    <operation name="getCurriculoCompactado">
+      <input message="tns:getCurriculoCompactadoRequest"/>
+      <output message="tns:getCurriculoCompactadoResponse"/>
+    </operation>
+    <operation name="getDataAtualizacaoCV">
+      <input message="tns:getDataAtualizacaoCVRequest"/>
+      <output message="tns:getDataAtualizacaoCVResponse"/>
+    </operation>
+  </portType>
+  <binding name="WSCurriculoBinding" type="tns:WSCurriculo">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="getCurriculoCompactado">
+      <soap:operation soapAction=""/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="getDataAtualizacaoCV">
+      <soap:operation soapAction=""/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+  </binding>
+  <service name="WSCurriculoService">
+    <port name="WSCurriculoPort" binding="tns:WSCurriculoBinding">
+      <soap:address location="http://127.0.0.1:0/srvcurriculo/WSCurriculo"/>
+    </port>
+  </service>
+</definitions>
