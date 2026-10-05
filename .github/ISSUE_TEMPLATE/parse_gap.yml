@@ -1,0 +1,17 @@
+name: Parse gap
+description: XML section not mapped (unmapped only)
+body:
+  - type: markdown
+    attributes:
+      value: Provide a **synthetic** minimal XML snippet only.
+  - type: textarea
+    id: snippet
+    attributes:
+      label: Minimal synthetic XML
+    validations:
+      required: true
+  - type: input
+    id: xpath
+    attributes:
+      label: XML path / tag name
+      placeholder: e.g. PROJETOS-DE-PESQUISA

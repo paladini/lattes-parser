@@ -39,9 +39,17 @@ function parse(value: string): ParsedLattesId {
   return { id: digits };
 }
 
-function canonicalUrl(id: string): string {
-  const parsed = parse(id);
-  return `https://lattes.cnpq.br/${parsed.id}`;
+type UrlInput = string | { id: string };
+
+function resolveId(input: UrlInput): string {
+  if (typeof input === "object" && input !== null && "id" in input) {
+    return parse(input.id).id;
+  }
+  return parse(input).id;
+}
+
+function canonicalUrl(input: UrlInput): string {
+  return `https://lattes.cnpq.br/${resolveId(input)}`;
 }
 
 function isValid(value: string): boolean {

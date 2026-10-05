@@ -1,6 +1,9 @@
 /** Raw XML fragments not mapped to typed fields (stable JSON-serializable shape). */
 export type UnmappedNodes = Record<string, unknown>;
 
+/** Parsed XML tree for lossless round-trip (internal document shape). */
+export type XmlDocument = Record<string, unknown>;
+
 export interface LattesDate {
   raw: string;
   iso?: string;
@@ -120,6 +123,8 @@ export interface AdvisorySection {
 
 export interface Curriculum {
   id: string;
+  /** Full CURRICULO-VITAE tree; required for serialize / round-trip. */
+  document: XmlDocument;
   updatedAt: LattesDateTime;
   identification: CurriculumIdentification;
   academicBackground: AcademicDegree[];

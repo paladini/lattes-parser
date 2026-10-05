@@ -1,0 +1,28 @@
+name: Bug report
+description: Something broke in parse, serialize, backup, or CLI
+body:
+  - type: markdown
+    attributes:
+      value: Do not attach real curriculum XML from third parties.
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: e.g. 1.1.0
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - parse
+        - serialize / round-trip
+        - backup / restore
+        - CLI
+        - extrator
+        - other
