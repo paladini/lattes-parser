@@ -6,3 +6,5 @@ coverage/
 .env
 .env.*
 .lattes-backup/
+docs/.vitepress/cache
+docs/.vitepress/dist

@@ -2,7 +2,7 @@
 
 **Independent toolkit** to edit *Plataforma Lattes* curriculum XML locally (CLI/TypeScript), with automatic backups. **Export and import on the platform stay manual.** Not affiliated with CNPq.
 
-[Portuguese README](./README.md)
+[Portuguese README](./README.md) · **[Documentation site](https://paladini.github.io/lattes-parser/)**
 
 ## Workflow
 

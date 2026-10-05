@@ -1,3 +1,8 @@
+---
+title: Importar XML no Lattes
+description: Como reimportar o XML editado na Plataforma Lattes, revisar merge na UI e boas práticas antes de salvar.
+---
+
 # Importar XML na Plataforma Lattes
 
 Este documento descreve o fluxo **humano** na UI e expectativas realistas — não garantias do CNPq.

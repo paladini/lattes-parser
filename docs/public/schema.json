@@ -1,0 +1,22 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "name": "@paladini/lattes-parser",
+      "url": "https://paladini.github.io/lattes-parser/",
+      "inLanguage": "pt-BR",
+      "description": "Toolkit para editar XML do Currículo Lattes localmente com CLI e TypeScript."
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "@paladini/lattes-parser",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Windows, macOS, Linux",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
+      "url": "https://www.npmjs.com/package/@paladini/lattes-parser",
+      "codeRepository": "https://github.com/paladini/lattes-parser",
+      "license": "https://opensource.org/licenses/MIT"
+    }
+  ]
+}

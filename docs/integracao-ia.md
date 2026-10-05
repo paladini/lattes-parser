@@ -36,7 +36,7 @@ Skills devem restringir paths editáveis à lista acordada com o usuário. Patch
 
 ## AGENTS.md
 
-Instruções para agentes de código neste repo: [../AGENTS.md](../AGENTS.md).
+Instruções para agentes de código neste repo: [AGENTS.md](https://github.com/paladini/lattes-parser/blob/main/AGENTS.md).
 
 ## Futuro
 

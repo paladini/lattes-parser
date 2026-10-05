@@ -30,6 +30,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -54,7 +57,7 @@
   "bugs": {
     "url": "https://github.com/paladini/lattes-parser/issues"
   },
-  "homepage": "https://github.com/paladini/lattes-parser#readme",
+  "homepage": "https://paladini.github.io/lattes-parser/",
   "publishConfig": {
     "access": "public"
   },
@@ -78,7 +81,8 @@
     "soap": "^1.1.7",
     "tsup": "^8.0.0",
     "typescript": "^5.3.0",
-    "vitest": "^2.1.0"
+    "vitest": "^2.1.0",
+    "vitepress": "^1.6.3"
   },
   "engines": {
     "node": ">=18.0.0"

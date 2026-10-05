@@ -12,7 +12,7 @@
 
 > **Projeto independente — não é produto, ferramenta nem endosso do CNPq.** As marcas Lattes e CNPq referem-se aos serviços públicos. Respeite o [termo de uso](https://memoria.cnpq.br/web/portal-lattes/termo-de-uso) e a LGPD. Detalhes em [docs/limitacoes.md](./docs/limitacoes.md).
 
-[English README](./README.en.md)
+[English README](./README.en.md) · **[Documentação completa (GitHub Pages)](https://paladini.github.io/lattes-parser/)**
 
 ## Problema e solução
 

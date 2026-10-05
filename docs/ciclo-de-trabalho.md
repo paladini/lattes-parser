@@ -1,3 +1,8 @@
+---
+title: Ciclo de trabalho
+description: Exportar XML do Currículo Lattes, editar localmente com CLI ou TypeScript, reimportar na Plataforma e usar backups.
+---
+
 # Ciclo de trabalho
 
 Este toolkit assume que **você** controla exportação e importação na [Plataforma Lattes](https://lattes.cnpq.br/).

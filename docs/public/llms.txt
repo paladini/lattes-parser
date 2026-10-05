@@ -1,0 +1,29 @@
+# @paladini/lattes-parser
+
+> Independent open-source toolkit to edit Brazilian Plataforma Lattes curriculum XML locally (CLI/TypeScript), with automatic backups. Export and import on the CNPq platform remain manual. Not affiliated with CNPq.
+
+## Primary workflow
+
+1. User exports Currículo Lattes XML from the platform (logged in).
+2. User edits locally: CLI (`lattes-parser set`) or TypeScript (`writeCurriculum`).
+3. User re-imports the updated XML via "Importar XML" on the platform, reviews, and saves.
+
+## Key facts
+
+- Package: `@paladini/lattes-parser` on npm
+- Docs: https://paladini.github.io/lattes-parser/
+- Repo: https://github.com/paladini/lattes-parser
+- Does NOT automate login, CAPTCHA, public scraping, or upload to CNPq
+
+## Documentation map
+
+- /ciclo-de-trabalho — step-by-step workflow
+- /importacao-lattes — platform import expectations (merge behavior)
+- /faq — common questions
+- /cli — CLI reference
+- /api-typescript — Node.js API
+- /backups — .lattes-backup snapshots
+
+## Install
+
+npm install @paladini/lattes-parser
