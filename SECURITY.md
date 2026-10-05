@@ -2,11 +2,14 @@
 
 ## Scope
 
-The **core** of `@paladini/lattes-parser` is an offline parser: it reads buffers/files
-you provide and does not call the network. Realistic concerns:
+The **core** of `@paladini/lattes-parser` is an offline XML toolkit: it reads and
+writes files you provide and does not call the network (except optional Extrator).
+Realistic concerns:
 
 - Malicious XML or ZIP causing excessive memory/CPU use (zip bombs, huge text nodes).
 - Path or encoding tricks that crash the parser instead of failing cleanly.
+- Backup/restore writing to paths recorded in `manifest.json` — keep `.lattes-backup/`
+  local and untrusted; do not restore manifests from untrusted sources.
 - The optional **Extrator client** sending requests to a WSDL you configure (your
   institution's endpoint — not hardcoded by this package).
 - Supply-chain issues in dependencies (`fast-xml-parser`, `fflate`, optional `soap`).

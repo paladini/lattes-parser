@@ -28,5 +28,8 @@ describe("LattesId", () => {
     expect(LattesId.canonicalUrl("8907059238612691")).toBe(
       "https://lattes.cnpq.br/8907059238612691",
     );
+    expect(
+      LattesId.canonicalUrl({ id: "8907059238612691" }),
+    ).toBe("https://lattes.cnpq.br/8907059238612691");
   });
 });

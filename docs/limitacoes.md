@@ -1,20 +1,24 @@
 # Limitações e conformidade
 
-## Escopo principal: parser offline
+## Escopo principal: toolkit XML local
 
-`@paladini/lattes-parser` existe para **ler arquivos que você já possui**:
+`@paladini/lattes-parser` opera em **arquivos que você já possui**:
 
 - XML exportado manualmente na Plataforma Lattes
 - ZIP/XML obtido por processo institucional (Extrator)
 
-O fluxo típico é: **obter arquivo → parse → usar dados em seu sistema**. A biblioteca não participa da etapa “obter” quando isso exigiria navegador, login seu ou scraping público.
+Fluxo típico: **exportar (manual) → parse → editar → serialize → importar (manual)**. Exportar e importar na Plataforma **não** são automatizados por este projeto.
 
 ## O que a biblioteca faz
 
-- Parse de XML oficial (`CURRICULO-VITAE`) para o tipo `Curriculum`
+- Parse do formato XML da Plataforma (`CURRICULO-VITAE`) para o tipo `Curriculum`
+- **Serialize** de volta para XML com round-trip via `document` + `unmapped`
+- **Backup** automático antes de sobrescrever XML (`.lattes-backup/`)
+- CLI workspace: `init`, `parse`, `get`, `set`, `serialize`, `restore`, `backup list`
 - Leitura de buffer/string, incluindo ZIP com um XML dentro
 - Detecção de encoding (`ISO-8859-1`, etc.) e entidades XML
 - Preservação de nós desconhecidos em `unmapped`
+- Patches com allowlist (`applyCurriculumPatches`) para integrações de IA
 - (Opcional) Cliente SOAP para instituições com Extrator Lattes
 
 ## O que a biblioteca não faz
@@ -22,7 +26,8 @@ O fluxo típico é: **obter arquivo → parse → usar dados em seu sistema**. A
 | Não faz | Por quê |
 | --- | --- |
 | Baixar currículo pela web pública | CAPTCHA, termo de uso, fragilidade |
-| Login / editar currículo na Plataforma | Fora de escopo; use o site do CNPq |
+| Login / importar XML na Plataforma por você | Fora de escopo; use o site do CNPq manualmente |
+| Upload automático do XML ao CNPq | Fora de escopo |
 | Consulta por CPF na v1 | Dado pessoal (LGPD) |
 | Validação XSD completa | Schema grande e mutável; use `unmapped` + testes |
 | Garantir 100% do schema | Best-effort; CNPq adiciona tags |

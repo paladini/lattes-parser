@@ -1,0 +1,14 @@
+name: Backup or restore
+description: Snapshot or rollback issue
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected vs actual
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: Windows / macOS / Linux

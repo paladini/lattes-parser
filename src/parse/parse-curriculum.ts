@@ -435,6 +435,7 @@ export function parseCurriculum(xml: string): Curriculum {
 
   return {
     id,
+    document: structuredClone(root) as typeof root,
     updatedAt: parseLattesDateTime(
       attr(root, "DATA-ATUALIZACAO"),
       attr(root, "HORA-ATUALIZACAO"),
