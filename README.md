@@ -1,7 +1,7 @@
 # @paladini/lattes-parser
 
 <p align="center">
-  <b>Toolkit independente para editar localmente o XML do Currículo Lattes (CLI/TypeScript), com backup automático.</b>
+  <b>Automatize a manutenção do seu Currículo Lattes: XML vira TypeScript, CLI e patches prontos para skill de IA.</b>
 </p>
 
 <p align="center">
@@ -10,25 +10,21 @@
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-green"></a>
 </p>
 
-> **Projeto independente — não é produto, ferramenta nem endosso do CNPq.** As marcas Lattes e CNPq referem-se aos serviços públicos. Respeite o [termo de uso](https://memoria.cnpq.br/web/portal-lattes/termo-de-uso) e a LGPD. Detalhes em [docs/limitacoes.md](./docs/limitacoes.md).
+Projeto independente, não afiliado ao CNPq. Uso conforme termo da Plataforma Lattes e LGPD.
 
-[English README](./README.en.md) · **[Documentação completa (GitHub Pages)](https://paladini.github.io/lattes-parser/)**
+[English README](./README.en.md) · **[Documentação](https://paladini.github.io/lattes-parser/)**
 
-## Problema e solução
+## Por que existe
 
-A Plataforma Lattes edita bem na interface web, mas o **XML exportado** é a interface natural para revisão em lote, scripts e (no futuro) assistentes de IA. Este toolkit cobre o ciclo **local**:
+Formulário web não escala. Você exporta o XML uma vez e passa a tratar o currículo como **código**: scripts, diff, CI interno, agente de IA com allowlist. Centenas de campos deixam de ser clique a clique.
 
-1. **Você exporta** o XML na Plataforma (login → Exportar).
-2. **Parse, edite e serialize** aqui (CLI ou TypeScript).
-3. **Você importa** de volta em Importar XML, revisa e salva.
+**Seu fluxo:**
 
-**Exportar e importar na Plataforma são sempre manuais.** O toolkit não faz login, CAPTCHA, download público em massa nem envio automático ao CNPq.
+1. Exportar XML na Plataforma (login).
+2. **Automatizar aqui:** parse, `set`, patches, skill de IA, backup em `.lattes-backup/`.
+3. **Importar XML** na Plataforma, revisar e confirmar. Um upload substitui horas de formulário.
 
-Fluxo detalhado: [docs/ciclo-de-trabalho.md](./docs/ciclo-de-trabalho.md). Limites da UI de importação: [docs/importacao-lattes.md](./docs/importacao-lattes.md).
-
-## Backup automático
-
-Antes de sobrescrever um XML de trabalho, uma cópia vai para `.lattes-backup/` (versionado por timestamp). Como listar e restaurar: [docs/backups.md](./docs/backups.md).
+A biblioteca **não** faz login no CNPq por você. Ela faz o trabalho pesado no arquivo; você fecha o ciclo na UI oficial (Importar XML).
 
 ## Instalação
 
@@ -36,81 +32,60 @@ Antes de sobrescrever um XML de trabalho, uma cópia vai para `.lattes-backup/` 
 npm install @paladini/lattes-parser
 ```
 
-CLI global (opcional):
-
-```bash
-npm install -g @paladini/lattes-parser
-```
-
-## Quick start (CLI)
+## CLI em 30 segundos
 
 ```bash
 lattes-parser init
-lattes-parser parse meu-curriculo.xml
-lattes-parser get meu-curriculo.xml identification.summary
-lattes-parser set meu-curriculo.xml identification.summary "Novo resumo profissional"
-# backup criado em .lattes-backup/ — reimporte meu-curriculo.xml na Plataforma
-lattes-parser backup list
-lattes-parser restore --last
+lattes-parser parse curriculo.xml
+lattes-parser set curriculo.xml identification.summary "Resumo atualizado em lote"
+# .lattes-backup/ criado automaticamente
+# Depois: Plataforma Lattes → Importar XML → enviar curriculo.xml
 ```
 
-## Quick start (TypeScript)
+## TypeScript
 
 ```ts
 import { readFileSync } from "node:fs";
 import {
   readCurriculum,
   writeCurriculum,
-  LattesId,
-  setCurriculumValue,
+  applyCurriculumPatches,
 } from "@paladini/lattes-parser";
 
 const cv = await readCurriculum(readFileSync("./curriculo.xml"));
-setCurriculumValue(cv, "identification.summary", "Texto atualizado.");
-await writeCurriculum(cv, "./curriculo.xml"); // backup automático
-
-console.log(LattesId.canonicalUrl(cv));
+applyCurriculumPatches(
+  cv,
+  [{ path: "identification.summary", value: "Texto gerado ou revisado pelo seu pipeline." }],
+  { allowlist: ["identification.summary"] },
+);
+await writeCurriculum(cv, "./curriculo.xml");
 ```
 
-## Editar “qualquer campo”
+## Skill de IA (contrato pronto)
 
-- **Campos tipados** — `identification`, produções, orientações, etc. (crescem com o tempo; mapa em [docs/cobertura-campos.md](./docs/cobertura-campos.md)).
-- **`unmapped`** — tags ainda não mapeadas permanecem no modelo e voltam ao XML no serialize (round-trip lossless no arquivo).
+`applyCurriculumPatches` + allowlist + backup antes de gravar. Fluxo documentado para Cursor, Codex e automações similares: [docs/integracao-ia.md](./docs/integracao-ia.md).
 
-Integração com skills de IA (contrato, allowlist, backup): [docs/integracao-ia.md](./docs/integracao-ia.md).
+## O que você ganha
 
-## De onde vem o arquivo?
+| Recurso | Benefício |
+| --- | --- |
+| `Curriculum` tipado + `unmapped` | Round-trip no XML sem perder tags raras |
+| CLI `get` / `set` / `parse` | Edição em lote sem abrir o site |
+| `writeCurriculum` | Serialize + backup automático |
+| Extrator (opcional) | Pipelines institucionais com SOAP |
 
-| Origem | Quem obtém o XML | Este toolkit |
-| --- | --- | --- |
-| Export manual na Plataforma Lattes | Você | Parse + edit + serialize → **Importar XML** (você, na UI) |
-| ZIP do Extrator institucional | Instituição credenciada | Idem + cliente SOAP opcional |
-| Download público / scraping | — | **Não suportado** |
-
-Passo a passo do export: [docs/como-obter-o-xml.md](./docs/como-obter-o-xml.md).
-
-### Extrator (rodapé — instituições)
-
-Alternativa para **obter** XML via credenciamento CNPq; não substitui o fluxo “meu currículo” na UI. Ver [docs/extrator.md](./docs/extrator.md).
+Mapa de campos: [docs/cobertura-campos.md](./docs/cobertura-campos.md).
 
 ## Documentação
 
 | Doc | Conteúdo |
 | --- | --- |
-| [Ciclo de trabalho](./docs/ciclo-de-trabalho.md) | Export → editar → reimportar |
-| [Backups](./docs/backups.md) | `.lattes-backup`, restore |
-| [Importação no Lattes](./docs/importacao-lattes.md) | UI + expectativas de merge |
-| [Cobertura de campos](./docs/cobertura-campos.md) | XSD ↔ tipos |
-| [Integração IA](./docs/integracao-ia.md) | Patches seguros |
-| [Modelo](./docs/modelo.md) | XML → TypeScript |
-| [Limitações](./docs/limitacoes.md) | Escopo e avisos |
-| [ROADMAP](./ROADMAP.md) | Próximos passos |
-| [Contribuir](./CONTRIBUTING.md) | PRs, round-trip, fixtures sintéticas |
-
-## Comunidade
-
-Issues e PRs são bem-vindos. Código de conduta: [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md). Segurança: [SECURITY.md](./SECURITY.md).
+| [Ciclo de trabalho](./docs/ciclo-de-trabalho.md) | Export, automação local, Importar XML |
+| [Importar XML](./docs/importacao-lattes.md) | Passo a passo na UI (DTD, Enviar) |
+| [Integração IA](./docs/integracao-ia.md) | Patches seguros para agentes |
+| [CLI](./docs/cli.md) | Referência de comandos |
+| [Backups](./docs/backups.md) | `.lattes-backup` e restore |
 
 ## Licença
 
-MIT — © Fernando Paladini
+MIT. © Fernando Paladini

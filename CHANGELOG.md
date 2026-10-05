@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## 1.1.0 — 2026-04-05
+## 1.1.1 - 2026-04-05
+
+### Changed
+
+- README and docs site: developer and AI-first positioning; Import XML as the closing step of an automated local workflow.
+
+## 1.1.0 - 2026-04-05
 
 ### Added
 
@@ -19,7 +25,7 @@ All notable changes to this project will be documented in this file.
 - Product positioning: local XML toolkit (export/import on platform remain manual)
 - Terminology: independent project; avoid implying CNPq endorsement
 
-## 1.0.0 — 2026-03-23
+## 1.0.0 - 2026-03-23
 
 ### Added
 

@@ -1,57 +1,42 @@
 ---
 title: Perguntas frequentes
-description: Dúvidas sobre editar XML do Currículo Lattes localmente, reimportar na Plataforma, backups e limites do CNPq.
+description: Automatizar Currículo Lattes com XML, CLI, TypeScript e skills de IA.
 ---
 
 # Perguntas frequentes
 
-## Posso atualizar meu Lattes editando o XML e reenviando?
+## Consigo automatizar a atualização do meu Lattes?
 
-**Sim — esse é o fluxo previsto.** A Plataforma Lattes oferece **Exportar** e **Importar XML**. Você:
+**Sim, a parte operacional.** Exporte o XML, deixe scripts ou uma skill de IA aplicarem dezenas de mudanças com backup e allowlist, gere o XML final e use **Importar XML** na Plataforma. Você revisa uma vez na UI em vez de repetir formulários.
 
-1. Exporta o XML (com login).
-2. Edita localmente com `@paladini/lattes-parser` (CLI ou TypeScript).
-3. Usa **Importar XML** no site, **revisa** o que a plataforma propõe alterar e **salva**.
+## O que a biblioteca automatiza?
 
-Este toolkit prepara o arquivo e cria **backup** antes de sobrescrever. **Enviar o arquivo ao CNPq continua sendo você**, na interface web.
+Parse, diff mental entre exports, edição em lote (`set`, patches), serialize, backups. Tudo no arquivo e no seu pipeline Node.js.
 
-## A biblioteca substitui editar no site?
+## O que continua humano?
 
-Não totalmente. Ela brilha quando você quer **muitas alterações**, scripts, diff ou integração com código. A **confirmação final** e a **importação** ficam na Plataforma.
+Login na Plataforma e o clique em **Importar XML → Enviar → confirmar**. A lib não guarda sua senha nem simula browser (e não deve).
 
-## A importação substitui 100% do currículo no servidor?
+## Funciona com Cursor / agentes de IA?
 
-**Não necessariamente.** A UI pode **mesclar** ou incorporar itens. Trate o XML como fonte de verdade **local**; após importar, confira seção por seção. Detalhes: [Importar no Lattes](./importacao-lattes.md).
+Sim. Contrato em [Integração com IA](./integracao-ia.md): `readCurriculum`, `applyCurriculumPatches` com allowlist, `writeCurriculum`, re-parse para validar.
 
-## Preciso do número Lattes (16 dígitos) para editar meu arquivo?
+## Preciso do ID Lattes de 16 dígitos?
 
-**Não no fluxo por arquivo.** Basta o XML exportado. O ID já está dentro do arquivo. O Extrator institucional é outro caminho (opcional).
+Não para o fluxo por arquivo. O XML exportado já traz o identificador.
 
-## Quais campos posso editar?
+## E campos que o parser ainda não tipou?
 
-- Campos **tipados** (resumo, nome, produções mapeadas, etc.) via `get`/`set` ou API.
-- Qualquer tag ainda não tipada permanece em **`unmapped`** e volta no serialize (round-trip no arquivo).
+Ficam em `unmapped` e voltam no serialize. Cobertura cresce; mapa em [Cobertura de campos](./cobertura-campos.md).
 
-Mapa: [Cobertura de campos](./cobertura-campos.md).
-
-## E se eu errar a edição?
-
-Use backup local:
+## Desfazer edição local
 
 ```bash
 lattes-parser restore --last
 ```
 
-Veja [Backups](./backups.md). Isso **não desfaz** alterações já salvas na Plataforma.
+Ver [Backups](./backups.md).
 
 ## É oficial do CNPq?
 
-**Não.** Projeto **independente**, open source (MIT). Marcas Lattes/CNPq referem-se aos serviços públicos.
-
-## O toolkit baixa currículo de outras pessoas?
-
-**Não** por scraping ou busca pública. Só lê arquivos que **você** (ou sua instituição via Extrator) já possui.
-
-## Onde reportar bug ou gap de parse?
-
-[Issues no GitHub](https://github.com/paladini/lattes-parser/issues) — use templates; **não** anexe XML real de terceiros.
+Não. Toolkit open source independente (MIT).

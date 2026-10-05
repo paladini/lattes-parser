@@ -1,57 +1,49 @@
 ---
 layout: home
-title: Editar XML do Currículo Lattes localmente
-description: Exporte o XML na Plataforma Lattes, edite com CLI ou TypeScript com backup automático e reimporte manualmente. Toolkit open source não afiliado ao CNPq.
+title: Automatize seu Currículo Lattes via XML
+description: Parse, CLI, TypeScript e patches para IA no XML exportado do Lattes. Feche o ciclo com Importar XML na Plataforma.
 hero:
   name: Lattes XML Toolkit
-  text: Edite o currículo no arquivo, reimporte na Plataforma
-  tagline: Exportar → parse → editar → serialize → Importar XML (manual). Backups em .lattes-backup/
+  text: Seu currículo como código, não como formulário infinito
+  tagline: Exportar → automatizar localmente (CLI, TS, skill de IA) → Importar XML na Plataforma
   image:
     src: /favicon.svg
-    alt: Ícone do toolkit Lattes XML
+    alt: Lattes XML Toolkit
   actions:
     - theme: brand
-      text: Começar em 5 minutos
+      text: Ver o fluxo completo
       link: /ciclo-de-trabalho
     - theme: alt
-      text: Instalar no npm
-      link: https://www.npmjs.com/package/@paladini/lattes-parser
+      text: Integração com IA
+      link: /integracao-ia
 features:
-  - icon: 🔄
-    title: Ciclo completo local
-    details: Leia o XML exportado, altere campos tipados ou via unmapped, gere XML atualizado para reimportar.
+  - icon: ⚡
+    title: Automação local de verdade
+    details: Parse tipado, CLI set/get, serialize com backup. Escale edições que a UI não aguenta.
+  - icon: 🤖
+    title: Pronto para skill de IA
+    details: applyCurriculumPatches com allowlist. Seu agente edita o modelo; você valida e importa o XML.
   - icon: 💾
-    title: Backup automático
-    details: Antes de sobrescrever seu XML, snapshots versionados em .lattes-backup/ com restore pela CLI.
-  - icon: 🛠️
-    title: CLI e TypeScript
-    details: lattes-parser set, get, parse ou writeCurriculum no seu script — sem digitar ID Lattes no fluxo por arquivo.
-  - icon: ⚖️
-    title: Projeto independente
-    details: Não é produto do CNPq. Respeite termos de uso e LGPD; export/import na Plataforma permanecem humanos.
+    title: Backups automáticos
+    details: Cada gravação versionada em .lattes-backup/. Restore com um comando.
+  - icon: 📦
+    title: Round-trip no XML
+    details: Campos tipados + unmapped. Nada some no serialize.
 ---
 
-## Resumo para busca e assistentes (GEO)
-
-> **O que é:** `@paladini/lattes-parser` é um toolkit Node.js/TypeScript para **editar localmente** o XML do Currículo Lattes exportado da Plataforma CNPq.
->
-> **Fluxo:** (1) você **exporta** o XML com login na Plataforma; (2) edita com **CLI** (`lattes-parser set`) ou **código** (`writeCurriculum`); (3) **reimporta** o mesmo arquivo em **Importar XML**, revisa e salva.
->
-> **O que não faz:** login automático, CAPTCHA, download público em massa ou upload automático ao CNPq.
-
-## Instalação rápida
+## Instalação
 
 ```bash
 npm install @paladini/lattes-parser
 npx lattes-parser init
-npx lattes-parser set curriculo.xml identification.summary "Novo resumo"
+npx lattes-parser set curriculo.xml identification.summary "Atualizado pelo meu script"
 ```
 
-Depois, reimporte `curriculo.xml` na Plataforma Lattes.
+Depois: **Importar XML** na Plataforma Lattes (arquivo pronto, DTD ok).
 
-## Próximos passos
+## Links úteis
 
-- [Ciclo de trabalho](./ciclo-de-trabalho.md) — passo a passo export → edit → import
-- [Importar XML no Lattes](./importacao-lattes.md) — o que esperar da UI de merge
-- [FAQ](./faq.md) — dúvidas comuns
+- [Ciclo de trabalho](./ciclo-de-trabalho.md)
+- [Importar XML na UI](./importacao-lattes.md)
 - [Referência CLI](./cli.md)
+- [FAQ](./faq.md)

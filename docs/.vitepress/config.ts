@@ -9,7 +9,7 @@ export default defineConfig({
   title: "@paladini/lattes-parser",
   titleTemplate: ":title | Editar XML Lattes localmente",
   description:
-    "Toolkit independente para exportar, editar e reimportar o XML do Currículo Lattes via CLI ou TypeScript, com backup automático. Não afiliado ao CNPq.",
+    "Automatize o Currículo Lattes no XML exportado: CLI, TypeScript, patches para IA e backup. Feche com Importar XML na Plataforma.",
   base: basePath,
   mpa: true,
   cleanUrls: true,
@@ -39,7 +39,7 @@ export default defineConfig({
       {
         property: "og:description",
         content:
-          "Exporte o XML na Plataforma Lattes, edite com backup automático e reimporte manualmente. Parser, serialize e CLI open source.",
+          "Automatize edições no XML exportado do Lattes: CLI, TypeScript, skill de IA, backup. Importar XML na Plataforma.",
       },
     ],
     ["meta", { name: "twitter:card", content: "summary_large_image" }],
@@ -97,7 +97,7 @@ export default defineConfig({
       { icon: "github", link: "https://github.com/paladini/lattes-parser" },
     ],
     footer: {
-      message: "Projeto independente — não afiliado ao CNPq.",
+      message: "Projeto independente. Não afiliado ao CNPq.",
       copyright: "MIT © Fernando Paladini",
     },
     search: {

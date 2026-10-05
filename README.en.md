@@ -1,16 +1,16 @@
 # @paladini/lattes-parser
 
-**Independent toolkit** to edit *Plataforma Lattes* curriculum XML locally (CLI/TypeScript), with automatic backups. **Export and import on the platform stay manual.** Not affiliated with CNPq.
+**Automate Lattes CV maintenance:** exported XML becomes TypeScript, CLI, and AI-ready patches. Finish with **Import XML** on the platform (you stay logged in; the library does not).
 
-[Portuguese README](./README.md) · **[Documentation site](https://paladini.github.io/lattes-parser/)**
+Independent project, not affiliated with CNPq.
 
-## Workflow
+[Portuguese README](./README.md) · **[Docs](https://paladini.github.io/lattes-parser/)**
 
-1. Export XML from the Lattes platform (logged in).
-2. Parse, edit, serialize with this package.
-3. Re-import via **Import XML**, review, and save.
+## Flow
 
-See [docs/ciclo-de-trabalho.md](./docs/ciclo-de-trabalho.md) (Portuguese) and [docs/backups.md](./docs/backups.md).
+1. Export XML from Plataforma Lattes.
+2. Parse, batch-edit, or run an AI skill with `applyCurriculumPatches` (allowlist + backups).
+3. **Import XML** on the platform, review, save.
 
 ## Install
 
@@ -18,31 +18,20 @@ See [docs/ciclo-de-trabalho.md](./docs/ciclo-de-trabalho.md) (Portuguese) and [d
 npm install @paladini/lattes-parser
 ```
 
-## CLI
-
-```bash
-lattes-parser init
-lattes-parser set curriculo.xml identification.summary "Updated summary"
-lattes-parser restore --last
-```
-
-## TypeScript
+## Example
 
 ```ts
-import { readCurriculum, writeCurriculum } from "@paladini/lattes-parser";
 import { readFileSync } from "node:fs";
+import { readCurriculum, writeCurriculum, applyCurriculumPatches } from "@paladini/lattes-parser";
 
 const cv = await readCurriculum(readFileSync("./curriculo.xml"));
+applyCurriculumPatches(cv, [{ path: "identification.summary", value: "Updated in batch." }], {
+  allowlist: ["identification.summary"],
+});
 await writeCurriculum(cv, "./curriculo.xml");
 ```
 
-## Scope
-
-- Parses and serializes the **platform XML format** (ISO-8859-1).
-- Preserves unknown tags in `unmapped` for lossless round-trip.
-- Does **not** automate login, CAPTCHA, public bulk download, or upload to CNPq.
-
-Optional institutional Extrator SOAP client: `@paladini/lattes-parser/extrator`.
+[AI integration contract](./docs/integracao-ia.md) · [Import XML guide](./docs/importacao-lattes.md)
 
 ## License
 

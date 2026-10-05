@@ -4,7 +4,7 @@ Guidance for humans and coding agents working in this repository.
 
 ## Product intent
 
-**Local Lattes XML toolkit:** export (manual on platform) → parse → edit (CLI/TS) → serialize → re-import (manual). The library operates on **files only**.
+**Local Lattes XML toolkit:** automate exported XML (parse, CLI, patches, AI allowlist, backups). User completes with **Import XML** on the platform UI. The library operates on **files only**; no CNPq login automation.
 
 - Always create **backup** before overwriting curriculum XML (`writeCurriculum`, CLI `set`, CLI `serialize -o` when target exists).
 - **Never** implement login, CAPTCHA, scraping, or automated upload to CNPq without explicit maintainer decision.

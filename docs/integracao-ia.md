@@ -1,45 +1,53 @@
-# Integração com IA (v1 — contrato)
+---
+title: Integração com IA
+description: Skills e agentes editam o Currículo Lattes via patches tipados, backup e allowlist. Você importa o XML na Plataforma.
+---
 
-Este repositório **não** inclui um agente LLM. A v1 define tipos, fluxo e documentação para **skills externas** (Cursor, Codex, etc.) editarem currículos com segurança.
+# Integração com IA
 
-## Fluxo recomendado
+Use este pacote como **backend de arquivo** para skills (Cursor, Codex, scripts internos). O agente não acessa o CNPq; ele produz um **XML revisável** que você envia em **Importar XML**.
 
-1. Ler XML: `readCurriculum` / `parseCurriculum`.
-2. Backup implícito: `writeCurriculum(cv, path)` ou `backupBeforeWrite` explícito.
-3. Aplicar mudanças: `applyCurriculumPatches(cv, patches, { allowlist })`.
-4. Validar: `serializeCurriculum` + `parseCurriculum` no resultado.
-5. Entregar diff legível ao usuário (fora desta lib).
-6. Usuário **importa manualmente** na Plataforma — nunca upload automático.
+## Fluxo recomendado para skills
 
-## Patches
+1. `readCurriculum(path)` ou parse do XML exportado.
+2. `applyCurriculumPatches(cv, patches, { allowlist })` com lista fechada de paths permitidos.
+3. `writeCurriculum(cv, path)` (backup em `.lattes-backup/` por padrão).
+4. Re-parse do XML gerado para checar integridade.
+5. Mostrar diff ao usuário (fora desta lib).
+6. Usuário: **Importar XML** na Plataforma Lattes.
+
+## Exemplo
 
 ```ts
 import {
+  readCurriculum,
+  writeCurriculum,
   applyCurriculumPatches,
   type CurriculumPatch,
 } from "@paladini/lattes-parser";
+import { readFileSync } from "node:fs";
+
+const cv = await readCurriculum(readFileSync("./curriculo.xml"));
 
 const patches: CurriculumPatch[] = [
-  { path: "identification.summary", value: "Texto revisado pela IA." },
+  { path: "identification.summary", value: "Resumo revisado pela skill." },
 ];
 
 applyCurriculumPatches(cv, patches, {
   allowlist: ["identification.summary", "identification.otherRelevantInfo"],
 });
-```
 
-Paths usam notação **dot/bracket** (`journalArticles[0].title` quando o campo existir no modelo tipado).
+await writeCurriculum(cv, "./curriculo.xml");
+```
 
 ## Allowlist
 
-Skills devem restringir paths editáveis à lista acordada com o usuário. Patches fora da allowlist lançam erro.
+Obrigatória em produção com IA: só paths explícitos. Patch fora da lista lança erro.
+
+## Paths
+
+Notação dot/bracket: `identification.summary`, `bibliographicProduction.journalArticles[0].title` (quando tipado).
 
 ## AGENTS.md
 
-Instruções para agentes de código neste repo: [AGENTS.md](https://github.com/paladini/lattes-parser/blob/main/AGENTS.md).
-
-## Futuro
-
-- DSL de patch mais rica
-- Validação DTD opcional
-- Exemplos de skill em repositório separado
+Instruções para agentes que editam este repositório: [AGENTS.md](https://github.com/paladini/lattes-parser/blob/main/AGENTS.md).

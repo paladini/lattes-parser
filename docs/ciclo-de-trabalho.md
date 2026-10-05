@@ -1,11 +1,11 @@
 ---
 title: Ciclo de trabalho
-description: Exportar XML do Currículo Lattes, editar localmente com CLI ou TypeScript, reimportar na Plataforma e usar backups.
+description: Exportar XML, automatizar edições com CLI ou TypeScript, Importar XML na Plataforma.
 ---
 
 # Ciclo de trabalho
 
-Este toolkit assume que **você** controla exportação e importação na [Plataforma Lattes](https://lattes.cnpq.br/).
+Pipeline completo para quem quer **automatizar** a manutenção do currículo sem abandonar a Plataforma oficial.
 
 ## 1. Exportar (manual)
 
@@ -35,12 +35,12 @@ lattes-parser set curriculo.xml identification.summary "Novo texto"
 
 Em TypeScript: `readCurriculum`, `setCurriculumValue`, `writeCurriculum`.
 
-Cada gravação que substitui o XML dispara backup — ver [backups.md](./backups.md).
+Cada gravação que substitui o XML dispara backup. Ver [backups.md](./backups.md).
 
 ## 4. Reimportar (manual)
 
 1. Na Plataforma: **Importar** → **Importar XML**.
-2. **Passo 1 — enviar arquivo:** selecione o XML editado (DTD do Currículo Lattes) e **Enviar**.
+2. **Passo 1, enviar arquivo:** selecione o XML editado (DTD do Currículo Lattes) e **Enviar**.
 3. Siga o assistente, **revise** alterações propostas e **salve** / envie ao CNPq.
 
 Detalhes: [importacao-lattes.md](./importacao-lattes.md).
@@ -55,4 +55,4 @@ Se a edição local ficou errada antes de reimportar:
 lattes-parser restore --last
 ```
 
-Isso não desfaz alterações já salvas na Plataforma — apenas o arquivo local.
+Isso não desfaz alterações já salvas na Plataforma; só o arquivo local.
