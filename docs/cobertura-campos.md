@@ -51,4 +51,4 @@ Demais alterações tipadas exigem estender `syncCvToDocument` ou editar via `do
 
 ## Contribuir
 
-Abra issue **parse gap** ou PR com fixture sintética + teste round-trip. Ver [CONTRIBUTING.md](https://github.com/paladini/lattes-parser/blob/main/CONTRIBUTING.md).
+Abra issue **parse gap** ou PR com fixture sintética + teste round-trip. Ver [CONTRIBUTING.md](https://github.com/paladini/lattes-toolkit/blob/main/CONTRIBUTING.md).

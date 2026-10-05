@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import { parseCurriculum, serializeCurriculum } from "@paladini/lattes-parser";
+import { parseCurriculum, serializeCurriculum } from "@paladini/lattes-toolkit";
 
 const xml = readFileSync(new URL("../test/fixtures/curriculum-sample.xml", import.meta.url), "latin1");
 const cv = parseCurriculum(xml);

@@ -16,7 +16,7 @@ import {
   readCurriculum,
   writeCurriculum,
   applyCurriculumPatches,
-} from "@paladini/lattes-parser";
+} from "@paladini/lattes-toolkit";
 import { readFileSync } from "node:fs";
 
 const cv = await readCurriculum(readFileSync("./curriculo.xml"));

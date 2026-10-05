@@ -2,7 +2,7 @@
 
 ## Scope
 
-The **core** of `@paladini/lattes-parser` is an offline XML toolkit: it reads and
+The **core** of `@paladini/lattes-toolkit` is an offline XML toolkit: it reads and
 writes files you provide and does not call the network (except optional Extrator).
 Realistic concerns:
 

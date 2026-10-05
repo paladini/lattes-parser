@@ -1,6 +1,6 @@
-# @paladini/lattes-parser
+# @paladini/lattes-toolkit
 
 Toolkit to parse and edit exported Plataforma Lattes curriculum XML programmatically via CLI or automated AI agents. Round-trip serialize. User imports updated XML on Plataforma Lattes (Import XML). Not affiliated with CNPq.
 
-Docs: https://paladini.github.io/lattes-parser/
-npm install @paladini/lattes-parser
+Docs: https://paladini.github.io/lattes-toolkit/
+npm install @paladini/lattes-toolkit

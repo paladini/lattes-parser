@@ -57,7 +57,9 @@ export async function backupBeforeWrite(
 
   const backupRoot = resolveBackupRoot(
     absTarget,
-    options?.backupDir ?? process.env.LATTES_PARSER_BACKUP_DIR,
+    options?.backupDir ??
+      process.env.LATTES_TOOLKIT_BACKUP_DIR ??
+      process.env.LATTES_PARSER_BACKUP_DIR,
   );
   const id = timestampId();
   const backupDir = path.join(backupRoot, id);

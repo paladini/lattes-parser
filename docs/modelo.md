@@ -1,6 +1,6 @@
 # Modelo de dados
 
-Pacote: `@paladini/lattes-parser`. O XML raiz é `CURRICULO-VITAE` (`NUMERO-IDENTIFICADOR`, `DATA-ATUALIZACAO`, `HORA-ATUALIZACAO`).
+Pacote: `@paladini/lattes-toolkit`. O XML raiz é `CURRICULO-VITAE` (`NUMERO-IDENTIFICADOR`, `DATA-ATUALIZACAO`, `HORA-ATUALIZACAO`).
 
 ## Mapa principal (v1)
 

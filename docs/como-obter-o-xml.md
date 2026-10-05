@@ -1,6 +1,6 @@
 # Como obter o XML (fora desta biblioteca)
 
-O `@paladini/lattes-parser` **não baixa** currículo na internet. Você precisa de um arquivo **já exportado**. Estes são os caminhos mais comuns:
+O `@paladini/lattes-toolkit` **não baixa** currículo na internet. Você precisa de um arquivo **já exportado**. Estes são os caminhos mais comuns:
 
 ## Export manual (pesquisador)
 

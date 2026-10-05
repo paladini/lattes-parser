@@ -1,9 +1,9 @@
 {
-  "name": "@paladini/lattes-parser",
-  "version": "1.1.1",
-  "description": "Toolkit to parse and edit exported Plataforma Lattes curriculum XML programmatically via CLI or automated AI agents. Not affiliated with CNPq.",
+  "name": "@paladini/lattes-toolkit",
+  "version": "1.2.0",
+  "description": "Toolkit to edit exported Currículo Lattes XML programmatically, via CLI or automated AI agents. Independent project for the platform XML format. Not affiliated with CNPq.",
   "bin": {
-    "lattes-parser": "./dist/cli.js"
+    "lattes-toolkit": "./dist/cli.js"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -37,7 +37,7 @@
   },
   "keywords": [
     "lattes",
-    "lattes-parser",
+    "lattes-toolkit",
     "cnpq",
     "curriculo",
     "curriculum",
@@ -52,12 +52,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/paladini/lattes-parser.git"
+    "url": "git+https://github.com/paladini/lattes-toolkit.git"
   },
   "bugs": {
-    "url": "https://github.com/paladini/lattes-parser/issues"
+    "url": "https://github.com/paladini/lattes-toolkit/issues"
   },
-  "homepage": "https://paladini.github.io/lattes-parser/",
+  "homepage": "https://paladini.github.io/lattes-toolkit/",
   "publishConfig": {
     "access": "public"
   },

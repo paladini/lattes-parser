@@ -1,4 +1,4 @@
-# Releasing @paladini/lattes-parser
+# Releasing @paladini/lattes-toolkit
 
 Maintainer checklist for npm and GitHub Releases.
 
@@ -26,12 +26,20 @@ Scoped public package:
 npm publish --access public
 ```
 
-Requires `NPM_TOKEN` with publish rights to `@paladini` scope (CI uses `secrets.npm_token` on release).
+Requires `NPM_TOKEN` with publish rights to `@paladini` scope (CI uses `secrets.NPM_TOKEN` on release).
 
 ## GitHub Release
 
 1. Create a GitHub Release tagged `vX.Y.Z` matching `package.json`.
 2. The [publish workflow](.github/workflows/publish.yml) runs `npm publish` on `release: created`.
+
+## Rename
+
+Done with 1.2.0. The GitHub repository is `paladini/lattes-toolkit` (the old URL redirects). The docs site base path is `/lattes-toolkit/`. Publishing this version creates `@paladini/lattes-toolkit`. Deprecate the previous package after that publish:
+
+```bash
+npm deprecate @paladini/lattes-parser "Renamed to @paladini/lattes-toolkit"
+```
 
 ## Version policy
 

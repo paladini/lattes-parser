@@ -12,13 +12,13 @@ import { getCurriculumValue, setCurriculumValue } from "./patch/paths.js";
 
 function usage(): never {
   console.error(`Usage:
-  lattes-parser init [dir]
-  lattes-parser parse <file.xml|zip> [--json|--summary]
-  lattes-parser get <file> <path>
-  lattes-parser set <file> <path> <value>
-  lattes-parser serialize <file.json> -o <out.xml>
-  lattes-parser backup list [dir]
-  lattes-parser restore [--last|<backup-id>] [dir]`);
+  lattes-toolkit init [dir]
+  lattes-toolkit parse <file.xml|zip> [--json|--summary]
+  lattes-toolkit get <file> <path>
+  lattes-toolkit set <file> <path> <value>
+  lattes-toolkit serialize <file.json> -o <out.xml>
+  lattes-toolkit backup list [dir]
+  lattes-toolkit restore [--last|<backup-id>] [dir]`);
   process.exit(1);
 }
 

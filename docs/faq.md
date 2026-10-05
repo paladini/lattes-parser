@@ -28,7 +28,7 @@ Tags do XML que ainda não têm tipo dedicado. Elas são preservadas no serializ
 ## Como desfazer uma edição no arquivo?
 
 ```bash
-lattes-parser restore --last
+lattes-toolkit restore --last
 ```
 
 Ver [Backups](./backups.md). Isso não altera o currículo já salvo na Plataforma.

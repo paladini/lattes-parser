@@ -7,13 +7,13 @@ O CNPq oferece o Extrator Lattes para IEPs integrarem sistemas ([gov.br](https:/
 ## Instalação
 
 ```bash
-npm install @paladini/lattes-parser soap
+npm install @paladini/lattes-toolkit soap
 ```
 
 ## Cliente
 
 ```ts
-import { ExtratorClient } from "@paladini/lattes-parser/extrator";
+import { ExtratorClient } from "@paladini/lattes-toolkit/extrator";
 
 const client = new ExtratorClient({
   wsdlUrl: process.env.LATTES_WSDL_URL!,
