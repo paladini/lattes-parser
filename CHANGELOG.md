@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.2.0 - 2026-10-05
+
+### Changed
+
+- Renamed the package from `@paladini/lattes-parser` to `@paladini/lattes-toolkit`. The CLI command is `lattes-toolkit`.
+- Backup directory override prefers `LATTES_TOOLKIT_BACKUP_DIR`. `LATTES_PARSER_BACKUP_DIR` still applies when the new variable is unset.
+- README in Brazilian Portuguese, with an English mirror of the same guide.
+
 ## 1.1.1 - 2026-04-05
 
 ### Changed

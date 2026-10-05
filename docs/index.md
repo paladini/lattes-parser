@@ -1,14 +1,14 @@
 ---
 layout: home
-title: Toolkit XML Currículo Lattes
-description: "Toolkit para parsear e editar o XML do Currículo Lattes de maneira programática, permitindo fazer edições no seu Lattes via CLI ou Agentes de IA automatizados."
+title: Editar XML do Currículo Lattes
+description: "Toolkit para editar o XML exportado do Currículo Lattes de maneira programática, via CLI ou agentes de IA."
 hero:
-  name: Lattes XML Toolkit
-  text: Parse e edição programática do XML
-  tagline: CLI, TypeScript ou agentes de IA automatizados. Round-trip no arquivo e Importar XML na Plataforma.
+  name: lattes-toolkit
+  text: Edição programática do XML exportado
+  tagline: CLI, TypeScript ou agentes de IA. Você importa o arquivo na Plataforma.
   image:
     src: /favicon.svg
-    alt: Lattes XML Toolkit
+    alt: lattes-toolkit
   actions:
     - theme: brand
       text: Ciclo de trabalho
@@ -22,7 +22,7 @@ features:
     details: XML exportado vira TypeScript e volta ao disco com round-trip e unmapped preservado.
   - icon: 🛠️
     title: CLI
-    details: parse, get, set e serialize para edições scriptadas.
+    details: lattes-toolkit parse, get, set e serialize no arquivo local.
   - icon: 🤖
     title: Agentes de IA
     details: applyCurriculumPatches com allowlist; você valida e importa o XML na Plataforma.
@@ -34,7 +34,7 @@ features:
 ## Instalar
 
 ```bash
-npm install @paladini/lattes-parser
+npm install @paladini/lattes-toolkit
 ```
 
 ## Links

@@ -4,7 +4,7 @@ Guidance for humans and coding agents working in this repository.
 
 ## Product intent
 
-**Local Lattes XML toolkit:** parse and edit exported XML programmatically (CLI, TypeScript, automated AI agents with allowlist). User imports XML on the platform UI. Files only; no CNPq login automation.
+**lattes-toolkit** (`@paladini/lattes-toolkit`, CLI `lattes-toolkit`): parse and edit exported XML programmatically (CLI, TypeScript, automated AI agents with allowlist). User imports XML on the platform UI. Files only; no CNPq login automation.
 
 - Always create **backup** before overwriting curriculum XML (`writeCurriculum`, CLI `set`, CLI `serialize -o` when target exists).
 - **Never** implement login, CAPTCHA, scraping, or automated upload to CNPq without explicit maintainer decision.

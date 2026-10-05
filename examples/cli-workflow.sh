@@ -2,8 +2,8 @@
 # Synthetic fixture only — replace with your exported XML.
 set -e
 XML="../test/fixtures/curriculum-sample.xml"
-npx lattes-parser init .
-npx lattes-parser parse "$XML"
-npx lattes-parser set "$XML" identification.summary "Resumo editado localmente."
-npx lattes-parser backup list .
+npx lattes-toolkit init .
+npx lattes-toolkit parse "$XML"
+npx lattes-toolkit set "$XML" identification.summary "Resumo editado localmente."
+npx lattes-toolkit backup list .
 echo "Re-import $XML manually on the Lattes platform."

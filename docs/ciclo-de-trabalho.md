@@ -20,7 +20,7 @@ Salve o arquivo em uma pasta de trabalho (ex.: `./meu-lattes/curriculo.xml`).
 ## 2. Preparar o workspace (opcional)
 
 ```bash
-lattes-parser init
+lattes-toolkit init
 ```
 
 Cria `.lattes-backup/` ao lado dos arquivos que você editar (ou na raiz indicada).
@@ -28,9 +28,9 @@ Cria `.lattes-backup/` ao lado dos arquivos que você editar (ou na raiz indicad
 ## 3. Inspecionar e editar (local)
 
 ```bash
-lattes-parser parse curriculo.xml
-lattes-parser get curriculo.xml identification.fullName
-lattes-parser set curriculo.xml identification.summary "Novo texto"
+lattes-toolkit parse curriculo.xml
+lattes-toolkit get curriculo.xml identification.fullName
+lattes-toolkit set curriculo.xml identification.summary "Novo texto"
 ```
 
 Em TypeScript: `readCurriculum`, `setCurriculumValue`, `writeCurriculum`.
@@ -52,7 +52,7 @@ A UI pode **mesclar** dados; não trate como “substituir 100% do servidor”. 
 Se a edição local ficou errada antes de reimportar:
 
 ```bash
-lattes-parser restore --last
+lattes-toolkit restore --last
 ```
 
 Isso não desfaz alterações já salvas na Plataforma; só o arquivo local.

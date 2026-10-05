@@ -2,7 +2,7 @@
 
 ## Escopo principal: toolkit XML local
 
-`@paladini/lattes-parser` opera em **arquivos que você já possui**:
+`@paladini/lattes-toolkit` opera em **arquivos que você já possui**:
 
 - XML exportado manualmente na Plataforma Lattes
 - ZIP/XML obtido por processo institucional (Extrator)

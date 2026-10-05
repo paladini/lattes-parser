@@ -6,7 +6,7 @@ description: readCurriculum, writeCurriculum, serializeCurriculum e applyCurricu
 # API TypeScript
 
 ```bash
-npm install @paladini/lattes-parser
+npm install @paladini/lattes-toolkit
 ```
 
 ## Ler e gravar
@@ -18,7 +18,7 @@ import {
   writeCurriculum,
   setCurriculumValue,
   LattesId,
-} from "@paladini/lattes-parser";
+} from "@paladini/lattes-toolkit";
 
 const cv = await readCurriculum(readFileSync("./curriculo.xml"));
 setCurriculumValue(cv, "identification.summary", "Resumo atualizado.");
@@ -30,7 +30,7 @@ console.log(LattesId.canonicalUrl(cv));
 ## Serialize sem gravar
 
 ```ts
-import { parseCurriculum, serializeCurriculum } from "@paladini/lattes-parser";
+import { parseCurriculum, serializeCurriculum } from "@paladini/lattes-toolkit";
 
 const cv = parseCurriculum(xmlString);
 const updatedXml = serializeCurriculum(cv);
@@ -41,7 +41,7 @@ const updatedXml = serializeCurriculum(cv);
 ## Patches (CLI e agentes de IA)
 
 ```ts
-import { applyCurriculumPatches } from "@paladini/lattes-parser";
+import { applyCurriculumPatches } from "@paladini/lattes-toolkit";
 
 applyCurriculumPatches(
   cv,
@@ -55,7 +55,7 @@ Detalhes: [Agentes de IA](./integracao-ia.md).
 ## Extrator (instituições)
 
 ```ts
-import { ExtratorClient } from "@paladini/lattes-parser/extrator";
+import { ExtratorClient } from "@paladini/lattes-toolkit/extrator";
 ```
 
 Ver [Extrator institucional](./extrator.md).

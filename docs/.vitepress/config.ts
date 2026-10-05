@@ -1,15 +1,15 @@
 import { defineConfig } from "vitepress";
 
 const siteHost = "https://paladini.github.io";
-const basePath = "/lattes-parser/";
+const basePath = "/lattes-toolkit/";
 const siteUrl = `${siteHost}${basePath.replace(/\/$/, "")}`;
 
 export default defineConfig({
   lang: "pt-BR",
-  title: "@paladini/lattes-parser",
-  titleTemplate: ":title | Toolkit XML Currículo Lattes",
+  title: "lattes-toolkit",
+  titleTemplate: ":title | lattes-toolkit",
   description:
-    "Toolkit para parsear e editar o XML do Currículo Lattes de maneira programática, via CLI ou Agentes de IA automatizados.",
+    "Toolkit para editar o XML exportado do Currículo Lattes de maneira programática, via CLI ou agentes de IA.",
   base: basePath,
   mpa: true,
   cleanUrls: true,
@@ -24,14 +24,14 @@ export default defineConfig({
     ["meta", { name: "author", content: "Fernando Paladini" }],
     ["meta", { name: "robots", content: "index, follow, max-image-preview:large" }],
     ["meta", { property: "og:type", content: "website" }],
-    ["meta", { property: "og:site_name", content: "@paladini/lattes-parser" }],
+    ["meta", { property: "og:site_name", content: "lattes-toolkit" }],
     ["meta", { property: "og:locale", content: "pt_BR" }],
     ["meta", { property: "og:url", content: siteUrl }],
     [
       "meta",
       {
         property: "og:title",
-        content: "Toolkit XML Currículo Lattes (CLI e agentes de IA)",
+        content: "lattes-toolkit: edição programática do XML do Currículo Lattes",
       },
     ],
     [
@@ -39,7 +39,7 @@ export default defineConfig({
       {
         property: "og:description",
         content:
-          "Parse e edição programática do XML do Currículo Lattes via CLI ou agentes de IA automatizados.",
+          "Toolkit para editar o XML exportado do Currículo Lattes de maneira programática, via CLI ou agentes de IA.",
       },
     ],
     ["meta", { name: "twitter:card", content: "summary_large_image" }],
@@ -55,13 +55,13 @@ export default defineConfig({
   ],
   themeConfig: {
     logo: "/favicon.svg",
-    siteTitle: "Lattes XML Toolkit",
+    siteTitle: "lattes-toolkit",
     nav: [
       { text: "Guia", link: "/ciclo-de-trabalho" },
       { text: "CLI", link: "/cli" },
       { text: "FAQ", link: "/faq" },
-      { text: "npm", link: "https://www.npmjs.com/package/@paladini/lattes-parser" },
-      { text: "GitHub", link: "https://github.com/paladini/lattes-parser" },
+      { text: "npm", link: "https://www.npmjs.com/package/@paladini/lattes-toolkit" },
+      { text: "GitHub", link: "https://github.com/paladini/lattes-toolkit" },
     ],
     sidebar: [
       {
@@ -94,7 +94,7 @@ export default defineConfig({
       },
     ],
     socialLinks: [
-      { icon: "github", link: "https://github.com/paladini/lattes-parser" },
+      { icon: "github", link: "https://github.com/paladini/lattes-toolkit" },
     ],
     footer: {
       message: "Projeto independente. Não afiliado ao CNPq.",
@@ -120,7 +120,7 @@ export default defineConfig({
     if (pageData.title) {
       head.push([
         "meta",
-        { property: "og:title", content: `${pageData.title} | Lattes XML Toolkit` },
+        { property: "og:title", content: `${pageData.title} | lattes-toolkit` },
       ]);
     }
     return head;

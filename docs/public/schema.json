@@ -3,19 +3,19 @@
   "@graph": [
     {
       "@type": "WebSite",
-      "name": "@paladini/lattes-parser",
-      "url": "https://paladini.github.io/lattes-parser/",
+      "name": "lattes-toolkit",
+      "url": "https://paladini.github.io/lattes-toolkit/",
       "inLanguage": "pt-BR",
-      "description": "Toolkit para editar XML do Currículo Lattes localmente com CLI e TypeScript."
+      "description": "Toolkit para editar o XML exportado do Currículo Lattes de maneira programática, via CLI ou agentes de IA."
     },
     {
       "@type": "SoftwareApplication",
-      "name": "@paladini/lattes-parser",
+      "name": "lattes-toolkit",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Windows, macOS, Linux",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
-      "url": "https://www.npmjs.com/package/@paladini/lattes-parser",
-      "codeRepository": "https://github.com/paladini/lattes-parser",
+      "url": "https://www.npmjs.com/package/@paladini/lattes-toolkit",
+      "codeRepository": "https://github.com/paladini/lattes-toolkit",
       "license": "https://opensource.org/licenses/MIT"
     }
   ]

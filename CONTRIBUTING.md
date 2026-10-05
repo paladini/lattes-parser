@@ -1,4 +1,4 @@
-# Contributing to @paladini/lattes-parser
+# Contributing to @paladini/lattes-toolkit
 
 Thanks for considering a contribution — issues, pull requests, and discussion are welcome. This project is an **independent local toolkit** for the **platform Lattes XML format**: parse, edit, serialize, with backups. Read this page before opening a PR.
 
@@ -23,7 +23,7 @@ src/
   io/          read/write, encoding, ZIP
   backup/      .lattes-backup snapshots
   patch/       path get/set, applyCurriculumPatches
-  cli.ts       lattes-parser commands
+  cli.ts       lattes-toolkit commands
   extrator/    optional SOAP (peer: soap)
 test/fixtures/ synthetic XML only
 docs/          workflow, backups, import, IA contract
