@@ -19,4 +19,4 @@ Universidades credenciadas podem baixar XML/ZIP via **Extrator Lattes** (SOAP, I
 - Automatizar o site público (CAPTCHA, termo de uso).
 - Enviar XML de terceiros em issues ou PRs (LGPD).
 
-Depois que o arquivo está no seu disco ou pipeline, o parser entra em ação.
+Com o arquivo salvo, use `parseCurriculum()` ou `readCurriculum()`.

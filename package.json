@@ -1,7 +1,7 @@
 {
   "name": "@paladini/lattes-parser",
   "version": "1.1.1",
-  "description": "Automate exported Plataforma Lattes CV XML: TypeScript, CLI, AI patches with allowlist, backups. Finish with Import XML on the platform. Not affiliated with CNPq.",
+  "description": "Toolkit to parse and edit exported Plataforma Lattes curriculum XML programmatically via CLI or automated AI agents. Not affiliated with CNPq.",
   "bin": {
     "lattes-parser": "./dist/cli.js"
   },

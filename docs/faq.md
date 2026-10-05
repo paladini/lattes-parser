@@ -1,42 +1,38 @@
 ---
 title: Perguntas frequentes
-description: Automatizar Currículo Lattes com XML, CLI, TypeScript e skills de IA.
+description: Toolkit para parsear e editar XML do Currículo Lattes via CLI ou agentes de IA.
 ---
 
 # Perguntas frequentes
 
-## Consigo automatizar a atualização do meu Lattes?
+## Como atualizo meu currículo com este pacote?
 
-**Sim, a parte operacional.** Exporte o XML, deixe scripts ou uma skill de IA aplicarem dezenas de mudanças com backup e allowlist, gere o XML final e use **Importar XML** na Plataforma. Você revisa uma vez na UI em vez de repetir formulários.
+Exporte o XML na Plataforma Lattes, edite o arquivo com a CLI, TypeScript ou um agente de IA (patches com allowlist), depois use **Importar XML** no site e confirme.
 
-## O que a biblioteca automatiza?
+## Posso usar agentes de IA automatizados?
 
-Parse, diff mental entre exports, edição em lote (`set`, patches), serialize, backups. Tudo no arquivo e no seu pipeline Node.js.
+Sim. Use `readCurriculum`, `applyCurriculumPatches` com allowlist e `writeCurriculum`. Veja [Agentes de IA](./integracao-ia.md). O envio à Plataforma continua manual.
 
-## O que continua humano?
+## A biblioteca envia o XML ao CNPq sozinha?
 
-Login na Plataforma e o clique em **Importar XML → Enviar → confirmar**. A lib não guarda sua senha nem simula browser (e não deve).
+Não. Ela grava arquivos locais. O envio é feito por você na Plataforma (Importar XML).
 
-## Funciona com Cursor / agentes de IA?
+## Preciso do número Lattes (16 dígitos)?
 
-Sim. Contrato em [Integração com IA](./integracao-ia.md): `readCurriculum`, `applyCurriculumPatches` com allowlist, `writeCurriculum`, re-parse para validar.
+Não, se você já tem o XML exportado. O ID vem no arquivo.
 
-## Preciso do ID Lattes de 16 dígitos?
+## O que é `unmapped`?
 
-Não para o fluxo por arquivo. O XML exportado já traz o identificador.
+Tags do XML que ainda não têm tipo dedicado. Elas são preservadas no serialize.
 
-## E campos que o parser ainda não tipou?
-
-Ficam em `unmapped` e voltam no serialize. Cobertura cresce; mapa em [Cobertura de campos](./cobertura-campos.md).
-
-## Desfazer edição local
+## Como desfazer uma edição no arquivo?
 
 ```bash
 lattes-parser restore --last
 ```
 
-Ver [Backups](./backups.md).
+Ver [Backups](./backups.md). Isso não altera o currículo já salvo na Plataforma.
 
-## É oficial do CNPq?
+## É produto do CNPq?
 
-Não. Toolkit open source independente (MIT).
+Não. Projeto open source independente (MIT).

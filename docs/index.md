@@ -1,49 +1,44 @@
 ---
 layout: home
-title: Automatize seu Currículo Lattes via XML
-description: Parse, CLI, TypeScript e patches para IA no XML exportado do Lattes. Feche o ciclo com Importar XML na Plataforma.
+title: Toolkit XML Currículo Lattes
+description: "Toolkit para parsear e editar o XML do Currículo Lattes de maneira programática, permitindo fazer edições no seu Lattes via CLI ou Agentes de IA automatizados."
 hero:
   name: Lattes XML Toolkit
-  text: Seu currículo como código, não como formulário infinito
-  tagline: Exportar → automatizar localmente (CLI, TS, skill de IA) → Importar XML na Plataforma
+  text: Parse e edição programática do XML
+  tagline: CLI, TypeScript ou agentes de IA automatizados. Round-trip no arquivo e Importar XML na Plataforma.
   image:
     src: /favicon.svg
     alt: Lattes XML Toolkit
   actions:
     - theme: brand
-      text: Ver o fluxo completo
+      text: Ciclo de trabalho
       link: /ciclo-de-trabalho
     - theme: alt
-      text: Integração com IA
+      text: Agentes de IA
       link: /integracao-ia
 features:
-  - icon: ⚡
-    title: Automação local de verdade
-    details: Parse tipado, CLI set/get, serialize com backup. Escale edições que a UI não aguenta.
+  - icon: 📄
+    title: Parse e serialize
+    details: XML exportado vira TypeScript e volta ao disco com round-trip e unmapped preservado.
+  - icon: 🛠️
+    title: CLI
+    details: parse, get, set e serialize para edições scriptadas.
   - icon: 🤖
-    title: Pronto para skill de IA
-    details: applyCurriculumPatches com allowlist. Seu agente edita o modelo; você valida e importa o XML.
-  - icon: 💾
-    title: Backups automáticos
-    details: Cada gravação versionada em .lattes-backup/. Restore com um comando.
-  - icon: 📦
-    title: Round-trip no XML
-    details: Campos tipados + unmapped. Nada some no serialize.
+    title: Agentes de IA
+    details: applyCurriculumPatches com allowlist; você valida e importa o XML na Plataforma.
+  - icon: 📤
+    title: Importar XML
+    details: Último passo manual na Plataforma Lattes após editar o arquivo.
 ---
 
-## Instalação
+## Instalar
 
 ```bash
 npm install @paladini/lattes-parser
-npx lattes-parser init
-npx lattes-parser set curriculo.xml identification.summary "Atualizado pelo meu script"
 ```
 
-Depois: **Importar XML** na Plataforma Lattes (arquivo pronto, DTD ok).
-
-## Links úteis
+## Links
 
 - [Ciclo de trabalho](./ciclo-de-trabalho.md)
-- [Importar XML na UI](./importacao-lattes.md)
-- [Referência CLI](./cli.md)
+- [Importar XML](./importacao-lattes.md)
 - [FAQ](./faq.md)

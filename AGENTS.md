@@ -4,7 +4,7 @@ Guidance for humans and coding agents working in this repository.
 
 ## Product intent
 
-**Local Lattes XML toolkit:** automate exported XML (parse, CLI, patches, AI allowlist, backups). User completes with **Import XML** on the platform UI. The library operates on **files only**; no CNPq login automation.
+**Local Lattes XML toolkit:** parse and edit exported XML programmatically (CLI, TypeScript, automated AI agents with allowlist). User imports XML on the platform UI. Files only; no CNPq login automation.
 
 - Always create **backup** before overwriting curriculum XML (`writeCurriculum`, CLI `set`, CLI `serialize -o` when target exists).
 - **Never** implement login, CAPTCHA, scraping, or automated upload to CNPq without explicit maintainer decision.
@@ -16,7 +16,7 @@ Guidance for humans and coding agents working in this repository.
 - `src/serialize/` — `Curriculum` → XML via `document` tree + `syncCvToDocument`
 - `src/io/` — read/write, encoding, ZIP
 - `src/backup/` — `.lattes-backup/` snapshots
-- `src/patch/` — path get/set, `applyCurriculumPatches` (allowlist for AI skills)
+- `src/patch/` — path get/set, `applyCurriculumPatches` (optional allowlist)
 - `src/cli.ts` — workspace-oriented commands
 - `src/extrator/` — optional SOAP; peer `soap`
 - `test/fixtures/` — **synthetic XML only** (no real third-party CVs)
@@ -28,9 +28,9 @@ Guidance for humans and coding agents working in this repository.
 - Parser/serialize changes: add or extend **round-trip** tests with synthetic fixtures
 - Run `npm test` and `npm run build` before finishing
 
-## AI / external skills
+## Programmatic edits
 
-When applying automated edits:
+When applying batch edits:
 
 1. `readCurriculum` or parse existing file
 2. `backupBeforeWrite` / `writeCurriculum` (backup on)
