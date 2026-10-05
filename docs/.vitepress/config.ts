@@ -7,9 +7,9 @@ const siteUrl = `${siteHost}${basePath.replace(/\/$/, "")}`;
 export default defineConfig({
   lang: "pt-BR",
   title: "@paladini/lattes-parser",
-  titleTemplate: ":title | Editar XML Lattes localmente",
+  titleTemplate: ":title | Toolkit XML Currículo Lattes",
   description:
-    "Automatize o Currículo Lattes no XML exportado: CLI, TypeScript, patches para IA e backup. Feche com Importar XML na Plataforma.",
+    "Toolkit para parsear e editar o XML do Currículo Lattes de maneira programática, via CLI ou Agentes de IA automatizados.",
   base: basePath,
   mpa: true,
   cleanUrls: true,
@@ -31,7 +31,7 @@ export default defineConfig({
       "meta",
       {
         property: "og:title",
-        content: "Editar XML do Currículo Lattes localmente (CLI e TypeScript)",
+        content: "Toolkit XML Currículo Lattes (CLI e agentes de IA)",
       },
     ],
     [
@@ -39,7 +39,7 @@ export default defineConfig({
       {
         property: "og:description",
         content:
-          "Automatize edições no XML exportado do Lattes: CLI, TypeScript, skill de IA, backup. Importar XML na Plataforma.",
+          "Parse e edição programática do XML do Currículo Lattes via CLI ou agentes de IA automatizados.",
       },
     ],
     ["meta", { name: "twitter:card", content: "summary_large_image" }],
@@ -80,7 +80,7 @@ export default defineConfig({
           { text: "Referência CLI", link: "/cli" },
           { text: "API TypeScript", link: "/api-typescript" },
           { text: "Backups", link: "/backups" },
-          { text: "Integração com IA", link: "/integracao-ia" },
+          { text: "Agentes de IA", link: "/integracao-ia" },
         ],
       },
       {

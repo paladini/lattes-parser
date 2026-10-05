@@ -38,7 +38,7 @@ const updatedXml = serializeCurriculum(cv);
 
 `Curriculum.document` é preenchido no parse e necessário para round-trip.
 
-## Patches (IA / automação)
+## Patches (CLI e agentes de IA)
 
 ```ts
 import { applyCurriculumPatches } from "@paladini/lattes-parser";
@@ -50,7 +50,7 @@ applyCurriculumPatches(
 );
 ```
 
-Contrato completo: [Integração com IA](./integracao-ia.md).
+Detalhes: [Agentes de IA](./integracao-ia.md).
 
 ## Extrator (instituições)
 

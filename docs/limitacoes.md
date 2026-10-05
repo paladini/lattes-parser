@@ -18,7 +18,7 @@ Fluxo de produto: **exportar (manual) → parse → editar → serialize → Imp
 - Leitura de buffer/string, incluindo ZIP com um XML dentro
 - Detecção de encoding (`ISO-8859-1`, etc.) e entidades XML
 - Preservação de nós desconhecidos em `unmapped`
-- Patches com allowlist (`applyCurriculumPatches`) para integrações de IA
+- Patches com allowlist (`applyCurriculumPatches`) para edição em lote
 - (Opcional) Cliente SOAP para instituições com Extrator Lattes
 - XML pronto para você usar em **Importar XML** na Plataforma (envio e revisão na UI)
 

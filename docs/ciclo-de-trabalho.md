@@ -1,11 +1,11 @@
 ---
 title: Ciclo de trabalho
-description: Exportar XML, automatizar edições com CLI ou TypeScript, Importar XML na Plataforma.
+description: Exportar XML, editar de forma programática (CLI, TypeScript ou agentes de IA), Importar XML na Plataforma.
 ---
 
 # Ciclo de trabalho
 
-Pipeline completo para quem quer **automatizar** a manutenção do currículo sem abandonar a Plataforma oficial.
+Passos para editar o currículo fora dos formulários web e publicar via Importar XML.
 
 ## 1. Exportar (manual)
 

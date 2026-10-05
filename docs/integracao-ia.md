@@ -1,20 +1,13 @@
 ---
-title: Integração com IA
-description: Skills e agentes editam o Currículo Lattes via patches tipados, backup e allowlist. Você importa o XML na Plataforma.
+title: Agentes de IA
+description: Edição programática com applyCurriculumPatches e allowlist para agentes de IA automatizados.
 ---
 
-# Integração com IA
+# Agentes de IA
 
-Use este pacote como **backend de arquivo** para skills (Cursor, Codex, scripts internos). O agente não acessa o CNPq; ele produz um **XML revisável** que você envia em **Importar XML**.
+Use esta API quando um agente de IA (ou outro processo automatizado) for aplicar várias alterações no currículo. A **allowlist** limita quais paths podem ser modificados.
 
-## Fluxo recomendado para skills
-
-1. `readCurriculum(path)` ou parse do XML exportado.
-2. `applyCurriculumPatches(cv, patches, { allowlist })` com lista fechada de paths permitidos.
-3. `writeCurriculum(cv, path)` (backup em `.lattes-backup/` por padrão).
-4. Re-parse do XML gerado para checar integridade.
-5. Mostrar diff ao usuário (fora desta lib).
-6. Usuário: **Importar XML** na Plataforma Lattes.
+A biblioteca não envia o XML ao CNPq. Depois de gravar o arquivo, você usa **Importar XML** na Plataforma.
 
 ## Exemplo
 
@@ -23,31 +16,28 @@ import {
   readCurriculum,
   writeCurriculum,
   applyCurriculumPatches,
-  type CurriculumPatch,
 } from "@paladini/lattes-parser";
 import { readFileSync } from "node:fs";
 
 const cv = await readCurriculum(readFileSync("./curriculo.xml"));
 
-const patches: CurriculumPatch[] = [
-  { path: "identification.summary", value: "Resumo revisado pela skill." },
-];
-
-applyCurriculumPatches(cv, patches, {
-  allowlist: ["identification.summary", "identification.otherRelevantInfo"],
-});
+applyCurriculumPatches(
+  cv,
+  [
+    { path: "identification.summary", value: "Novo resumo." },
+  ],
+  { allowlist: ["identification.summary"] },
+);
 
 await writeCurriculum(cv, "./curriculo.xml");
 ```
 
-## Allowlist
+## Fluxo sugerido
 
-Obrigatória em produção com IA: só paths explícitos. Patch fora da lista lança erro.
+1. Ler o XML (`readCurriculum`).
+2. Aplicar patches com allowlist explícita.
+3. Gravar (`writeCurriculum`).
+4. Parse de novo no arquivo gerado para conferir.
+5. Importar o XML na Plataforma Lattes.
 
-## Paths
-
-Notação dot/bracket: `identification.summary`, `bibliographicProduction.journalArticles[0].title` (quando tipado).
-
-## AGENTS.md
-
-Instruções para agentes que editam este repositório: [AGENTS.md](https://github.com/paladini/lattes-parser/blob/main/AGENTS.md).
+Paths: notação com ponto e colchetes, por exemplo `identification.summary` ou `bibliographicProduction.journalArticles[0].title` quando o campo existir no modelo.
