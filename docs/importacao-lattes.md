@@ -1,6 +1,6 @@
 ---
 title: Importar XML no Lattes
-description: Último passo do fluxo automatizado: enviar o XML editado na Plataforma (Importar XML, DTD, Enviar).
+description: "Último passo do fluxo automatizado - enviar o XML editado na Plataforma (Importar XML, DTD, Enviar)."
 ---
 
 # Importar XML na Plataforma Lattes
