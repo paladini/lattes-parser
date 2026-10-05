@@ -1,0 +1,83 @@
+{
+  "name": "@paladini/lattes-parser",
+  "version": "1.0.0",
+  "description": "Offline TypeScript parser for official Currículo Lattes XML (and Extrator ZIP). No web scraping, no CAPTCHA.",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./extrator": {
+      "types": "./dist/extrator/index.d.ts",
+      "import": "./dist/extrator/index.js",
+      "require": "./dist/extrator/index.cjs"
+    }
+  },
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/extrator/index.ts --format cjs,esm --dts --clean",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "lattes",
+    "lattes-parser",
+    "cnpq",
+    "curriculo",
+    "curriculum",
+    "xml",
+    "parser",
+    "extrator",
+    "brasil",
+    "pesquisa",
+    "typescript"
+  ],
+  "author": "Fernando Paladini <fnpaladini@gmail.com> (https://github.com/paladini)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paladini/lattes-parser.git"
+  },
+  "bugs": {
+    "url": "https://github.com/paladini/lattes-parser/issues"
+  },
+  "homepage": "https://github.com/paladini/lattes-parser#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.0.9",
+    "fflate": "^0.8.2"
+  },
+  "peerDependencies": {
+    "soap": "^1.1.7"
+  },
+  "peerDependenciesMeta": {
+    "soap": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "soap": "^1.1.7",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
