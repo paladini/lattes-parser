@@ -15,5 +15,5 @@ export function loadSampleXmlBytes(): Uint8Array {
 
 export function zipSampleCurriculum(): Uint8Array {
   const xml = loadSampleXmlBytes();
-  return zipSync({ "8907059238612691.xml": xml });
+  return zipSync({ "0000000000000001.xml": xml });
 }

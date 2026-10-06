@@ -1,7 +1,7 @@
 /**
  * Example: institutional Extrator client (requires credentialed WSDL + optional soap package).
  *
- *   LATTES_WSDL_URL=https://... npx tsx examples/extrator.ts 8907059238612691
+ *   LATTES_WSDL_URL=https://... npx tsx examples/extrator.ts 0000000000000001
  */
 import { ExtratorClient } from "../src/extrator/index.js";
 

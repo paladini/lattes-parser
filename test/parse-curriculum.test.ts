@@ -11,7 +11,7 @@ describe("parseCurriculum", () => {
   it("maps major curriculum sections from synthetic XML", () => {
     const curriculum = parseCurriculum(loadSampleXml());
 
-    expect(curriculum.id).toBe("8907059238612691");
+    expect(curriculum.id).toBe("0000000000000001");
     expect(curriculum.updatedAt.iso).toBe("2024-03-15T14:30:22");
     expect(curriculum.identification.fullName).toBe("Pesquisador Síntese");
     expect(curriculum.identification.summary).toContain("acentuação");
@@ -59,7 +59,7 @@ describe("readCurriculum", () => {
   it("reads ZIP archives from Extrator", async () => {
     const zip = zipSampleCurriculum();
     const curriculum = await readCurriculum(zip);
-    expect(curriculum.id).toBe("8907059238612691");
+    expect(curriculum.id).toBe("0000000000000001");
   });
 
   it("rejects empty ZIP archives", async () => {
