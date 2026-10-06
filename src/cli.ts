@@ -8,7 +8,9 @@ import {
 } from "./backup/store.js";
 import { readCurriculum } from "./io/read-curriculum.js";
 import { writeCurriculum } from "./io/write-curriculum.js";
+import { applyCurriculumPatches } from "./patch/apply-patches.js";
 import { getCurriculumValue, setCurriculumValue } from "./patch/paths.js";
+import { validateCurriculumXml } from "./validate/validate-curriculum.js";
 
 function usage(): never {
   console.error(`Usage:
@@ -18,7 +20,9 @@ function usage(): never {
   lattes-toolkit set <file> <path> <value>
   lattes-toolkit serialize <file.json> -o <out.xml>
   lattes-toolkit backup list [dir]
-  lattes-toolkit restore [--last|<backup-id>] [dir]`);
+  lattes-toolkit restore [--last|<backup-id>] [dir]
+  lattes-toolkit validate <file.xml>
+  lattes-toolkit patch <file.xml> <patches.json>`);
   process.exit(1);
 }
 
@@ -110,6 +114,39 @@ async function main(): Promise<void> {
       return;
     }
     usage();
+  }
+
+  if (cmd === "validate") {
+    const file = rest[0];
+    if (!file) {
+      usage();
+    }
+    const xml = await readFile(file, "latin1");
+    const result = validateCurriculumXml(xml, { xmlPath: path.resolve(file) });
+    if (result.skipped) {
+      console.log(JSON.stringify({ skipped: true, reason: result.reason }, null, 2));
+      process.exit(0);
+    }
+    console.log(JSON.stringify({ valid: result.valid, errors: result.errors }, null, 2));
+    process.exit(result.valid ? 0 : 1);
+  }
+
+  if (cmd === "patch") {
+    const [file, patchFile] = rest;
+    if (!file || !patchFile) {
+      usage();
+    }
+    const payload = JSON.parse(await readFile(patchFile, "utf8")) as {
+      patches: Array<{ path: string; value: unknown }>;
+      allowlist?: string[];
+    };
+    const cv = await loadCurriculumFromFile(file);
+    applyCurriculumPatches(cv, payload.patches, {
+      allowlist: payload.allowlist,
+    });
+    await writeCurriculum(cv, file);
+    console.log(`Applied ${payload.patches.length} patch(es) to ${file}`);
+    return;
   }
 
   if (cmd === "restore") {

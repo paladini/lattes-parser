@@ -1,18 +1,26 @@
 import { InvalidCurriculumXmlError } from "../errors.js";
+import { DEGREE_TAGS } from "../schema/degree-tags.js";
 import type {
   AcademicDegree,
   Advisory,
-  Author,
   Award,
   BibliographicItem,
   Curriculum,
+  EmploymentLink,
   LanguageEntry,
   ProfessionalActivity,
   ProfessionalAddress,
   ResearchArea,
-  TechnicalItem,
 } from "../types.js";
+import {
+  mapAuthors,
+  readCitationName,
+  readOtherRelevantInfo,
+  readSummaryText,
+} from "./authors.js";
 import { parseLattesDateTime } from "./dates.js";
+import { mapComplementaryData } from "./sections/dados-complementares.js";
+import { mapTechnicalProduction } from "./sections/producao-tecnica.js";
 import {
   asArray,
   asRecord,
@@ -22,40 +30,6 @@ import {
   xmlParser,
   type XmlRecord,
 } from "./xml-utils.js";
-
-function mapAuthors(node: unknown): Author[] {
-  const record = asRecord(node);
-  if (!record) {
-    return [];
-  }
-  const autoresNode = asRecord(record["AUTORES"]);
-  const authorNodes = autoresNode
-    ? asArray(autoresNode["AUTOR"])
-    : asArray(record["AUTOR"]);
-
-  return authorNodes.flatMap((entry) => {
-      const record = asRecord(entry);
-      if (!record) {
-        return [];
-      }
-      const name =
-        attr(record, "NOME-COMPLETO-DO-AUTOR") ??
-        textContent(record) ??
-        attr(record, "NOME-PARA-CITACAO");
-      if (!name) {
-        return [];
-      }
-      const orderRaw = attr(record, "ORDEM-DE-AUTORIA");
-      return [
-        {
-          name,
-          citationName: attr(record, "NOME-PARA-CITACAO"),
-          order: orderRaw ? Number(orderRaw) : undefined,
-          raw: record,
-        },
-      ];
-    });
-}
 
 function mapBibliographicItems(
   container: XmlRecord | undefined,
@@ -72,7 +46,9 @@ function mapBibliographicItems(
       asRecord(record["DADOS-BASICOS-DO-ARTIGO"]) ??
       asRecord(record["DADOS-BASICOS-DO-TRABALHO"]) ??
       asRecord(record["DADOS-BASICOS-DO-LIVRO"]) ??
+      asRecord(record["DADOS-BASICOS-DO-CAPITULO"]) ??
       asRecord(record["DADOS-BASICOS-DE-OUTRAS-PRODUCOES-BIBLIOGRAFICAS"]) ??
+      asRecord(record["DADOS-BASICOS-DE-OUTRA-PRODUCAO"]) ??
       record;
 
     const title =
@@ -89,7 +65,8 @@ function mapBibliographicItems(
     const detail =
       asRecord(record["DETALHAMENTO-DO-ARTIGO"]) ??
       asRecord(record["DETALHAMENTO-DO-TRABALHO"]) ??
-      asRecord(record["DETALHAMENTO-DO-LIVRO"]);
+      asRecord(record["DETALHAMENTO-DO-LIVRO"]) ??
+      asRecord(record["DETALHAMENTO-DO-CAPITULO"]);
 
     return [
       {
@@ -101,10 +78,41 @@ function mapBibliographicItems(
           attr(detail, "TITULO-DO-PERIODICO-OU-REVISTA") ??
           attr(detail, "NOME-DO-EVENTO"),
         doi: attr(detail, "DOI"),
+        sequence: attr(record, "SEQUENCIA-PRODUCAO"),
         raw: record,
       },
     ];
   });
+}
+
+function mapBooksAndChapters(booksContainer: XmlRecord | undefined): BibliographicItem[] {
+  if (!booksContainer) {
+    return [];
+  }
+
+  const flatBooks = mapBibliographicItems(
+    booksContainer,
+    "LIVRO-PUBLICADO-OU-ORGANIZADO",
+    "book",
+  );
+  const flatChapters = mapBibliographicItems(
+    booksContainer,
+    "CAPITULO-DE-LIVRO-PUBLICADO",
+    "book_chapter",
+  );
+
+  const nestedBooks = mapBibliographicItems(
+    asRecord(booksContainer["LIVROS-PUBLICADOS-OU-ORGANIZADOS"]),
+    "LIVRO-PUBLICADO-OU-ORGANIZADO",
+    "book",
+  );
+  const nestedChapters = mapBibliographicItems(
+    asRecord(booksContainer["CAPITULOS-DE-LIVROS-PUBLICADOS"]),
+    "CAPITULO-DE-LIVRO-PUBLICADO",
+    "book_chapter",
+  );
+
+  return [...flatBooks, ...flatChapters, ...nestedBooks, ...nestedChapters];
 }
 
 function mapAcademicBackground(node: unknown): AcademicDegree[] {
@@ -114,34 +122,54 @@ function mapAcademicBackground(node: unknown): AcademicDegree[] {
   }
 
   const degrees: AcademicDegree[] = [];
-  for (const tag of [
-    "GRADUACAO",
-    "MESTRADO",
-    "DOUTORADO",
-    "POS-DOUTORADO",
-    "ESPECIALIZACAO",
-    "APERFEICOAMENTO",
-  ] as const) {
+  for (const tag of DEGREE_TAGS) {
     for (const entry of asArray(root[tag])) {
       const record = asRecord(entry);
       if (!record) {
         continue;
       }
       degrees.push({
+        xmlTag: tag,
         level: attr(record, "NIVEL") ?? tag.replace(/-/g, " "),
         title:
           attr(record, "TITULO-DA-MONOGRAFIA") ??
-          attr(record, "TITULO-DA-DISSERTACAO-TESE"),
+          attr(record, "TITULO-DA-DISSERTACAO-TESE") ??
+          attr(record, "TITULO-DO-TRABALHO-DE-CONCLUSAO-DE-CURSO"),
         institution: attr(record, "NOME-INSTITUICAO"),
         startYear: attr(record, "ANO-DE-INICIO"),
         endYear: attr(record, "ANO-DE-CONCLUSAO"),
         status: attr(record, "STATUS-DO-CURSO"),
+        sequence: attr(record, "SEQUENCIA-FORMACAO"),
         raw: record,
       });
     }
   }
 
   return degrees;
+}
+
+function mapEmploymentLinks(node: unknown): EmploymentLink[] {
+  return asArray(node).flatMap((entry) => {
+    const record = asRecord(entry);
+    if (!record) {
+      return [];
+    }
+    return [
+      {
+        linkType: attr(record, "TIPO-DE-VINCULO"),
+        functionalRole:
+          attr(record, "OUTRO-ENQUADRAMENTO-FUNCIONAL-INFORMADO") ??
+          attr(record, "ENQUADRAMENTO-FUNCIONAL"),
+        weeklyHours: attr(record, "CARGA-HORARIA-SEMANAL"),
+        exclusive: attr(record, "FLAG-DEDICACAO-EXCLUSIVA"),
+        startMonth: attr(record, "MES-INICIO"),
+        startYear: attr(record, "ANO-INICIO"),
+        endMonth: attr(record, "MES-FIM"),
+        endYear: attr(record, "ANO-FIM"),
+        raw: record,
+      },
+    ];
+  });
 }
 
 function mapProfessionalActivities(node: unknown): ProfessionalActivity[] {
@@ -155,12 +183,16 @@ function mapProfessionalActivities(node: unknown): ProfessionalActivity[] {
     if (!record) {
       return [];
     }
+    const links = mapEmploymentLinks(record["VINCULOS"]);
+    const primaryLink = links[0];
     return [
       {
         institution: attr(record, "NOME-INSTITUICAO"),
-        role: attr(record, "CARGO"),
-        startYear: attr(record, "ANO-DE-INICIO"),
-        endYear: attr(record, "ANO-DE-FIM"),
+        institutionCode: attr(record, "CODIGO-INSTITUICAO"),
+        role: primaryLink?.functionalRole ?? attr(record, "CARGO"),
+        startYear: primaryLink?.startYear ?? attr(record, "ANO-DE-INICIO"),
+        endYear: primaryLink?.endYear ?? attr(record, "ANO-DE-FIM"),
+        links,
         raw: record,
       },
     ];
@@ -215,26 +247,31 @@ function mapLanguages(node: unknown): LanguageEntry[] {
     return [
       {
         language,
+        languageCode: attr(record, "IDIOMA"),
         proficiency: attr(record, "PROFICIENCIA"),
+        reading: attr(record, "PROFICIENCIA-DE-LEITURA"),
+        speaking: attr(record, "PROFICIENCIA-DE-FALA"),
+        writing: attr(record, "PROFICIENCIA-DE-ESCRITA"),
+        comprehension: attr(record, "PROFICIENCIA-DE-COMPREENSAO"),
         raw: record,
       },
     ];
   });
 }
 
-function mapProfessionalAddress(node: unknown): ProfessionalAddress | undefined {
-  const root = asRecord(node);
-  if (!root) {
+function mapAddressBlock(
+  endereco: XmlRecord | undefined,
+  tag: string,
+): ProfessionalAddress | undefined {
+  const prof = asRecord(endereco?.[tag]);
+  if (!prof) {
     return undefined;
   }
-
-  const prof = asRecord(root["ENDERECO-PROFISSIONAL"]) ?? root;
-  const institution = attr(prof, "NOME-INSTITUICAO");
+  const institution = attr(prof, "NOME-INSTITUICAO-EMPRESA") ?? attr(prof, "NOME-INSTITUICAO");
   const city = attr(prof, "CIDADE");
-  if (!institution && !city) {
+  if (!institution && !city && !attr(prof, "E-MAIL")) {
     return undefined;
   }
-
   return {
     institution,
     department: attr(prof, "NOME-UNIDADE"),
@@ -243,51 +280,6 @@ function mapProfessionalAddress(node: unknown): ProfessionalAddress | undefined 
     country: attr(prof, "PAIS"),
     raw: prof,
   };
-}
-
-function mapTechnicalProduction(node: unknown): TechnicalItem[] {
-  const root = asRecord(node);
-  if (!root) {
-    return [];
-  }
-
-  const items: TechnicalItem[] = [];
-  for (const [tag, label] of [
-    ["PATENTE", "patent"],
-    ["PRODUTO-TECNOLOGICO", "technology_product"],
-    ["SOFTWARE", "software"],
-    ["TRABALHO-TECNICO", "technical_work"],
-  ] as const) {
-    for (const entry of asArray(root[tag])) {
-      const record = asRecord(entry);
-      if (!record) {
-        continue;
-      }
-      const basics =
-        asRecord(record["DADOS-BASICOS-DA-PATENTE"]) ??
-        asRecord(record["DADOS-BASICOS-DO-PRODUTO-TECNOLOGICO"]) ??
-        asRecord(record["DADOS-BASICOS-DO-SOFTWARE"]) ??
-        asRecord(record["DADOS-BASICOS-DO-TRABALHO-TECNICO"]) ??
-        record;
-      const title =
-        attr(basics, "TITULO-PATENTE") ??
-        attr(basics, "TITULO-DO-PRODUTO-TECNOLOGICO") ??
-        attr(basics, "TITULO-DO-SOFTWARE") ??
-        attr(basics, "TITULO-DO-TRABALHO-TECNICO") ??
-        attr(basics, "TITULO");
-      if (!title) {
-        continue;
-      }
-      items.push({
-        type: label,
-        title,
-        year: attr(basics, "ANO"),
-        raw: record,
-      });
-    }
-  }
-
-  return items;
 }
 
 function mapAdvisories(complement: XmlRecord | undefined): {
@@ -375,7 +367,12 @@ function mapAwards(node: unknown): Award[] {
     return [];
   }
 
-  return asArray(root["PREMIO-OU-TITULO"]).flatMap((entry) => {
+  const entries = [
+    ...asArray(root["PREMIO-TITULO"]),
+    ...asArray(root["PREMIO-OU-TITULO"]),
+  ];
+
+  return entries.flatMap((entry) => {
     const record = asRecord(entry);
     if (!record) {
       return [];
@@ -387,7 +384,8 @@ function mapAwards(node: unknown): Award[] {
     return [
       {
         title,
-        year: attr(record, "ANO"),
+        year: attr(record, "ANO-DA-PREMIACAO") ?? attr(record, "ANO"),
+        promotingEntity: attr(record, "NOME-DA-ENTIDADE-PROMOTORA"),
         raw: record,
       },
     ];
@@ -416,11 +414,15 @@ export function parseCurriculum(xml: string): Curriculum {
     );
   }
 
+  const document = structuredClone(root) as XmlRecord;
+
   const empty: XmlRecord = {};
-  const dadosGerais = asRecord(root["DADOS-GERAIS"]) ?? empty;
-  const bibliographic = asRecord(root["PRODUCAO-BIBLIOGRAFICA"]) ?? empty;
-  const technical = asRecord(root["PRODUCAO-TECNICA"]);
-  const complement = asRecord(root["DADOS-COMPLEMENTARES"]);
+  const dadosGerais = asRecord(document["DADOS-GERAIS"]) ?? empty;
+  document["DADOS-GERAIS"] = dadosGerais;
+  const bibliographic = asRecord(document["PRODUCAO-BIBLIOGRAFICA"]) ?? empty;
+  document["PRODUCAO-BIBLIOGRAFICA"] = bibliographic;
+  const technical = asRecord(document["PRODUCAO-TECNICA"]);
+  const complement = asRecord(document["DADOS-COMPLEMENTARES"]);
 
   const fullName =
     attr(dadosGerais, "NOME-COMPLETO") ??
@@ -430,24 +432,32 @@ export function parseCurriculum(xml: string): Curriculum {
   const journalContainer = asRecord(bibliographic["ARTIGOS-PUBLICADOS"]);
   const conferenceContainer = asRecord(bibliographic["TRABALHOS-EM-EVENTOS"]);
   const booksContainer = asRecord(bibliographic["LIVROS-E-CAPITULOS"]);
+  const endereco = asRecord(dadosGerais["ENDERECO"]);
 
+  const resumoNode = asRecord(dadosGerais["RESUMO-CV"]);
   const advisories = mapAdvisories(complement);
+  const complementary = mapComplementaryData(complement);
 
   return {
     id,
-    document: structuredClone(root) as typeof root,
+    document,
+    metadata: {
+      systemOrigin: attr(document, "SISTEMA-ORIGEM-XML"),
+      dateFormat: attr(document, "FORMATO-DATA-ATUALIZACAO"),
+      timeFormat: attr(document, "FORMATO-HORA-ATUALIZACAO"),
+    },
     updatedAt: parseLattesDateTime(
-      attr(root, "DATA-ATUALIZACAO"),
-      attr(root, "HORA-ATUALIZACAO"),
+      attr(document, "DATA-ATUALIZACAO"),
+      attr(document, "HORA-ATUALIZACAO"),
     ),
     identification: {
       fullName,
-      citationName: attr(dadosGerais, "NOME-CITACOES"),
-      summary: textContent(dadosGerais["RESUMO-CV"]),
-      otherRelevantInfo: textContent(
-        dadosGerais["OUTRAS-INFORMACOES-RELEVANTES"],
-      ),
-      professionalAddress: mapProfessionalAddress(dadosGerais["ENDERECO"]),
+      citationName: readCitationName(dadosGerais),
+      summary: readSummaryText(dadosGerais),
+      summaryEnglish: attr(resumoNode, "TEXTO-RESUMO-CV-RH-EN"),
+      otherRelevantInfo: readOtherRelevantInfo(dadosGerais),
+      professionalAddress: mapAddressBlock(endereco, "ENDERECO-PROFISSIONAL"),
+      residentialAddress: mapAddressBlock(endereco, "ENDERECO-RESIDENCIAL"),
       researchAreas: mapResearchAreas(dadosGerais["AREAS-DE-ATUACAO"]),
       languages: mapLanguages(dadosGerais["IDIOMAS"]),
       unmapped: pickUnmapped(dadosGerais, [
@@ -461,6 +471,7 @@ export function parseCurriculum(xml: string): Curriculum {
         "PREMIOS-TITULOS",
         "NOME-COMPLETO",
         "NOME-CITACOES",
+        "NOME-EM-CITACOES-BIBLIOGRAFICAS",
       ]),
     },
     academicBackground: mapAcademicBackground(
@@ -480,26 +491,34 @@ export function parseCurriculum(xml: string): Curriculum {
         "TRABALHO-EM-EVENTOS",
         "conference_paper",
       ),
-      booksAndChapters: [
-        ...mapBibliographicItems(booksContainer, "LIVRO-PUBLICADO-OU-ORGANIZADO", "book"),
-        ...mapBibliographicItems(booksContainer, "CAPITULO-DE-LIVRO-PUBLICADO", "book_chapter"),
+      booksAndChapters: mapBooksAndChapters(booksContainer),
+      other: [
+        ...mapBibliographicItems(
+          bibliographic,
+          "OUTRA-PRODUCAO-BIBLIOGRAFICA",
+          "other_bibliographic",
+        ),
+        ...mapBibliographicItems(
+          asRecord(bibliographic["DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA"]),
+          "OUTRA-PRODUCAO-BIBLIOGRAFICA",
+          "other_bibliographic",
+        ),
       ],
-      other: mapBibliographicItems(
-        bibliographic,
-        "OUTRA-PRODUCAO-BIBLIOGRAFICA",
-        "other_bibliographic",
-      ),
       unmapped: pickUnmapped(bibliographic, [
         "ARTIGOS-PUBLICADOS",
         "TRABALHOS-EM-EVENTOS",
         "LIVROS-E-CAPITULOS",
         "OUTRA-PRODUCAO-BIBLIOGRAFICA",
+        "DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA",
+        "ARTIGOS-ACEITOS-PARA-PUBLICACAO",
+        "TEXTOS-EM-JORNAIS-OU-REVISTAS",
       ]),
     },
     technicalProduction: mapTechnicalProduction(technical),
+    complementary,
     advisories,
     awards: mapAwards(dadosGerais["PREMIOS-TITULOS"]),
-    unmapped: pickUnmapped(root, [
+    unmapped: pickUnmapped(document, [
       "DADOS-GERAIS",
       "PRODUCAO-BIBLIOGRAFICA",
       "PRODUCAO-TECNICA",

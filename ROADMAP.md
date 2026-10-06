@@ -8,7 +8,7 @@ Independent project — not a CNPq roadmap. Priorities may shift with community 
 - [x] Automatic `.lattes-backup/` before overwrite
 - [x] CLI: init, parse, get, set, serialize, restore, backup list
 - [x] Patch API + IA contract (docs)
-- [ ] Broader `syncCvToDocument` for production sections
+- [x] Broader `syncCvToDocument` for typed sections already parsed
 
 ## Near term
 

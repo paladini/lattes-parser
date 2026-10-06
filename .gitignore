@@ -8,3 +8,4 @@ coverage/
 .lattes-backup/
 docs/.vitepress/cache
 docs/.vitepress/dist
+DEFINITIONS/Definitions_Lattes_Curriculum_*.xml

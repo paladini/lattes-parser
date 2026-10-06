@@ -5,6 +5,8 @@ export { writeCurriculum } from "./io/write-curriculum.js";
 export type { WriteCurriculumOptions } from "./io/write-curriculum.js";
 export { serializeCurriculum } from "./serialize/serialize-curriculum.js";
 export { syncCvToDocument } from "./serialize/sync-document.js";
+export { validateCurriculumXml } from "./validate/validate-curriculum.js";
+export type { ValidateCurriculumResult } from "./validate/validate-curriculum.js";
 export {
   backupBeforeWrite,
   listBackups,
@@ -41,6 +43,13 @@ export type {
   ProfessionalAddress,
   Award,
   Author,
+  ComplementaryData,
+  ComplementaryTraining,
+  CurriculumMetadata,
+  EmploymentLink,
+  EventParticipation,
+  AdditionalCourse,
+  AdditionalInstitution,
   LattesDate,
   LattesDateTime,
   UnmappedNodes,

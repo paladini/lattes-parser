@@ -52,6 +52,21 @@ Converte JSON `Curriculum` (com `document`) em XML. Backup se `saida.xml` já ex
 
 Lista manifests em `.lattes-backup/`.
 
+### `lattes-toolkit validate <arquivo.xml>`
+
+Valida contra o XSD em `DEFINITIONS/` usando `xmllint` (se instalado).
+
+### `lattes-toolkit patch <arquivo.xml> <patches.json>`
+
+Aplica patches em lote. Exemplo de JSON:
+
+```json
+{
+  "allowlist": ["identification.summary"],
+  "patches": [{ "path": "identification.summary", "value": "Novo texto." }]
+}
+```
+
 ### `lattes-toolkit restore [--last|<id>] [dir]`
 
 Restaura snapshot para o caminho original do manifest.

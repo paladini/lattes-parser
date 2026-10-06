@@ -5,7 +5,7 @@ description: "Toolkit para editar o XML exportado do Currículo Lattes de maneir
 hero:
   name: lattes-toolkit
   text: Edição programática do XML exportado
-  tagline: CLI, TypeScript ou agentes de IA. Você importa o arquivo na Plataforma.
+  tagline: CLI, TypeScript ou agentes de IA. Campos tipados editados saem no XML; você importa na Plataforma.
   image:
     src: /favicon.svg
     alt: lattes-toolkit
@@ -19,7 +19,7 @@ hero:
 features:
   - icon: 📄
     title: Parse e serialize
-    details: XML exportado vira TypeScript e volta ao disco com round-trip e unmapped preservado.
+    details: XML exportado vira TypeScript; ao gravar, os campos tipados editados são escritos no arquivo e o restante permanece em unmapped.
   - icon: 🛠️
     title: CLI
     details: lattes-toolkit parse, get, set e serialize no arquivo local.

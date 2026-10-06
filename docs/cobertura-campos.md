@@ -1,54 +1,66 @@
 # Cobertura de campos (XSD ↔ TypeScript)
 
-Documento **vivo**: meta é ampliar mappers em `src/parse/` mantendo `unmapped` como rede de segurança até cobertura total.
+Documento **vivo**, alinhado ao XSD [`CurriculoLattes_12_09_2022`](../DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd).
 
 ## Legenda
 
 | Estado | Significado |
 | --- | --- |
-| ✅ | Seção principal mapeada para tipos |
-| 🟡 | Parcial (subcampos em `unmapped`) |
-| ⬜ | Ainda só via `unmapped` / raiz `document` |
+| ✅ | Leitura + gravação tipada |
+| 🟡 | Leitura parcial ou gravação parcial |
+| ⬜ | Preservado em `document` / `unmapped` |
 
 ## DADOS-GERAIS
 
 | Seção XML | Estado | Tipo TS |
 | --- | --- | --- |
-| Identificação, resumo, endereço | ✅ | `CurriculumIdentification` |
-| Formação acadêmica | ✅ | `AcademicDegree[]` |
-| Atuação profissional | ✅ | `ProfessionalActivity[]` |
+| Identificação (nome, citação, resumo XSD) | ✅ | `CurriculumIdentification` |
+| Metadados raiz (`SISTEMA-ORIGEM-XML`, formatos) | ✅ | `CurriculumMetadata` |
+| Endereço profissional e residencial | 🟡 | `ProfessionalAddress` |
+| Formação acadêmica (tags XSD principais) | ✅ | `AcademicDegree[]` |
+| Atuação profissional + `VINCULOS` | 🟡 | `ProfessionalActivity`, `EmploymentLink[]` |
 | Áreas de atuação | ✅ | `ResearchArea[]` |
-| Idiomas | ✅ | `LanguageEntry[]` |
-| Prêmios (em dados gerais) | 🟡 | parcial + `unmapped` |
-| Demais tags | ⬜ | `identification.unmapped` |
+| Idiomas (proficiências XSD) | ✅ | `LanguageEntry[]` |
+| Prêmios (`PREMIO-TITULO`) | ✅ | `Award[]` |
+| Licenças, PII estendida | ⬜ | `identification.unmapped` |
 
-## PRODUÇÃO
+## PRODUÇÃO BIBLIOGRÁFICA
 
 | Seção XML | Estado | Tipo TS |
 | --- | --- | --- |
-| Artigos | ✅ | `BibliographicItem[]` |
-| Trabalhos em eventos | ✅ | `BibliographicItem[]` |
-| Livros e capítulos | ✅ | `BibliographicItem[]` |
-| Produção técnica (software) | 🟡 | `TechnicalItem[]` |
-| Outras produções | ⬜ | `unmapped` / `document` |
+| Artigos, eventos, livros/capítulos (flat + aninhado) | 🟡 | `BibliographicItem[]` |
+| Autores (`AUTORES` irmãos) | ✅ | `Author[]` |
+| Aceitos, jornais, demais tipos XSD | ⬜ | `bibliographicProduction.unmapped` |
+
+## PRODUÇÃO TÉCNICA
+
+| Seção XML | Estado | Tipo TS |
+| --- | --- | --- |
+| Patente, produto, software, trabalho técnico | ✅ | `TechnicalItem[]` |
+| `DEMAIS-TIPOS-DE-PRODUCAO-TECNICA` (apresentação, mídia, etc.) | 🟡 | `TechnicalItem[]` |
+| Demais tags XSD | ⬜ | `document` |
 
 ## DADOS COMPLEMENTARES
 
 | Seção XML | Estado | Tipo TS |
 | --- | --- | --- |
-| Orientações concluídas | ✅ | `Advisory[]` |
-| Orientações em andamento | ✅ | `Advisory[]` |
-| Projetos, bancas, etc. | ⬜ | roadmap |
+| Formação complementar | ✅ | `ComplementaryTraining[]` |
+| Participação em eventos | ✅ | `EventParticipation[]` |
+| Informações adicionais instituições/cursos | ✅ | `AdditionalInstitution[]`, `AdditionalCourse[]` |
+| Orientações | 🟡 | `Advisory[]` |
+| Bancas, projetos | ⬜ | `complementary.unmapped` |
 
-## Serialize
+## OUTRA-PRODUCAO
 
-Campos tipados sincronizados em `syncCvToDocument` hoje:
+| Seção XML | Estado | Tipo TS |
+| --- | --- | --- |
+| Produção artística/cultural | ⬜ | `Curriculum.unmapped` |
 
-- `id`, `updatedAt`
-- `identification.fullName`, `citationName`, `summary`, `otherRelevantInfo`
+## Validação
 
-Demais alterações tipadas exigem estender `syncCvToDocument` ou editar via `document` (avançado).
+- CLI: `lattes-toolkit validate arquivo.xml` (XSD via `xmllint`)
+- Ver [schema-xsd.md](./schema-xsd.md)
 
 ## Contribuir
 
-Abra issue **parse gap** ou PR com fixture sintética + teste round-trip. Ver [CONTRIBUTING.md](https://github.com/paladini/lattes-toolkit/blob/main/CONTRIBUTING.md).
+Abra issue **parse gap** ou PR com fixture sintética ou anonimizada + teste round-trip. Ver [CONTRIBUTING.md](https://github.com/paladini/lattes-toolkit/blob/main/CONTRIBUTING.md).

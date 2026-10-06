@@ -15,6 +15,13 @@ Depois de editar o XML no seu computador, envie o arquivo na Plataforma Lattes.
 4. O sistema exige conformidade com a **DTD** do Currículo Lattes (saída deste toolkit segue export típico: `ISO-8859-1`, `CURRICULO-VITAE`).
 5. **Enviar**, revisar o que a plataforma propõe alterar e **confirmar**.
 
+## Checklist antes de importar
+
+1. `lattes-toolkit validate curriculo.xml` (opcional; requer `xmllint`)
+2. Conferir backup: `lattes-toolkit backup list`
+3. Importar na UI e revisar diff proposto pela Plataforma
+4. Se algo falhar, `lattes-parser restore --last` no arquivo local
+
 ## Dica
 
 Revise na UI antes de salvar. Depois, exporte de novo e compare com `parse` se quiser auditar.

@@ -19,7 +19,8 @@ Guidance for humans and coding agents working in this repository.
 - `src/patch/` — path get/set, `applyCurriculumPatches` (optional allowlist)
 - `src/cli.ts` — workspace-oriented commands
 - `src/extrator/` — optional SOAP; peer `soap`
-- `test/fixtures/` — **synthetic XML only** (no real third-party CVs)
+- `test/fixtures/` — synthetic XML + `curriculum-real-anonymized.xml` (no PII)
+- `DEFINITIONS/` — XSD versionado; exports pessoais gitignored
 
 ## Conventions
 

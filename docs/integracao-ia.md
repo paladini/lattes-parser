@@ -40,4 +40,14 @@ await writeCurriculum(cv, "./curriculo.xml");
 4. Parse de novo no arquivo gerado para conferir.
 5. Importar o XML na Plataforma Lattes.
 
-Paths: notação com ponto e colchetes, por exemplo `identification.summary` ou `bibliographicProduction.journalArticles[0].title` quando o campo existir no modelo.
+Paths: notação com ponto e colchetes, por exemplo `identification.summary` ou `technicalProduction[0].title` quando o campo existir no modelo.
+
+Fluxo recomendado com validação:
+
+1. `readCurriculum`
+2. `applyCurriculumPatches` com allowlist (ou `lattes-toolkit patch arquivo.json`)
+3. `writeCurriculum` com `{ validate: true }` se `xmllint` estiver disponível
+4. Re-parse do arquivo gerado
+5. Importar XML na Plataforma (manual)
+
+Schema e campos: [schema-xsd.md](./schema-xsd.md), [cobertura-campos.md](./cobertura-campos.md).
