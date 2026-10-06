@@ -27,6 +27,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libxml2-utils
-          output="$(node dist/cli.js validate test/fixtures/curriculum-real-anonymized.xml)"
+          set +e
+          output="$(node dist/cli.js validate test/fixtures/curriculum-real-anonymized.xml 2>&1)"
+          status=$?
+          set -e
           printf '%s\n' "$output"
-          printf '%s\n' "$output" | grep -q '"valid": true'
+          if [ "$status" -ne 0 ] || ! printf '%s\n' "$output" | grep -q '"valid": true'; then
+            exit 1
+          fi
