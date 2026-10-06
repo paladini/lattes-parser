@@ -22,3 +22,11 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+      - name: Validate fixture against XSD
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxml2-utils
+          output="$(node dist/cli.js validate test/fixtures/curriculum-real-anonymized.xml)"
+          printf '%s\n' "$output"
+          printf '%s\n' "$output" | grep -q '"valid": true'
