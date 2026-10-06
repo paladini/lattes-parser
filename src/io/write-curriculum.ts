@@ -2,6 +2,7 @@ import { writeFile } from "node:fs/promises";
 import { backupBeforeWrite } from "../backup/store.js";
 import type { Curriculum } from "../types.js";
 import { serializeCurriculum } from "../serialize/serialize-curriculum.js";
+import type { CurriculumSectionId } from "../serialize/sync-document.js";
 import { validateCurriculumXml } from "../validate/validate-curriculum.js";
 
 export interface WriteCurriculumOptions {
@@ -9,6 +10,7 @@ export interface WriteCurriculumOptions {
   backupDir?: string;
   validate?: boolean;
   schemaPath?: string;
+  sections?: CurriculumSectionId[];
 }
 
 export async function writeCurriculum(
@@ -24,7 +26,7 @@ export async function writeCurriculum(
     });
   }
 
-  const xml = serializeCurriculum(cv);
+  const xml = serializeCurriculum(cv, { sections: options.sections });
   if (options.validate) {
     const result = validateCurriculumXml(xml, {
       schemaPath: options.schemaPath,

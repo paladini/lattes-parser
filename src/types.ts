@@ -21,12 +21,26 @@ export interface CurriculumMetadata {
   timeFormat?: string;
 }
 
+export interface AddressContact {
+  preference?: string;
+  electronic?: string;
+  otherContact?: string;
+  socialNetwork?: string;
+}
+
 export interface ProfessionalAddress {
   institution?: string;
   department?: string;
   city?: string;
   state?: string;
   country?: string;
+  street?: string;
+  postalCode?: string;
+  neighborhood?: string;
+  areaCode?: string;
+  phone?: string;
+  email?: string;
+  homepage?: string;
   raw?: Record<string, unknown>;
 }
 
@@ -101,7 +115,29 @@ export interface BibliographicItem {
   raw?: Record<string, unknown>;
 }
 
-export interface TechnicalItem {
+export interface KnowledgeAreaEntry {
+  majorArea?: string;
+  area?: string;
+  subArea?: string;
+  specialty?: string;
+}
+
+export interface ProductionAdditionalInfo {
+  description?: string;
+  descriptionEnglish?: string;
+}
+
+/** Attribute envelope shared by technical production items (XSD sequence). */
+export interface ProductionEnvelope {
+  basics: Record<string, string>;
+  detail: Record<string, string>;
+  keywords: string[];
+  knowledgeAreas: KnowledgeAreaEntry[];
+  activitySectors: string[];
+  additionalInfo?: ProductionAdditionalInfo;
+}
+
+export interface TechnicalItem extends ProductionEnvelope {
   type: string;
   xmlTag?: string;
   containerTag?: string;
@@ -137,17 +173,30 @@ export interface ComplementaryTraining {
   startYear?: string;
   endYear?: string;
   status?: string;
+  level?: string;
+  institutionCode?: string;
+  organCode?: string;
+  organName?: string;
+  courseCode?: string;
+  titleEnglish?: string;
   sequence?: string;
   raw?: Record<string, unknown>;
 }
 
-export interface EventParticipation {
+export interface EventParticipant {
+  name: string;
+  citationName?: string;
+  order?: number;
+}
+
+export interface EventParticipation extends ProductionEnvelope {
   type: string;
   title?: string;
   year?: string;
   eventName?: string;
   city?: string;
   sequence?: string;
+  participants: EventParticipant[];
   raw?: Record<string, unknown>;
 }
 
@@ -179,6 +228,7 @@ export interface CurriculumIdentification {
   summary?: string;
   summaryEnglish?: string;
   otherRelevantInfo?: string;
+  addressContact?: AddressContact;
   professionalAddress?: ProfessionalAddress;
   residentialAddress?: ProfessionalAddress;
   researchAreas: ResearchArea[];

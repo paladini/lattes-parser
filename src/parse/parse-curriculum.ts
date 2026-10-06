@@ -259,9 +259,44 @@ function mapLanguages(node: unknown): LanguageEntry[] {
   });
 }
 
+function firstPresentAttr(record: XmlRecord, names: readonly string[]): string | undefined {
+  for (const name of names) {
+    const value = attr(record, name);
+    if (value) {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+function mapAddressContact(endereco: XmlRecord | undefined): {
+  preference?: string;
+  electronic?: string;
+  otherContact?: string;
+  socialNetwork?: string;
+} | undefined {
+  if (!endereco) {
+    return undefined;
+  }
+  const preference = attr(endereco, "FLAG-DE-PREFERENCIA");
+  const electronic = attr(endereco, "ELETRONICO");
+  const otherContact = attr(endereco, "OUTRA-FORMA-DE-CONTATO");
+  const socialNetwork = attr(endereco, "REDE-SOCIAL");
+  if (
+    preference === undefined &&
+    electronic === undefined &&
+    otherContact === undefined &&
+    socialNetwork === undefined
+  ) {
+    return undefined;
+  }
+  return { preference, electronic, otherContact, socialNetwork };
+}
+
 function mapAddressBlock(
   endereco: XmlRecord | undefined,
   tag: string,
+  streetAttrs: readonly string[] = ["LOGRADOURO-COMPLEMENTO", "LOGRADOURO"],
 ): ProfessionalAddress | undefined {
   const prof = asRecord(endereco?.[tag]);
   if (!prof) {
@@ -269,15 +304,45 @@ function mapAddressBlock(
   }
   const institution = attr(prof, "NOME-INSTITUICAO-EMPRESA") ?? attr(prof, "NOME-INSTITUICAO");
   const city = attr(prof, "CIDADE");
-  if (!institution && !city && !attr(prof, "E-MAIL")) {
+  const street = firstPresentAttr(prof, streetAttrs);
+  const postalCode = attr(prof, "CEP");
+  const email = attr(prof, "E-MAIL");
+  const department = attr(prof, "NOME-UNIDADE");
+  const state = attr(prof, "UF");
+  const country = attr(prof, "PAIS");
+  const neighborhood = attr(prof, "BAIRRO");
+  const areaCode = attr(prof, "DDD");
+  const phone = attr(prof, "TELEFONE");
+  const homepage = attr(prof, "HOME-PAGE");
+  if (
+    !institution &&
+    !city &&
+    !email &&
+    !street &&
+    !postalCode &&
+    !department &&
+    !state &&
+    !country &&
+    !neighborhood &&
+    !areaCode &&
+    !phone &&
+    !homepage
+  ) {
     return undefined;
   }
   return {
     institution,
-    department: attr(prof, "NOME-UNIDADE"),
+    department,
     city,
-    state: attr(prof, "UF"),
-    country: attr(prof, "PAIS"),
+    state,
+    country,
+    street,
+    postalCode,
+    neighborhood,
+    areaCode,
+    phone,
+    email,
+    homepage,
     raw: prof,
   };
 }
@@ -456,8 +521,9 @@ export function parseCurriculum(xml: string): Curriculum {
       summary: readSummaryText(dadosGerais),
       summaryEnglish: attr(resumoNode, "TEXTO-RESUMO-CV-RH-EN"),
       otherRelevantInfo: readOtherRelevantInfo(dadosGerais),
+      addressContact: mapAddressContact(endereco),
       professionalAddress: mapAddressBlock(endereco, "ENDERECO-PROFISSIONAL"),
-      residentialAddress: mapAddressBlock(endereco, "ENDERECO-RESIDENCIAL"),
+      residentialAddress: mapAddressBlock(endereco, "ENDERECO-RESIDENCIAL", ["LOGRADOURO"]),
       researchAreas: mapResearchAreas(dadosGerais["AREAS-DE-ATUACAO"]),
       languages: mapLanguages(dadosGerais["IDIOMAS"]),
       unmapped: pickUnmapped(dadosGerais, [
