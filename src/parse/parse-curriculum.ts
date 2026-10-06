@@ -19,6 +19,7 @@ import {
   readSummaryText,
 } from "./authors.js";
 import { parseLattesDateTime } from "./dates.js";
+import { mapProjectParticipations } from "./sections/atuacao-profissional.js";
 import { mapComplementaryData } from "./sections/dados-complementares.js";
 import { mapTechnicalProduction } from "./sections/producao-tecnica.js";
 import {
@@ -193,6 +194,7 @@ function mapProfessionalActivities(node: unknown): ProfessionalActivity[] {
         startYear: primaryLink?.startYear ?? attr(record, "ANO-DE-INICIO"),
         endYear: primaryLink?.endYear ?? attr(record, "ANO-DE-FIM"),
         links,
+        projectParticipations: mapProjectParticipations(record),
         raw: record,
       },
     ];

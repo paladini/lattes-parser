@@ -15,6 +15,10 @@ import type {
   LanguageEntry,
   ProfessionalActivity,
   ProfessionalAddress,
+  ProjectParticipation,
+  ResearchProject,
+  ResearchProjectFunder,
+  ResearchProjectTeamMember,
   ResearchArea,
   TechnicalItem,
 } from "../types.js";
@@ -303,6 +307,94 @@ function syncAcademicBackground(
   }
 }
 
+function syncResearchProjectTeamMembers(
+  projectNode: XmlRecord,
+  members: ResearchProjectTeamMember[] | undefined,
+): void {
+  if (members === undefined) {
+    return;
+  }
+  if (members.length === 0) {
+    delete projectNode["EQUIPE-DO-PROJETO"];
+    return;
+  }
+  const teamRoot = ensureChild(projectNode, "EQUIPE-DO-PROJETO");
+  const existing = asArray(teamRoot["INTEGRANTES-DO-PROJETO"]).flatMap((entry) => {
+    const record = asRecord(entry);
+    return record ? [record] : [];
+  });
+  const next = members.map((member, index) => {
+    const record = asRecord(member.raw) ?? existing[index] ?? {};
+    setAttrPreserve(record, "NOME-COMPLETO", member.name);
+    setAttrPreserve(record, "NOME-PARA-CITACAO", member.citationName);
+    setAttrPreserve(record, "ORDEM-DE-INTEGRACAO", member.integrationOrder);
+    setAttrPreserve(record, "FLAG-RESPONSAVEL", member.responsible);
+    return record;
+  });
+  writeArray(teamRoot, "INTEGRANTES-DO-PROJETO", next);
+}
+
+function syncResearchProjectFunders(
+  projectNode: XmlRecord,
+  funders: ResearchProjectFunder[] | undefined,
+): void {
+  if (funders === undefined) {
+    return;
+  }
+  if (funders.length === 0) {
+    delete projectNode["FINANCIADORES-DO-PROJETO"];
+    return;
+  }
+  const fundersRoot = ensureChild(projectNode, "FINANCIADORES-DO-PROJETO");
+  syncSimpleList(fundersRoot, "FINANCIADOR-DO-PROJETO", funders, (node, entry) => {
+    setAttrPreserve(node, "SEQUENCIA-FINANCIADOR", entry.sequence);
+    setAttrPreserve(node, "CODIGO-INSTITUICAO", entry.institutionCode);
+    setAttrPreserve(node, "NOME-INSTITUICAO", entry.institutionName);
+    setAttrPreserve(node, "NATUREZA", entry.nature);
+  });
+}
+
+function applyResearchProject(node: XmlRecord, project: ResearchProject): void {
+  setAttrPreserve(node, "SEQUENCIA-PROJETO", project.sequence);
+  setAttrPreserve(node, "NOME-DO-PROJETO", project.name);
+  setAttrPreserve(node, "NOME-DO-PROJETO-INGLES", project.nameEnglish);
+  setAttrPreserve(node, "ANO-INICIO", project.startYear);
+  setAttrPreserve(node, "ANO-FIM", project.endYear);
+  setAttrPreserve(node, "SITUACAO", project.situation);
+  setAttrPreserve(node, "NATUREZA", project.nature);
+  setAttrPreserve(node, "DESCRICAO-DO-PROJETO", project.description);
+  setAttrPreserve(node, "DESCRICAO-DO-PROJETO-INGLES", project.descriptionEnglish);
+  setAttrPreserve(node, "IDENTIFICADOR-PROJETO", project.projectIdentifier);
+  setAttrPreserve(node, "FLAG-POTENCIAL-INOVACAO", project.innovationPotential);
+  syncResearchProjectTeamMembers(node, project.teamMembers);
+  syncResearchProjectFunders(node, project.funders);
+}
+
+function syncProjectParticipations(
+  activityNode: XmlRecord,
+  participations: ProjectParticipation[] | undefined,
+): void {
+  if (participations === undefined || participations.length === 0) {
+    return;
+  }
+  const container = ensureChild(activityNode, "ATIVIDADES-DE-PARTICIPACAO-EM-PROJETO");
+  syncSimpleList(container, "PARTICIPACAO-EM-PROJETO", participations, (node, entry) => {
+    setAttrPreserve(node, "SEQUENCIA-FUNCAO-ATIVIDADE", entry.sequence);
+    setAttrPreserve(node, "FLAG-PERIODO", entry.periodFlag);
+    setAttrPreserve(node, "MES-INICIO", entry.startMonth);
+    setAttrPreserve(node, "ANO-INICIO", entry.startYear);
+    setAttrPreserve(node, "MES-FIM", entry.endMonth);
+    setAttrPreserve(node, "ANO-FIM", entry.endYear);
+    setAttrPreserve(node, "CODIGO-ORGAO", entry.organCode);
+    setAttrPreserve(node, "NOME-ORGAO", entry.organName);
+    setAttrPreserve(node, "CODIGO-UNIDADE", entry.unitCode);
+    setAttrPreserve(node, "NOME-UNIDADE", entry.unitName);
+    syncSimpleList(node, "PROJETO-DE-PESQUISA", entry.projects, (projectNode, project) => {
+      applyResearchProject(projectNode, project);
+    });
+  });
+}
+
 function applyEmploymentLink(node: XmlRecord, link: EmploymentLink): void {
   setAttrPreserve(node, "TIPO-DE-VINCULO", link.linkType);
   setAttrPreserve(node, "OUTRO-ENQUADRAMENTO-FUNCIONAL-INFORMADO", link.functionalRole);
@@ -348,6 +440,7 @@ function syncProfessionalActivities(
       setAttrPreserve(node, "ANO-DE-INICIO", activity.startYear);
       setAttrPreserve(node, "ANO-DE-FIM", activity.endYear);
     }
+    syncProjectParticipations(node, activity.projectParticipations);
     next.push(node);
   }
 

@@ -11,3 +11,4 @@ docs/.vitepress/dist
 DEFINITIONS/Definitions_Lattes_Curriculum_*.xml
 DEFINITIONS/*.zip
 DEFINITIONS/*.jpeg
+.agents/issues/
