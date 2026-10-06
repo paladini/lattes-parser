@@ -4,8 +4,8 @@ title: Editar XML do Currículo Lattes
 description: "Toolkit para ler e gravar campos do Currículo Lattes no XML exportado, por código, CLI ou agente de IA."
 hero:
   name: lattes-toolkit
-  text: Leitura e gravação de campos no XML
-  tagline: Exporte na Plataforma Lattes, edite aqui e importe o XML de volta.
+  text: Gerencie o XML da Plataforma Lattes via CLI
+  tagline: Exporte o currículo, edite os campos e importe o arquivo de volta.
   image:
     src: /favicon.svg
     alt: lattes-toolkit
