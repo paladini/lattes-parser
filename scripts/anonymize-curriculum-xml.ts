@@ -46,6 +46,17 @@ const replacements: Array<[RegExp, string]> = [
   [/TELEFONE="[^"]*"/g, 'TELEFONE="00000000"'],
   [/HOME-PAGE="[^"]*"/g, 'HOME-PAGE=""'],
   [/REDE-SOCIAL="[^"]*"/g, 'REDE-SOCIAL=""'],
+  [
+    /TEXTO-RESUMO-CV-RH="[^"]*"/g,
+    'TEXTO-RESUMO-CV-RH="Pesquisador anonimo atua em computacao."',
+  ],
+  [
+    /TEXTO-RESUMO-CV-RH-EN="[^"]*"/g,
+    'TEXTO-RESUMO-CV-RH-EN="Anonymous researcher working in computing."',
+  ],
+  [/DATA-NASCIMENTO="[^"]*"/g, 'DATA-NASCIMENTO="01011900"'],
+  [/DATA-DE-EMISSAO="[^"]*"/g, 'DATA-DE-EMISSAO="01011900"'],
+  [/CEP="[^"]*"/g, 'CEP="00000000"'],
 ];
 
 for (const [pattern, value] of replacements) {
