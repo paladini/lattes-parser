@@ -62,6 +62,8 @@ export type {
   EmploymentLink,
   EventParticipant,
   EventParticipation,
+  BoardParticipant,
+  BoardParticipation,
   AdditionalCourse,
   AdditionalInstitution,
   LattesDate,

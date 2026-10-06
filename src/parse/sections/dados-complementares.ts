@@ -6,6 +6,7 @@ import type {
   EventParticipant,
   EventParticipation,
 } from "../../types.js";
+import { mapBoardParticipation } from "./bancas.js";
 import { parseProductionEnvelope } from "../production/envelope.js";
 import { asArray, asRecord, attr, pickUnmapped, type XmlRecord } from "../xml-utils.js";
 
@@ -58,6 +59,7 @@ export function mapComplementaryData(
   const empty: ComplementaryData = {
     complementaryTraining: [],
     eventParticipation: [],
+    boards: [],
     additionalInstitutions: [],
     additionalCourses: [],
     unmapped: {},
@@ -175,6 +177,7 @@ export function mapComplementaryData(
   return {
     complementaryTraining: training,
     eventParticipation: events,
+    boards: mapBoardParticipation(complement),
     additionalInstitutions: institutions,
     additionalCourses: courses,
     unmapped: pickUnmapped(complement, [

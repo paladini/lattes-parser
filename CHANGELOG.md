@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.1.0 - 2026-10-06
+
+### Added
+
+- Typed parse and sync for thesis and judging boards under `DADOS-COMPLEMENTARES` (`complementary.boards`, `BoardParticipation`), including participants and production envelope fields (keywords, knowledge areas, and related metadata).
+
 ## 2.0.0 - 2026-10-06
 
 ### Breaking

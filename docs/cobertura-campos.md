@@ -51,7 +51,8 @@ Leitura e gravação do envelope em `TechnicalItem`: `DADOS-BASICOS-*`, `DETALHA
 | Participação em eventos (básicos, detalhe, participantes) | ✅ | `EventParticipation[]` |
 | Informações adicionais instituições/cursos | ✅ | `AdditionalInstitution[]`, `AdditionalCourse[]` |
 | Orientações | 🟡 | `Advisory[]` |
-| Bancas, projetos | ⬜ | `complementary.unmapped` |
+| Bancas de conclusão e bancas julgadoras | ✅ | `BoardParticipation[]` em `complementary.boards` |
+| Projetos e demais atividades de atuação | ⬜ | `document` / `complementary.unmapped` |
 
 ## OUTRA-PRODUCAO
 
