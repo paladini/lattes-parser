@@ -30,7 +30,7 @@ Fluxo de produto: **exportar (manual) → parse → editar → serialize → Imp
 | Login automático ou clicar **Enviar** no Importar XML por você | Fora de escopo; você faz na Plataforma após editar o arquivo |
 | Upload automático / bot na UI do CNPq | Fora de escopo |
 | Consulta por CPF na v1 | Dado pessoal (LGPD) |
-| Validação XSD completa | Schema grande e mutável; use `unmapped` + testes |
+| Validação XSD garantida em todo ambiente | Requer `xmllint`; UI Plataforma usa DTD |
 | Garantir 100% do schema | Best-effort; CNPq adiciona tags |
 
 ## Termos de uso

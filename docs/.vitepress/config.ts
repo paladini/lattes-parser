@@ -87,6 +87,7 @@ export default defineConfig({
         text: "Referência",
         items: [
           { text: "Modelo de dados", link: "/modelo" },
+          { text: "Schema XSD", link: "/schema-xsd" },
           { text: "Cobertura de campos", link: "/cobertura-campos" },
           { text: "Limitações", link: "/limitacoes" },
           { text: "Extrator institucional", link: "/extrator" },

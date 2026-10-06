@@ -65,6 +65,8 @@ Na Plataforma, use **Importar XML**, revise o resultado e salve.
 | `get` | Lê um campo (`identification.summary`, listas com `[0]`) |
 | `set` | Altera um campo, serializa o XML e cria backup |
 | `serialize` | Converte um JSON `Curriculum` em XML |
+| `validate` | Valida o XML contra o XSD em `DEFINITIONS/` (`xmllint`) |
+| `patch` | Aplica patches em lote a partir de JSON com allowlist |
 | `restore --last` | Restaura o snapshot mais recente |
 
 A referência completa está em [docs/cli.md](./docs/cli.md).
@@ -103,8 +105,8 @@ O exemplo está em [docs/integracao-ia.md](./docs/integracao-ia.md).
 ## Recursos
 
 - Parse do XML exportado (`CURRICULO-VITAE`) para o tipo `Curriculum`
-- Serialize com round-trip: campos tipados e nós desconhecidos
-- CLI para script e uso local
+- Serialize alinhado ao XSD 12/09/2022: campos tipados e nós desconhecidos (ver [cobertura de campos](./docs/cobertura-campos.md))
+- CLI para script e uso local (`validate`, `patch`, etc.)
 - Edição por caminho, um campo ou vários patches
 - Backup em `.lattes-backup/` antes de sobrescrever
 - Leitura de XML ou ZIP, com detecção de encoding

@@ -35,6 +35,8 @@ Arquivos exportados frequentemente declaram `ISO-8859-1`. `readCurriculum()` det
 
 ## Referência de schema
 
-Definições XSD publicadas pelo CNPq (Extrator): [Portal Memória — Extração de dados](https://memoria.cnpq.br/web/portal-lattes/extracoes-de-dados).
+- XSD versionado: [`DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd`](../DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd)
+- Guia: [schema-xsd.md](./schema-xsd.md)
+- CNPq (Extrator): [Portal Memória — Extração de dados](https://memoria.cnpq.br/web/portal-lattes/extracoes-de-dados)
 
-Este projeto não inclui o XSD completo no repositório para reduzir tamanho; a validação XSD integral é **fora de escopo** na v1.
+Atributos importantes na raiz `CURRICULO-VITAE`: `SISTEMA-ORIGEM-XML`, `NUMERO-IDENTIFICADOR`, `DATA-ATUALIZACAO`, `HORA-ATUALIZACAO`.
