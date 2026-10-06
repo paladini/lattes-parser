@@ -20,7 +20,7 @@ Depois de editar o XML no seu computador, envie o arquivo na Plataforma Lattes.
 1. `lattes-toolkit validate curriculo.xml` (opcional; requer `xmllint`)
 2. Conferir backup: `lattes-toolkit backup list`
 3. Importar na UI e revisar diff proposto pela Plataforma
-4. Se algo falhar, `lattes-parser restore --last` no arquivo local
+4. Se algo falhar, `lattes-toolkit restore --last` no arquivo local
 
 ## Dica
 

@@ -20,7 +20,7 @@ Usa `xmllint --schema` quando disponível. Se `xmllint` não estiver instalado, 
 Na API:
 
 ```ts
-import { validateCurriculumXml } from "@paladini/lattes-parser";
+import { validateCurriculumXml } from "@paladini/lattes-toolkit";
 
 const result = validateCurriculumXml(xmlString);
 ```
