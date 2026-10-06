@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <b>Toolkit para editar o XML exportado do Currículo Lattes de maneira programática, via CLI ou agentes de IA.</b>
+  <b>Edite o XML exportado do Currículo Lattes por código, CLI ou agente de IA.</b>
 </p>
 
 <p align="center">
@@ -20,10 +20,9 @@
   <a href="./CONTRIBUTING.md">Contribuir</a>
 </p>
 
-O formulário da Plataforma não foi feito para alteração em lote. O
-lattes-toolkit lê o XML que você exportou, altera os campos que você
-indicar e grava um arquivo pronto para **Importar XML**. Tags que o
-modelo tipado ainda não cobre permanecem no arquivo.
+Você exporta o XML na Plataforma, altera o arquivo neste computador e devolve com **Importar XML**. O toolkit lê o `CURRICULO-VITAE`, muda os campos que você indicar e grava o XML de volta. Login e envio continuam na Plataforma.
+
+Identificação, formação, atuação, produção bibliográfica e técnica, dados complementares, prêmios e orientações entram no modelo tipado e saem no XML no formato da Plataforma (XSD de 12/09/2022). O que ainda não tem campo tipado permanece no arquivo. Cada gravação por cima de um XML existente deixa uma cópia em `.lattes-backup/`.
 
 ## Instalação
 
@@ -33,43 +32,34 @@ Node.js 18 ou superior.
 npm install @paladini/lattes-toolkit
 ```
 
-O comando `lattes-toolkit` entra no `node_modules/.bin` do projeto.
-Sem instalação global:
-
 ```bash
 npx lattes-toolkit parse curriculo.xml
 ```
 
-O pacote publicado antes como `@paladini/lattes-parser` passa a se
-chamar `@paladini/lattes-toolkit`. O comando da CLI é `lattes-toolkit`.
+O pacote publicado antes como `@paladini/lattes-parser` agora se chama `@paladini/lattes-toolkit`.
 
-## Início rápido
+## Uso
 
 Exporte o XML na Plataforma Lattes e salve como `curriculo.xml`.
-
-### Linha de comando
 
 ```bash
 lattes-toolkit parse curriculo.xml
 lattes-toolkit set curriculo.xml identification.summary "Novo resumo"
 ```
 
-`set` grava o XML no mesmo arquivo. Se o arquivo já existe, o toolkit
-copia o original para `.lattes-backup/` antes de sobrescrever.
-
-Na Plataforma, use **Importar XML**, revise o resultado e salve.
+`set` grava no mesmo arquivo e cria o backup. Na Plataforma, use **Importar XML**, revise e salve.
 
 | Comando | Efeito |
 | --- | --- |
-| `parse` | Mostra um resumo JSON do arquivo (XML ou ZIP) |
+| `parse` | Resumo JSON do arquivo (XML ou ZIP) |
 | `get` | Lê um campo (`identification.summary`, listas com `[0]`) |
-| `set` | Altera um campo, serializa o XML e cria backup |
+| `set` | Altera um campo e grava o XML |
+| `patch` | Aplica vários campos a partir de um JSON com allowlist |
 | `serialize` | Converte um JSON `Curriculum` em XML |
-| `validate` | Valida o XML contra o XSD em `DEFINITIONS/` (`xmllint`) |
-| `patch` | Aplica patches em lote a partir de JSON com allowlist |
+| `validate` | Confere o XML com o XSD do repositório (`xmllint`) |
 | `restore --last` | Restaura o snapshot mais recente |
 
-A referência completa está em [docs/cli.md](./docs/cli.md).
+Referência: [docs/cli.md](./docs/cli.md). Campos tipados: [docs/cobertura-campos.md](./docs/cobertura-campos.md).
 
 ### TypeScript
 
@@ -86,42 +76,17 @@ setCurriculumValue(cv, "identification.summary", "Novo resumo");
 await writeCurriculum(cv, "./curriculo.xml");
 ```
 
-`writeCurriculum` faz o backup e serializa de volta para o XML da
-Plataforma. Nós ainda não mapeados ficam em `unmapped` e voltam no
-arquivo.
-
 ### Agentes de IA
 
-Quando um agente for aplicar várias alterações, limite os caminhos:
+Limite o que o agente pode mudar:
 
-1. Leia o arquivo com `readCurriculum`.
-2. Aplique `applyCurriculumPatches` com uma allowlist.
-3. Grave com `writeCurriculum`.
-4. Leia o XML gerado de novo e confira os campos.
-5. Importe o arquivo na Plataforma.
+1. `readCurriculum`
+2. `applyCurriculumPatches` com allowlist
+3. `writeCurriculum`
+4. Ler o XML gerado e conferir os campos
+5. **Importar XML** na Plataforma
 
-O exemplo está em [docs/integracao-ia.md](./docs/integracao-ia.md).
-
-## Recursos
-
-- Parse do XML exportado (`CURRICULO-VITAE`) para o tipo `Curriculum`
-- Serialize alinhado ao XSD 12/09/2022: campos tipados e nós desconhecidos (ver [cobertura de campos](./docs/cobertura-campos.md))
-- CLI para script e uso local (`validate`, `patch`, etc.)
-- Edição por caminho, um campo ou vários patches
-- Backup em `.lattes-backup/` antes de sobrescrever
-- Leitura de XML ou ZIP, com detecção de encoding
-- Cliente SOAP opcional para instituições com Extrator, em
-  `@paladini/lattes-toolkit/extrator`
-
-## Fluxo
-
-1. Exporte o XML na Plataforma Lattes.
-2. Edite o arquivo neste computador, pela CLI, por TypeScript ou por um
-   agente com allowlist.
-3. Importe o XML na Plataforma, revise e salve.
-
-Login e o envio do arquivo acontecem na Plataforma, feitos por você. O
-toolkit lê e grava arquivos locais.
+Exemplo em [docs/integracao-ia.md](./docs/integracao-ia.md). Instituições com Extrator SOAP usam `@paladini/lattes-toolkit/extrator`.
 
 ## Documentação
 
@@ -130,6 +95,8 @@ toolkit lê e grava arquivos locais.
 | [Ciclo de trabalho](./docs/ciclo-de-trabalho.md) | Exportar, editar e importar |
 | [CLI](./docs/cli.md) | Comandos |
 | [API TypeScript](./docs/api-typescript.md) | Funções públicas |
+| [Cobertura de campos](./docs/cobertura-campos.md) | O que é lido e gravado |
+| [Schema XSD](./docs/schema-xsd.md) | Schema versionado e validação |
 | [Agentes de IA](./docs/integracao-ia.md) | Patches e allowlist |
 | [Backups](./docs/backups.md) | Snapshots e restore |
 | [Limitações](./docs/limitacoes.md) | Escopo e conformidade |
@@ -138,9 +105,7 @@ Site: <https://paladini.github.io/lattes-toolkit/>
 
 ## Contribuir
 
-Issues e pull requests são bem-vindos, em português ou inglês. Fixtures
-de teste são XML sintético. Veja [CONTRIBUTING.md](./CONTRIBUTING.md) e
-o [código de conduta](./CODE_OF_CONDUCT.md).
+Issues e pull requests são bem-vindos, em português ou inglês. Fixtures de teste são XML sintético ou anonimizado. Veja [CONTRIBUTING.md](./CONTRIBUTING.md) e o [código de conduta](./CODE_OF_CONDUCT.md).
 
 ## Licença
 
