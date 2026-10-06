@@ -8,6 +8,7 @@ export type { SerializeCurriculumOptions } from "./serialize/serialize-curriculu
 export {
   syncCvToDocument,
   sectionsFromPatchPaths,
+  requireSectionsFromPatchPaths,
 } from "./serialize/sync-document.js";
 export type {
   CurriculumSectionId,

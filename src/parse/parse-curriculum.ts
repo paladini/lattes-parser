@@ -307,22 +307,42 @@ function mapAddressBlock(
   const street = firstPresentAttr(prof, streetAttrs);
   const postalCode = attr(prof, "CEP");
   const email = attr(prof, "E-MAIL");
-  if (!institution && !city && !email && !street && !postalCode) {
+  const department = attr(prof, "NOME-UNIDADE");
+  const state = attr(prof, "UF");
+  const country = attr(prof, "PAIS");
+  const neighborhood = attr(prof, "BAIRRO");
+  const areaCode = attr(prof, "DDD");
+  const phone = attr(prof, "TELEFONE");
+  const homepage = attr(prof, "HOME-PAGE");
+  if (
+    !institution &&
+    !city &&
+    !email &&
+    !street &&
+    !postalCode &&
+    !department &&
+    !state &&
+    !country &&
+    !neighborhood &&
+    !areaCode &&
+    !phone &&
+    !homepage
+  ) {
     return undefined;
   }
   return {
     institution,
-    department: attr(prof, "NOME-UNIDADE"),
+    department,
     city,
-    state: attr(prof, "UF"),
-    country: attr(prof, "PAIS"),
+    state,
+    country,
     street,
     postalCode,
-    neighborhood: attr(prof, "BAIRRO"),
-    areaCode: attr(prof, "DDD"),
-    phone: attr(prof, "TELEFONE"),
+    neighborhood,
+    areaCode,
+    phone,
     email,
-    homepage: attr(prof, "HOME-PAGE"),
+    homepage,
     raw: prof,
   };
 }

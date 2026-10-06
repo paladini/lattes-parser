@@ -25,6 +25,10 @@ function setAttrPreserve(
   }
 }
 
+function deleteAttr(record: XmlRecord, name: string): void {
+  delete record[`@_${name}`];
+}
+
 function writeAttributeMap(record: XmlRecord, values: Record<string, string> | undefined): void {
   if (!values) {
     return;
@@ -61,7 +65,11 @@ function ensurePrefixedChild(record: XmlRecord, prefix: string, fallbackTag: str
 }
 
 function syncKeywords(record: XmlRecord, keywords: string[] | undefined): void {
-  if (!keywords || keywords.length === 0) {
+  if (keywords === undefined) {
+    return;
+  }
+  if (keywords.length === 0) {
+    delete record["PALAVRAS-CHAVE"];
     return;
   }
   let node = firstRecord(record["PALAVRAS-CHAVE"]);
@@ -69,16 +77,25 @@ function syncKeywords(record: XmlRecord, keywords: string[] | undefined): void {
     node = {};
     record["PALAVRAS-CHAVE"] = node;
   }
-  keywords.slice(0, 6).forEach((word, index) => {
-    setAttrPreserve(node, `PALAVRA-CHAVE-${index + 1}`, word);
-  });
+  for (let index = 1; index <= 6; index += 1) {
+    const word = keywords[index - 1];
+    if (word !== undefined) {
+      setAttrPreserve(node, `PALAVRA-CHAVE-${index}`, word);
+    } else {
+      deleteAttr(node, `PALAVRA-CHAVE-${index}`);
+    }
+  }
 }
 
 function syncKnowledgeAreas(
   record: XmlRecord,
   areas: KnowledgeAreaEntry[] | undefined,
 ): void {
-  if (!areas || areas.length === 0) {
+  if (areas === undefined) {
+    return;
+  }
+  if (areas.length === 0) {
+    delete record["AREAS-DO-CONHECIMENTO"];
     return;
   }
   let root = firstRecord(record["AREAS-DO-CONHECIMENTO"]);
@@ -97,10 +114,17 @@ function syncKnowledgeAreas(
       setAttrPreserve(node, name, entry[field]);
     }
   });
+  for (let index = areas.length + 1; index <= 3; index += 1) {
+    delete root[`AREA-DO-CONHECIMENTO-${index}`];
+  }
 }
 
 function syncActivitySectors(record: XmlRecord, sectors: string[] | undefined): void {
-  if (!sectors || sectors.length === 0) {
+  if (sectors === undefined) {
+    return;
+  }
+  if (sectors.length === 0) {
+    delete record["SETORES-DE-ATIVIDADE"];
     return;
   }
   let node = firstRecord(record["SETORES-DE-ATIVIDADE"]);
@@ -108,30 +132,44 @@ function syncActivitySectors(record: XmlRecord, sectors: string[] | undefined): 
     node = {};
     record["SETORES-DE-ATIVIDADE"] = node;
   }
-  sectors.slice(0, 3).forEach((sector, index) => {
-    setAttrPreserve(node, `SETOR-DE-ATIVIDADE-${index + 1}`, sector);
-  });
+  for (let index = 1; index <= 3; index += 1) {
+    const sector = sectors[index - 1];
+    if (sector !== undefined) {
+      setAttrPreserve(node, `SETOR-DE-ATIVIDADE-${index}`, sector);
+    } else {
+      deleteAttr(node, `SETOR-DE-ATIVIDADE-${index}`);
+    }
+  }
 }
 
 function syncAdditionalInfo(record: XmlRecord, item: ProductionEnvelope): void {
+  if (item.additionalInfo === undefined) {
+    return;
+  }
   const info = item.additionalInfo;
-  if (!info) {
-    return;
-  }
-  if (info.description === undefined && info.descriptionEnglish === undefined) {
-    return;
-  }
   let node = firstRecord(record["INFORMACOES-ADICIONAIS"]);
   if (!node) {
     node = {};
     record["INFORMACOES-ADICIONAIS"] = node;
   }
-  setAttrPreserve(node, "DESCRICAO-INFORMACOES-ADICIONAIS", info.description);
-  setAttrPreserve(
-    node,
-    "DESCRICAO-INFORMACOES-ADICIONAIS-INGLES",
-    info.descriptionEnglish,
-  );
+  if (info.description !== undefined) {
+    setAttrPreserve(node, "DESCRICAO-INFORMACOES-ADICIONAIS", info.description);
+  } else {
+    deleteAttr(node, "DESCRICAO-INFORMACOES-ADICIONAIS");
+  }
+  if (info.descriptionEnglish !== undefined) {
+    setAttrPreserve(
+      node,
+      "DESCRICAO-INFORMACOES-ADICIONAIS-INGLES",
+      info.descriptionEnglish,
+    );
+  } else {
+    deleteAttr(node, "DESCRICAO-INFORMACOES-ADICIONAIS-INGLES");
+  }
+  const hasAttributes = Object.keys(node).some((key) => key.startsWith("@_"));
+  if (!hasAttributes) {
+    delete record["INFORMACOES-ADICIONAIS"];
+  }
 }
 
 function detailFallbackTag(record: XmlRecord): string | undefined {

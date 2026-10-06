@@ -10,7 +10,7 @@ import { readCurriculum } from "./io/read-curriculum.js";
 import { writeCurriculum } from "./io/write-curriculum.js";
 import { applyCurriculumPatches } from "./patch/apply-patches.js";
 import { getCurriculumValue, setCurriculumValue } from "./patch/paths.js";
-import { sectionsFromPatchPaths } from "./serialize/sync-document.js";
+import { requireSectionsFromPatchPaths } from "./serialize/sync-document.js";
 import { validateCurriculumXml } from "./validate/validate-curriculum.js";
 
 function usage(): never {
@@ -89,7 +89,7 @@ async function main(): Promise<void> {
     const cv = await loadCurriculumFromFile(file);
     setCurriculumValue(cv, fieldPath, value);
     await writeCurriculum(cv, file, {
-      sections: sectionsFromPatchPaths([fieldPath]),
+      sections: requireSectionsFromPatchPaths([fieldPath]),
     });
     console.log(`Updated ${fieldPath} in ${file}`);
     return;
@@ -148,7 +148,9 @@ async function main(): Promise<void> {
       allowlist: payload.allowlist,
     });
     await writeCurriculum(cv, file, {
-      sections: sectionsFromPatchPaths(payload.patches.map((patch) => patch.path)),
+      sections: requireSectionsFromPatchPaths(
+        payload.patches.map((patch) => patch.path),
+      ),
     });
     console.log(`Applied ${payload.patches.length} patch(es) to ${file}`);
     return;

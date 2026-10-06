@@ -50,6 +50,10 @@ describe("selective sync", () => {
     expect(xml).not.toContain("DEMAIS-TIPOS-DE-PRODUCAO-TECNICA");
   });
 
+  it("maps id patches to metadata for selective sync", () => {
+    expect(sectionsFromPatchPaths(["id"])).toEqual(["metadata"]);
+  });
+
   it("keeps technical production on full sync when the typed array is empty", () => {
     const cv = parseCurriculum(loadXml());
     cv.technicalProduction = [];

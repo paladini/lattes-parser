@@ -40,7 +40,7 @@ Cada item de `technicalProduction` mantém `title` e `year` lidos dos atributos 
 | `activitySectors` | `SETORES-DE-ATIVIDADE` (`SETOR-DE-ATIVIDADE-1` a `3`) |
 | `additionalInfo` | `INFORMACOES-ADICIONAIS` (`description`, `descriptionEnglish`) |
 
-Na gravação, o título volta para o atributo de título que já existe no nó (`TITULO-DO-SOFTWARE`, `TITULO-PATENTE`, `TITULO-DO-PRODUTO-TECNOLOGICO`, `TITULO` ou `TITULO-DO-TRABALHO-TECNICO`). Atributos desconhecidos e filhos como `AUTORES` permanecem no nó.
+Na gravação, o título volta para o atributo de título que já existe no nó (`TITULO-DO-SOFTWARE`, `TITULO-DO-PRODUTO`, `TITULO-DO-PROCESSO`, `TITULO` ou `TITULO-DO-TRABALHO-TECNICO`, conforme o XSD de cada tipo). Atributos desconhecidos e filhos como `AUTORES` permanecem no nó.
 
 ## Campos `unmapped`
 

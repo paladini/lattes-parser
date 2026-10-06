@@ -17,6 +17,11 @@ import type {
   TechnicalItem,
 } from "../types.js";
 import { DEGREE_TAGS } from "../schema/degree-tags.js";
+import {
+  TECHNICAL_TITLE_READ_ATTRIBUTES,
+  TECHNICAL_YEAR_READ_ATTRIBUTES,
+  technicalSpecForItem,
+} from "../schema/technical-production-catalog.js";
 import { asArray, asRecord, type XmlRecord } from "../parse/xml-utils.js";
 import { syncAuthorsOnRecord } from "./authors-sync.js";
 import { syncProductionEnvelope } from "./production/envelope.js";
@@ -48,20 +53,38 @@ export interface SyncDocumentOptions {
   sections?: CurriculumSectionId[];
 }
 
+const PATCH_PATH_HEAD_TO_SECTION: Record<string, CurriculumSectionId> = {
+  id: "metadata",
+  updatedAt: "metadata",
+};
+
 /** Maps patch paths to the curriculum sections those paths belong to. */
 export function sectionsFromPatchPaths(paths: string[]): CurriculumSectionId[] {
   const seen = new Set<CurriculumSectionId>();
   const sections: CurriculumSectionId[] = [];
   for (const path of paths) {
     const head = path.split(/[.[]/)[0] ?? "";
-    if (
-      (CURRICULUM_SECTION_IDS as readonly string[]).includes(head) &&
-      !seen.has(head as CurriculumSectionId)
-    ) {
-      const id = head as CurriculumSectionId;
+    let id: CurriculumSectionId | undefined;
+    if ((CURRICULUM_SECTION_IDS as readonly string[]).includes(head)) {
+      id = head as CurriculumSectionId;
+    } else if (PATCH_PATH_HEAD_TO_SECTION[head]) {
+      id = PATCH_PATH_HEAD_TO_SECTION[head];
+    }
+    if (id && !seen.has(id)) {
       seen.add(id);
       sections.push(id);
     }
+  }
+  return sections;
+}
+
+/** Like {@link sectionsFromPatchPaths}, but fails when no section would sync. */
+export function requireSectionsFromPatchPaths(paths: string[]): CurriculumSectionId[] {
+  const sections = sectionsFromPatchPaths(paths);
+  if (sections.length === 0) {
+    throw new Error(
+      `No curriculum section mapped for patch path(s): ${paths.join(", ")}`,
+    );
   }
   return sections;
 }
@@ -72,13 +95,6 @@ function sectionSelected(
 ): boolean {
   return sections === undefined || sections.includes(id);
 }
-
-const TECH_TAG_BY_TYPE: Record<string, string> = {
-  patent: "PATENTE",
-  technology_product: "PRODUTO-TECNOLOGICO",
-  software: "SOFTWARE",
-  technical_work: "TRABALHO-TECNICO",
-};
 
 function setAttr(record: XmlRecord, name: string, value: string | undefined): void {
   if (value === undefined) {
@@ -682,43 +698,22 @@ function syncBibliographicProduction(
   }
 }
 
-function technicalBasicsTag(type: string): string {
-  switch (type) {
-    case "patent":
-      return "DADOS-BASICOS-DA-PATENTE";
-    case "technology_product":
-      return "DADOS-BASICOS-DO-PRODUTO-TECNOLOGICO";
-    case "software":
-      return "DADOS-BASICOS-DO-SOFTWARE";
-    default:
-      return "DADOS-BASICOS-DO-TRABALHO-TECNICO";
-  }
+function technicalBasicsTag(item: TechnicalItem): string {
+  return (
+    technicalSpecForItem(item.type, item.xmlTag)?.basicsTag ??
+    "DADOS-BASICOS-DO-TRABALHO-TECNICO"
+  );
 }
 
-const TECHNICAL_TITLE_ATTRIBUTES = [
-  "TITULO-DO-SOFTWARE",
-  "TITULO-PATENTE",
-  "TITULO-DO-PRODUTO-TECNOLOGICO",
-  "TITULO",
-  "TITULO-DO-TRABALHO-TECNICO",
-] as const;
-
-const TECHNICAL_TITLE_BY_TYPE: Record<string, string> = {
-  patent: "TITULO-PATENTE",
-  technology_product: "TITULO-DO-PRODUTO-TECNOLOGICO",
-  software: "TITULO-DO-SOFTWARE",
-  technical_work: "TITULO-DO-TRABALHO-TECNICO",
-};
-
 function writeTechnicalTitle(basics: XmlRecord, item: TechnicalItem): void {
-  const present = TECHNICAL_TITLE_ATTRIBUTES.find((name) => `@_${name}` in basics);
+  const present = TECHNICAL_TITLE_READ_ATTRIBUTES.find((name) => `@_${name}` in basics);
   if (present) {
     setAttrPreserve(basics, present, item.title);
     return;
   }
-  const typed = TECHNICAL_TITLE_BY_TYPE[item.type];
-  if (typed) {
-    setAttrPreserve(basics, typed, item.title);
+  const spec = technicalSpecForItem(item.type, item.xmlTag);
+  if (spec) {
+    setAttrPreserve(basics, spec.titleAttribute, item.title);
     return;
   }
   const hasAttributes = Object.keys(basics).some((key) => key.startsWith("@_"));
@@ -727,8 +722,15 @@ function writeTechnicalTitle(basics: XmlRecord, item: TechnicalItem): void {
   }
 }
 
+function writeTechnicalYear(basics: XmlRecord, item: TechnicalItem): void {
+  const present = TECHNICAL_YEAR_READ_ATTRIBUTES.find((name) => `@_${name}` in basics);
+  const spec = technicalSpecForItem(item.type, item.xmlTag);
+  const attrName = present ?? spec?.yearAttribute ?? "ANO";
+  setAttrPreserve(basics, attrName, item.year);
+}
+
 function applyTechnicalFields(record: XmlRecord, item: TechnicalItem): void {
-  const basicsTag = technicalBasicsTag(item.type);
+  const basicsTag = technicalBasicsTag(item);
   let basics = asRecord(record[basicsTag]);
   if (!basics) {
     for (const [key, value] of Object.entries(record)) {
@@ -743,7 +745,7 @@ function applyTechnicalFields(record: XmlRecord, item: TechnicalItem): void {
   }
   syncProductionEnvelope(record, item);
   writeTechnicalTitle(basics, item);
-  setAttrPreserve(basics, "ANO", item.year);
+  writeTechnicalYear(basics, item);
   setAttrPreserve(record, "SEQUENCIA-PRODUCAO", item.sequence);
   if (item.authors && item.authors.length > 0) {
     syncAuthorsOnRecord(record, item.authors);
@@ -757,7 +759,11 @@ function createTechnicalNode(item: TechnicalItem): XmlRecord {
 }
 
 function technicalTag(item: TechnicalItem): string {
-  return item.xmlTag ?? TECH_TAG_BY_TYPE[item.type] ?? "TRABALHO-TECNICO";
+  return (
+    item.xmlTag ??
+    technicalSpecForItem(item.type, item.xmlTag)?.xmlTag ??
+    "TRABALHO-TECNICO"
+  );
 }
 
 function syncTechnicalGroup(parent: XmlRecord, items: TechnicalItem[]): void {
@@ -925,7 +931,11 @@ function syncEventParticipants(
   node: XmlRecord,
   participants: EventParticipant[] | undefined,
 ): void {
-  if (!participants || participants.length === 0) {
+  if (participants === undefined) {
+    return;
+  }
+  if (participants.length === 0) {
+    delete node["PARTICIPANTE-DE-EVENTOS-CONGRESSOS"];
     return;
   }
   const existing = asArray(node["PARTICIPANTE-DE-EVENTOS-CONGRESSOS"]).flatMap((entry) => {
