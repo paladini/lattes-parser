@@ -87,6 +87,54 @@ export interface EmploymentLink {
   raw?: Record<string, unknown>;
 }
 
+export interface ResearchProjectTeamMember {
+  name: string;
+  citationName?: string;
+  integrationOrder?: string;
+  responsible?: string;
+  raw?: Record<string, unknown>;
+}
+
+export interface ResearchProjectFunder {
+  sequence?: string;
+  institutionCode?: string;
+  institutionName?: string;
+  nature?: string;
+  raw?: Record<string, unknown>;
+}
+
+export interface ResearchProject {
+  name: string;
+  nameEnglish?: string;
+  startYear?: string;
+  endYear?: string;
+  sequence?: string;
+  situation?: string;
+  nature?: string;
+  description?: string;
+  descriptionEnglish?: string;
+  projectIdentifier?: string;
+  innovationPotential?: string;
+  teamMembers: ResearchProjectTeamMember[];
+  funders: ResearchProjectFunder[];
+  raw?: Record<string, unknown>;
+}
+
+export interface ProjectParticipation {
+  sequence?: string;
+  periodFlag?: string;
+  startMonth?: string;
+  startYear?: string;
+  endMonth?: string;
+  endYear?: string;
+  organCode?: string;
+  organName?: string;
+  unitCode?: string;
+  unitName?: string;
+  projects: ResearchProject[];
+  raw?: Record<string, unknown>;
+}
+
 export interface ProfessionalActivity {
   institution?: string;
   institutionCode?: string;
@@ -94,6 +142,7 @@ export interface ProfessionalActivity {
   startYear?: string;
   endYear?: string;
   links: EmploymentLink[];
+  projectParticipations: ProjectParticipation[];
   raw?: Record<string, unknown>;
 }
 

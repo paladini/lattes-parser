@@ -19,6 +19,7 @@ Documento **vivo**, alinhado ao XSD [`CurriculoLattes_12_09_2022`](https://githu
 | Endereço profissional, residencial e contato (`ELETRONICO`, `REDE-SOCIAL` no `ENDERECO`) | ✅ | `ProfessionalAddress`, `AddressContact` |
 | Formação acadêmica (tags XSD principais) | ✅ | `AcademicDegree[]` |
 | Atuação profissional + `VINCULOS` | 🟡 | `ProfessionalActivity`, `EmploymentLink[]` |
+| Participação em projeto (`PROJETO-DE-PESQUISA`, equipe) | ✅ | `ProjectParticipation[]`, `ResearchProject[]` |
 | Áreas de atuação | ✅ | `ResearchArea[]` |
 | Idiomas (proficiências XSD) | ✅ | `LanguageEntry[]` |
 | Prêmios (`PREMIO-TITULO`) | ✅ | `Award[]` |

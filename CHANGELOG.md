@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.2.0 - 2026-10-06
+
+### Added
+
+- Typed parse and sync for research projects under professional activity (`ProjectParticipation`, `ResearchProject`, team members and funders) via `ATIVIDADES-DE-PARTICIPACAO-EM-PROJETO` / `PARTICIPACAO-EM-PROJETO` / `PROJETO-DE-PESQUISA`.
+
 ## 2.1.0 - 2026-10-06
 
 ### Added

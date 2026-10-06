@@ -18,6 +18,7 @@ Pacote: `@paladini/lattes-toolkit`. O XML raiz é `CURRICULO-VITAE` (`NUMERO-IDE
 | `DADOS-COMPLEMENTARES/PARTICIPACAO-EM-BANCA-*` | `complementary.boards[]` (`BoardParticipation`) |
 | `DADOS-GERAIS/FORMACAO-ACADEMICA-TITULACAO/*` | `academicBackground[]` |
 | `DADOS-GERAIS/ATUACOES-PROFISSIONAIS/*` | `professionalActivities[]` |
+| `ATUACAO-PROFISSIONAL/ATIVIDADES-DE-PARTICIPACAO-EM-PROJETO/*` | `professionalActivities[].projectParticipations[]` |
 | `DADOS-GERAIS/AREAS-DE-ATUACAO/*` | `identification.researchAreas[]` |
 | `DADOS-GERAIS/IDIOMAS/*` | `identification.languages[]` |
 | `DADOS-GERAIS/PREMIOS-TITULOS/*` | `awards[]` |
