@@ -6,7 +6,7 @@
       "name": "lattes-toolkit",
       "url": "https://paladini.github.io/lattes-toolkit/",
       "inLanguage": "pt-BR",
-      "description": "Toolkit para editar o XML exportado do Currículo Lattes de maneira programática, via CLI ou agentes de IA."
+      "description": "Toolkit para ler e gravar campos do Currículo Lattes no XML exportado, por código, CLI ou agente de IA."
     },
     {
       "@type": "SoftwareApplication",

@@ -31,7 +31,7 @@ export default defineConfig({
       "meta",
       {
         property: "og:title",
-        content: "lattes-toolkit: edição programática do XML do Currículo Lattes",
+        content: "lattes-toolkit: leitura e gravação de campos do Currículo Lattes",
       },
     ],
     [
