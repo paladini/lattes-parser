@@ -1,6 +1,6 @@
 ---
 title: Schema XSD no repositório
-description: Como usar o XSD CurriculoLattes 12/09/2022, validação e diferença em relação ao Importar XML na Plataforma.
+description: Como usar o XSD CurriculoLattes 12/09/2022, validação e diferença em relação à importação na Plataforma Lattes.
 ---
 
 # Schema XSD
@@ -27,7 +27,7 @@ const result = validateCurriculumXml(xmlString);
 
 `writeCurriculum(cv, path, { validate: true })` valida antes de gravar (falha se `xmllint` ausente).
 
-## DTD (Plataforma) vs XSD (Extrator)
+## DTD (Plataforma Lattes) vs XSD (Extrator)
 
 A UI **Importar XML** exige conformidade com a **DTD** do currículo. O XSD do Extrator é a gramática mais completa para integração e testes neste projeto. Passar na validação XSD **não garante** aceite na UI, mas reduz erros estruturais.
 

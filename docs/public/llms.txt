@@ -1,6 +1,6 @@
 # @paladini/lattes-toolkit
 
-Toolkit to parse and edit exported Plataforma Lattes curriculum XML programmatically via CLI or automated AI agents. Round-trip serialize. User imports updated XML on Plataforma Lattes (Import XML). Not affiliated with CNPq.
+Toolkit to read and write Currículo Lattes fields in exported XML, from code, the CLI, or an AI agent. You export the XML on Plataforma Lattes, edit fields locally, and import the file back. Not affiliated with CNPq.
 
 Docs: https://paladini.github.io/lattes-toolkit/
 npm install @paladini/lattes-toolkit

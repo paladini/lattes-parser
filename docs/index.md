@@ -1,11 +1,11 @@
 ---
 layout: home
 title: Editar XML do Currículo Lattes
-description: "Toolkit para editar o XML exportado do Currículo Lattes de maneira programática, via CLI ou agentes de IA."
+description: "Toolkit para ler e gravar campos do Currículo Lattes no XML exportado, por código, CLI ou agente de IA."
 hero:
   name: lattes-toolkit
-  text: Edição programática do XML exportado
-  tagline: CLI, TypeScript ou agentes de IA. Campos tipados editados saem no XML; você importa na Plataforma.
+  text: Leitura e gravação de campos no XML
+  tagline: Exporte na Plataforma Lattes, edite aqui e importe o XML de volta.
   image:
     src: /favicon.svg
     alt: lattes-toolkit
@@ -22,13 +22,13 @@ features:
     details: XML exportado vira TypeScript; ao gravar, os campos tipados editados são escritos no arquivo e o restante permanece em unmapped.
   - icon: 🛠️
     title: CLI
-    details: lattes-toolkit parse, get, set e serialize no arquivo local.
+    details: lattes-toolkit parse, get, set, patch, validate e serialize no arquivo local.
   - icon: 🤖
     title: Agentes de IA
-    details: applyCurriculumPatches com allowlist; você valida e importa o XML na Plataforma.
+    details: applyCurriculumPatches com allowlist. Depois você importa o XML na Plataforma Lattes.
   - icon: 📤
-    title: Importar XML
-    details: Último passo manual na Plataforma Lattes após editar o arquivo.
+    title: Exportar e importar
+    details: Você exporta o XML na Plataforma Lattes, edita os campos e importa o arquivo de volta.
 ---
 
 ## Instalar

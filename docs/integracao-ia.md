@@ -7,7 +7,7 @@ description: Edição programática com applyCurriculumPatches e allowlist para 
 
 Use esta API quando um agente de IA (ou outro processo automatizado) for aplicar várias alterações no currículo. A **allowlist** limita quais paths podem ser modificados.
 
-A biblioteca não envia o XML ao CNPq. Depois de gravar o arquivo, você usa **Importar XML** na Plataforma.
+A biblioteca não envia o XML ao CNPq. Depois de gravar o arquivo, você importa o XML na Plataforma Lattes.
 
 ## Exemplo
 
@@ -48,6 +48,6 @@ Fluxo recomendado com validação:
 2. `applyCurriculumPatches` com allowlist (ou `lattes-toolkit patch arquivo.json`)
 3. `writeCurriculum` com `{ validate: true }` se `xmllint` estiver disponível
 4. Re-parse do arquivo gerado
-5. Importar XML na Plataforma (manual)
+5. Importar o XML na Plataforma Lattes (manual)
 
 Schema e campos: [schema-xsd.md](./schema-xsd.md), [cobertura-campos.md](./cobertura-campos.md).

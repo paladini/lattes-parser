@@ -9,7 +9,7 @@ export default defineConfig({
   title: "lattes-toolkit",
   titleTemplate: ":title | lattes-toolkit",
   description:
-    "Toolkit para editar o XML exportado do Currículo Lattes de maneira programática, via CLI ou agentes de IA.",
+    "Toolkit para ler e gravar campos do Currículo Lattes no XML exportado, por código, CLI ou agente de IA.",
   base: basePath,
   mpa: true,
   cleanUrls: true,
@@ -39,7 +39,7 @@ export default defineConfig({
       {
         property: "og:description",
         content:
-          "Toolkit para editar o XML exportado do Currículo Lattes de maneira programática, via CLI ou agentes de IA.",
+          "Toolkit para ler e gravar campos do Currículo Lattes no XML exportado, por código, CLI ou agente de IA.",
       },
     ],
     ["meta", { name: "twitter:card", content: "summary_large_image" }],
