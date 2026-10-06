@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <b>Toolkit to edit exported Currículo Lattes XML programmatically, from the CLI or from AI agents.</b>
+  <b>A toolkit to edit a Currículo Lattes: read and write fields in the XML, from code, the CLI, or an AI agent.</b>
 </p>
 
 <p align="center">
@@ -20,10 +20,9 @@
   <a href="./CONTRIBUTING.md">Contributing</a>
 </p>
 
-The platform form is a poor fit for batch edits. lattes-toolkit reads
-the XML you exported, changes the fields you name, and writes a file
-ready for **Import XML**. Tags the typed model does not cover yet stay
-in the file.
+Use it as an export and import process on Plataforma Lattes. You export the XML, lattes-toolkit reads the fields, changes the ones you name, and writes the file. You import that XML yourself, after signing in on Plataforma Lattes.
+
+Identification, education, professional activity, bibliographic and technical production, complementary data, awards, and advisories are typed fields and are written in the Plataforma Lattes XML format (XSD dated 12 Sep 2022). Anything without a typed field stays in the file. Each overwrite of an existing XML file keeps a copy under `.lattes-backup/`.
 
 ## Install
 
@@ -33,42 +32,34 @@ Node.js 18 or later.
 npm install @paladini/lattes-toolkit
 ```
 
-This adds the `lattes-toolkit` command to the project's
-`node_modules/.bin`. Without a global install:
-
 ```bash
 npx lattes-toolkit parse curriculo.xml
 ```
 
-The package previously published as `@paladini/lattes-parser` is now
-`@paladini/lattes-toolkit`. The CLI command is `lattes-toolkit`.
+The package previously published as `@paladini/lattes-parser` is now `@paladini/lattes-toolkit`.
 
-## Quick start
+## Use
 
 Export XML on Plataforma Lattes and save it as `curriculo.xml`.
-
-### Command line
 
 ```bash
 lattes-toolkit parse curriculo.xml
 lattes-toolkit set curriculo.xml identification.summary "New summary"
 ```
 
-`set` writes XML back to the same file. When the file already exists,
-the toolkit copies the original into `.lattes-backup/` before
-overwriting it.
-
-On the platform, use **Import XML**, review the result, and save.
+`set` writes the same file and creates the backup. Import the file on Plataforma Lattes, review, and save.
 
 | Command | Effect |
 | --- | --- |
-| `parse` | Prints a JSON summary of an XML or ZIP file |
+| `parse` | JSON summary of an XML or ZIP file |
 | `get` | Reads one field (`identification.summary`, lists with `[0]`) |
-| `set` | Updates a field, serializes XML, and creates a backup |
+| `set` | Updates one field and writes the XML |
+| `patch` | Applies several fields from a JSON file with an allowlist |
 | `serialize` | Turns a `Curriculum` JSON file into XML |
+| `validate` | Checks the XML against the repo XSD (`xmllint`) |
 | `restore --last` | Restores the latest snapshot |
 
-Full reference: [docs/cli.md](./docs/cli.md).
+Reference: [docs/cli.md](./docs/cli.md). Typed fields: [docs/cobertura-campos.md](./docs/cobertura-campos.md).
 
 ### TypeScript
 
@@ -85,41 +76,17 @@ setCurriculumValue(cv, "identification.summary", "New summary");
 await writeCurriculum(cv, "./curriculo.xml");
 ```
 
-`writeCurriculum` creates the backup and serializes back to platform
-XML. Unmapped nodes stay on `unmapped` and round-trip into the file.
-
 ### AI agents
 
-When an agent applies several edits, restrict the paths it can change:
+Restrict what the agent can change:
 
-1. Read the file with `readCurriculum`.
-2. Apply `applyCurriculumPatches` with an allowlist.
-3. Write with `writeCurriculum`.
-4. Read the generated XML again and check the fields.
-5. Import the file on the platform.
+1. `readCurriculum`
+2. `applyCurriculumPatches` with an allowlist
+3. `writeCurriculum`
+4. Read the generated XML and check the fields
+5. Import the XML on Plataforma Lattes
 
-See [docs/integracao-ia.md](./docs/integracao-ia.md).
-
-## Features
-
-- Parse exported XML (`CURRICULO-VITAE`) into a `Curriculum` value
-- Round-trip serialize: typed fields and unknown nodes
-- CLI for scripts and local use
-- Edit one path or apply several patches
-- Backup under `.lattes-backup/` before overwrite
-- Read XML or ZIP, with encoding detection
-- Optional SOAP client for institutions that use Extrator, at
-  `@paladini/lattes-toolkit/extrator`
-
-## Flow
-
-1. Export XML on Plataforma Lattes.
-2. Edit the file on your computer with the CLI, TypeScript, or an agent
-   that uses an allowlist.
-3. Import the XML on the platform, review it, and save.
-
-You sign in and upload the file on the platform. The toolkit reads and
-writes local files.
+Example: [docs/integracao-ia.md](./docs/integracao-ia.md). Institutions that use the Extrator SOAP client import `@paladini/lattes-toolkit/extrator`.
 
 ## Documentation
 
@@ -128,6 +95,8 @@ writes local files.
 | [Workflow](./docs/ciclo-de-trabalho.md) | Export, edit, and import |
 | [CLI](./docs/cli.md) | Commands |
 | [TypeScript API](./docs/api-typescript.md) | Public functions |
+| [Field coverage](./docs/cobertura-campos.md) | What is read and written |
+| [XSD schema](./docs/schema-xsd.md) | Versioned schema and validation |
 | [AI agents](./docs/integracao-ia.md) | Patches and allowlist |
 | [Backups](./docs/backups.md) | Snapshots and restore |
 | [Limits](./docs/limitacoes.md) | Scope and compliance |
@@ -136,9 +105,7 @@ Site: <https://paladini.github.io/lattes-toolkit/>
 
 ## Contributing
 
-Issues and pull requests are welcome in Portuguese or English. Test
-fixtures are synthetic XML. See [CONTRIBUTING.md](./CONTRIBUTING.md)
-and the [code of conduct](./CODE_OF_CONDUCT.md).
+Issues and pull requests are welcome in Portuguese or English. Test fixtures are synthetic or anonymized XML. See [CONTRIBUTING.md](./CONTRIBUTING.md) and the [code of conduct](./CODE_OF_CONDUCT.md).
 
 ## License
 

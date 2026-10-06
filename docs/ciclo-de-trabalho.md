@@ -1,15 +1,15 @@
 ---
 title: Ciclo de trabalho
-description: Exportar XML, editar de forma programática (CLI, TypeScript ou agentes de IA), Importar XML na Plataforma.
+description: Exportar o XML na Plataforma Lattes, editar os campos e importar o arquivo de volta.
 ---
 
 # Ciclo de trabalho
 
-Passos para editar o currículo fora dos formulários web e publicar via Importar XML.
+O uso passa por exportação e importação na Plataforma Lattes. O toolkit lê e grava os campos no XML, neste computador.
 
 ## 1. Exportar (manual)
 
-1. Acesse a Plataforma com login.
+1. Acesse a Plataforma Lattes com login.
 2. Abra seu currículo.
 3. Use **Exportar** / **Exportar currículo** (XML), conforme a UI atual.
 
@@ -39,7 +39,7 @@ Cada gravação que substitui o XML dispara backup. Ver [backups.md](./backups.m
 
 ## 4. Reimportar (manual)
 
-1. Na Plataforma: **Importar** → **Importar XML**.
+1. Na Plataforma Lattes: **Importar** → **Importar XML**.
 2. **Passo 1, enviar arquivo:** selecione o XML editado (DTD do Currículo Lattes) e **Enviar**.
 3. Siga o assistente, **revise** alterações propostas e **salve** / envie ao CNPq.
 
@@ -55,4 +55,4 @@ Se a edição local ficou errada antes de reimportar:
 lattes-toolkit restore --last
 ```
 
-Isso não desfaz alterações já salvas na Plataforma; só o arquivo local.
+Isso não desfaz alterações já salvas na Plataforma Lattes; só o arquivo local.

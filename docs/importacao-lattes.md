@@ -1,6 +1,6 @@
 ---
 title: Importar XML no Lattes
-description: "Enviar o XML editado na Plataforma (Importar XML, DTD, Enviar)."
+description: "Importar o XML editado na Plataforma Lattes (Importar XML, DTD, Enviar)."
 ---
 
 # Importar XML na Plataforma Lattes
@@ -19,7 +19,7 @@ Depois de editar o XML no seu computador, envie o arquivo na Plataforma Lattes.
 
 1. `lattes-toolkit validate curriculo.xml` (opcional; requer `xmllint`)
 2. Conferir backup: `lattes-toolkit backup list`
-3. Importar na UI e revisar diff proposto pela Plataforma
+3. Importar na Plataforma Lattes e revisar o diff proposto
 4. Se algo falhar, `lattes-toolkit restore --last` no arquivo local
 
 ## Dica
