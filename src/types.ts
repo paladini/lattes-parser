@@ -200,6 +200,25 @@ export interface EventParticipation extends ProductionEnvelope {
   raw?: Record<string, unknown>;
 }
 
+export interface BoardParticipant {
+  name: string;
+  citationName?: string;
+  order?: number;
+  raw?: Record<string, unknown>;
+}
+
+export interface BoardParticipation extends ProductionEnvelope {
+  kind: "thesis" | "judging";
+  xmlTag: string;
+  title?: string;
+  year?: string;
+  sequence?: string;
+  candidateName?: string;
+  institution?: string;
+  participants: BoardParticipant[];
+  raw?: Record<string, unknown>;
+}
+
 export interface AdditionalInstitution {
   institutionCode: string;
   acronym?: string;
@@ -217,6 +236,7 @@ export interface AdditionalCourse {
 export interface ComplementaryData {
   complementaryTraining: ComplementaryTraining[];
   eventParticipation: EventParticipation[];
+  boards: BoardParticipation[];
   additionalInstitutions: AdditionalInstitution[];
   additionalCourses: AdditionalCourse[];
   unmapped: UnmappedNodes;

@@ -5,6 +5,8 @@ import type {
   Advisory,
   Award,
   BibliographicItem,
+  BoardParticipant,
+  BoardParticipation,
   ComplementaryTraining,
   Curriculum,
   EmploymentLink,
@@ -22,6 +24,10 @@ import {
   TECHNICAL_YEAR_READ_ATTRIBUTES,
   technicalSpecForItem,
 } from "../schema/technical-production-catalog.js";
+import {
+  JUDGING_BOARD_CONTAINER,
+  THESIS_BOARD_CONTAINER,
+} from "../parse/sections/bancas.js";
 import { asArray, asRecord, type XmlRecord } from "../parse/xml-utils.js";
 import { syncAuthorsOnRecord } from "./authors-sync.js";
 import { syncProductionEnvelope } from "./production/envelope.js";
@@ -167,6 +173,8 @@ const OWNED_BIBLIOGRAPHIC_TAGS = [
 const COMPLEMENTARY_LIST_TAGS = [
   "FORMACAO-COMPLEMENTAR",
   "PARTICIPACAO-EM-EVENTOS-CONGRESSOS",
+  "PARTICIPACAO-EM-BANCA-TRABALHOS-CONCLUSAO",
+  "PARTICIPACAO-EM-BANCA-JULGADORA",
   "INFORMACOES-ADICIONAIS-INSTITUICOES",
   "INFORMACOES-ADICIONAIS-CURSOS",
 ] as const;
@@ -962,6 +970,77 @@ function syncEventParticipants(
   writeArray(node, "PARTICIPANTE-DE-EVENTOS-CONGRESSOS", next);
 }
 
+function syncBoardParticipants(
+  node: XmlRecord,
+  participants: BoardParticipant[] | undefined,
+): void {
+  if (participants === undefined) {
+    return;
+  }
+  if (participants.length === 0) {
+    delete node["PARTICIPANTE-BANCA"];
+    return;
+  }
+  const existing = asArray(node["PARTICIPANTE-BANCA"]).flatMap((entry) => {
+    const record = asRecord(entry);
+    return record ? [record] : [];
+  });
+  const next = participants.map((participant, index) => {
+    const record = asRecord(participant.raw) ?? existing[index] ?? {};
+    setAttrPreserve(
+      record,
+      "NOME-COMPLETO-DO-PARTICIPANTE-DA-BANCA",
+      participant.name,
+    );
+    setAttrPreserve(
+      record,
+      "NOME-PARA-CITACAO-DO-PARTICIPANTE-DA-BANCA",
+      participant.citationName,
+    );
+    if (participant.order !== undefined) {
+      setAttrPreserve(record, "ORDEM-PARTICIPANTE", String(participant.order));
+    }
+    return record;
+  });
+  writeArray(node, "PARTICIPANTE-BANCA", next);
+}
+
+function syncBoardGroup(
+  complement: XmlRecord,
+  containerTag: string,
+  entries: BoardParticipation[],
+): void {
+  if (entries.length === 0) {
+    return;
+  }
+  const container = ensureChild(complement, containerTag);
+  const byTag = new Map<string, BoardParticipation[]>();
+  for (const entry of entries) {
+    const list = byTag.get(entry.xmlTag) ?? [];
+    list.push(entry);
+    byTag.set(entry.xmlTag, list);
+  }
+  for (const [xmlTag, group] of byTag) {
+    syncSimpleList(container, xmlTag, group, (node, entry) => {
+      setAttrPreserve(node, "SEQUENCIA-PRODUCAO", entry.sequence);
+      const basics =
+        asRecord(node[`DADOS-BASICOS-DA-${xmlTag}`]) ??
+        asRecord(node[`DADOS-BASICOS-DE-${xmlTag}`]) ??
+        ensureChild(node, `DADOS-BASICOS-DA-${xmlTag}`);
+      const detail =
+        asRecord(node[`DETALHAMENTO-DA-${xmlTag}`]) ??
+        asRecord(node[`DETALHAMENTO-DE-${xmlTag}`]) ??
+        ensureChild(node, `DETALHAMENTO-DA-${xmlTag}`);
+      syncProductionEnvelope(node, entry);
+      setAttrPreserve(basics, "TITULO", entry.title);
+      setAttrPreserve(basics, "ANO", entry.year);
+      setAttrPreserve(detail, "NOME-DO-CANDIDATO", entry.candidateName);
+      setAttrPreserve(detail, "NOME-INSTITUICAO", entry.institution);
+      syncBoardParticipants(node, entry.participants);
+    });
+  }
+}
+
 function clearComplementaryLists(root: XmlRecord): void {
   const complement = asRecord(root["DADOS-COMPLEMENTARES"]);
   if (!complement) {
@@ -984,6 +1063,7 @@ function syncComplementaryData(
   const hasData =
     data.complementaryTraining.length > 0 ||
     data.eventParticipation.length > 0 ||
+    data.boards.length > 0 ||
     data.additionalInstitutions.length > 0 ||
     data.additionalCourses.length > 0;
   if (!hasData) {
@@ -1085,6 +1165,16 @@ function syncComplementaryData(
     );
   } else if (deleteWhenEmpty) {
     delete complement["INFORMACOES-ADICIONAIS-CURSOS"];
+  }
+
+  if (data.boards.length > 0) {
+    const thesisBoards = data.boards.filter((entry) => entry.kind === "thesis");
+    const judgingBoards = data.boards.filter((entry) => entry.kind === "judging");
+    syncBoardGroup(complement, THESIS_BOARD_CONTAINER, thesisBoards);
+    syncBoardGroup(complement, JUDGING_BOARD_CONTAINER, judgingBoards);
+  } else if (deleteWhenEmpty) {
+    delete complement[THESIS_BOARD_CONTAINER];
+    delete complement[JUDGING_BOARD_CONTAINER];
   }
 }
 
