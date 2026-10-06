@@ -53,7 +53,7 @@ export function sectionsFromPatchPaths(paths: string[]): CurriculumSectionId[] {
   const seen = new Set<CurriculumSectionId>();
   const sections: CurriculumSectionId[] = [];
   for (const path of paths) {
-    const head = path.split(/[.\[]/)[0] ?? "";
+    const head = path.split(/[.[]/)[0] ?? "";
     if (
       (CURRICULUM_SECTION_IDS as readonly string[]).includes(head) &&
       !seen.has(head as CurriculumSectionId)
