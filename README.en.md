@@ -20,9 +20,9 @@
   <a href="./CONTRIBUTING.md">Contributing</a>
 </p>
 
-You export the XML on the platform, edit the file on your computer, and send it back with **Import XML**. The toolkit reads `CURRICULO-VITAE`, changes the fields you name, and writes the XML back. Sign-in and upload stay on the platform.
+You export the XML on Plataforma Lattes, edit the file on your computer, and send it back with **Import XML**. The toolkit reads `CURRICULO-VITAE`, changes the fields you name, and writes the XML back. Sign-in and upload stay on Plataforma Lattes.
 
-Identification, education, professional activity, bibliographic and technical production, complementary data, awards, and advisories are typed fields and are written in the platform XML format (XSD dated 12 Sep 2022). Anything without a typed field stays in the file. Each overwrite of an existing XML file keeps a copy under `.lattes-backup/`.
+Identification, education, professional activity, bibliographic and technical production, complementary data, awards, and advisories are typed fields and are written in the Plataforma Lattes XML format (XSD dated 12 Sep 2022). Anything without a typed field stays in the file. Each overwrite of an existing XML file keeps a copy under `.lattes-backup/`.
 
 ## Install
 
@@ -47,7 +47,7 @@ lattes-toolkit parse curriculo.xml
 lattes-toolkit set curriculo.xml identification.summary "New summary"
 ```
 
-`set` writes the same file and creates the backup. On the platform, use **Import XML**, review, and save.
+`set` writes the same file and creates the backup. On Plataforma Lattes, use **Import XML**, review, and save.
 
 | Command | Effect |
 | --- | --- |
@@ -84,7 +84,7 @@ Restrict what the agent can change:
 2. `applyCurriculumPatches` with an allowlist
 3. `writeCurriculum`
 4. Read the generated XML and check the fields
-5. **Import XML** on the platform
+5. **Import XML** on Plataforma Lattes
 
 Example: [docs/integracao-ia.md](./docs/integracao-ia.md). Institutions that use the Extrator SOAP client import `@paladini/lattes-toolkit/extrator`.
 
