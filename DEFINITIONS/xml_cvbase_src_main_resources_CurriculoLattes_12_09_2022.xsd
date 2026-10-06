@@ -97,6 +97,8 @@
       <xs:attribute name="PAIS-DE-NACIONALIDADE"/>
       <xs:attribute name="RACA-OU-COR" use="optional"/>
       <xs:attribute name="ORCID-ID"/>
+      <!-- Presente no export da plataforma e ausente no XSD de 12/09/2022. -->
+      <xs:attribute name="PCD"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="RESUMO-CV">
@@ -124,6 +126,10 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
+      <!-- Presentes no export da plataforma e ausentes no XSD de 12/09/2022. -->
+      <xs:attribute name="ELETRONICO"/>
+      <xs:attribute name="OUTRA-FORMA-DE-CONTATO"/>
+      <xs:attribute name="REDE-SOCIAL"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="ENDERECO-PROFISSIONAL">

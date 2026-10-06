@@ -14,13 +14,11 @@ const schemaFileName =
   "xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd";
 
 function resolveDefaultSchemaPath(): string {
+  const moduleDir = path.dirname(fileURLToPath(import.meta.url));
   const candidates = [
     path.join(process.cwd(), "DEFINITIONS", schemaFileName),
-    path.join(
-      path.dirname(fileURLToPath(import.meta.url)),
-      "../../DEFINITIONS",
-      schemaFileName,
-    ),
+    path.join(moduleDir, "..", "DEFINITIONS", schemaFileName),
+    path.join(moduleDir, "..", "..", "DEFINITIONS", schemaFileName),
   ];
   for (const candidate of candidates) {
     if (existsSync(candidate)) {
