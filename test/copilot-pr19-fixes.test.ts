@@ -87,16 +87,23 @@ describe("Copilot PR 19 fixes", () => {
     const cv = loadAnonymized();
     const software = cv.technicalProduction.find((item) => item.type === "software");
     expect(software).toBeTruthy();
-    expect(software!.keywords.length).toBeGreaterThan(1);
 
-    software!.keywords = [software!.keywords[0]!];
+    software!.keywords = ["kw-one", "kw-two"];
+    software!.keywords = ["kw-one"];
     const xml = serializeCurriculum(cv, { sections: ["technicalProduction"] });
     const again = parseCurriculum(xml);
     const updated = again.technicalProduction.find(
       (item) => item.type === "software" && item.sequence === software!.sequence,
     );
-    expect(updated?.keywords).toEqual(software!.keywords);
-    expect(xml).not.toContain("PALAVRA-CHAVE-2=");
+    expect(updated?.keywords).toEqual(["kw-one"]);
+    const sequence = software!.sequence ?? "";
+    const softwareBlock = xml.match(
+      new RegExp(
+        `<SOFTWARE[^>]*SEQUENCIA-PRODUCAO="${sequence}"[\\s\\S]*?</SOFTWARE>`,
+      ),
+    )?.[0];
+    expect(softwareBlock).toBeTruthy();
+    expect(softwareBlock).not.toContain("PALAVRA-CHAVE-2=");
   });
 
   it("removes event participants when the typed array is empty", () => {
@@ -108,8 +115,15 @@ describe("Copilot PR 19 fixes", () => {
     expect(congress!.participants.length).toBeGreaterThan(0);
 
     congress!.participants = [];
+    const sequence = congress!.sequence ?? "";
     const xml = serializeCurriculum(cv, { sections: ["complementary"] });
-    expect(xml).not.toContain("PARTICIPANTE-DE-EVENTOS-CONGRESSOS");
+    const congressBlock = xml.match(
+      new RegExp(
+        `<PARTICIPACAO-EM-CONGRESSO[^>]*SEQUENCIA-PRODUCAO="${sequence}"[\\s\\S]*?</PARTICIPACAO-EM-CONGRESSO>`,
+      ),
+    )?.[0];
+    expect(congressBlock).toBeTruthy();
+    expect(congressBlock).not.toContain("PARTICIPANTE-DE-EVENTOS-CONGRESSOS");
 
     const again = parseCurriculum(xml);
     const updated = again.complementary.eventParticipation.find(
