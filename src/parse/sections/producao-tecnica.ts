@@ -1,5 +1,6 @@
 import type { TechnicalItem } from "../../types.js";
 import { mapAuthors } from "../authors.js";
+import { parseProductionEnvelope } from "../production/envelope.js";
 import { asArray, asRecord, attr, type XmlRecord } from "../xml-utils.js";
 
 const TOP_LEVEL_TECH: Array<[string, string]> = [
@@ -85,6 +86,7 @@ function mapTechnicalEntries(
         year: yearFromTechnicalRecord(record),
         sequence: attr(record, "SEQUENCIA-PRODUCAO"),
         authors: mapAuthors(record),
+        ...parseProductionEnvelope(record),
         raw: record,
       },
     ];

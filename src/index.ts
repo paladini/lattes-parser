@@ -4,7 +4,15 @@ export { readCurriculum } from "./io/read-curriculum.js";
 export { writeCurriculum } from "./io/write-curriculum.js";
 export type { WriteCurriculumOptions } from "./io/write-curriculum.js";
 export { serializeCurriculum } from "./serialize/serialize-curriculum.js";
-export { syncCvToDocument } from "./serialize/sync-document.js";
+export type { SerializeCurriculumOptions } from "./serialize/serialize-curriculum.js";
+export {
+  syncCvToDocument,
+  sectionsFromPatchPaths,
+} from "./serialize/sync-document.js";
+export type {
+  CurriculumSectionId,
+  SyncDocumentOptions,
+} from "./serialize/sync-document.js";
 export { validateCurriculumXml } from "./validate/validate-curriculum.js";
 export type { ValidateCurriculumResult } from "./validate/validate-curriculum.js";
 export {
@@ -34,6 +42,9 @@ export type {
   BibliographicProduction,
   BibliographicItem,
   TechnicalItem,
+  KnowledgeAreaEntry,
+  ProductionAdditionalInfo,
+  ProductionEnvelope,
   Advisory,
   AdvisorySection,
   AcademicDegree,
@@ -41,12 +52,14 @@ export type {
   ResearchArea,
   LanguageEntry,
   ProfessionalAddress,
+  AddressContact,
   Award,
   Author,
   ComplementaryData,
   ComplementaryTraining,
   CurriculumMetadata,
   EmploymentLink,
+  EventParticipant,
   EventParticipation,
   AdditionalCourse,
   AdditionalInstitution,

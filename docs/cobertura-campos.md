@@ -16,13 +16,14 @@ Documento **vivo**, alinhado ao XSD [`CurriculoLattes_12_09_2022`](https://githu
 | --- | --- | --- |
 | Identificação (nome, citação, resumo XSD) | ✅ | `CurriculumIdentification` |
 | Metadados raiz (`SISTEMA-ORIGEM-XML`, formatos) | ✅ | `CurriculumMetadata` |
-| Endereço profissional e residencial | 🟡 | `ProfessionalAddress` |
+| Endereço profissional, residencial e contato (`ELETRONICO`, `REDE-SOCIAL` no `ENDERECO`) | ✅ | `ProfessionalAddress`, `AddressContact` |
 | Formação acadêmica (tags XSD principais) | ✅ | `AcademicDegree[]` |
 | Atuação profissional + `VINCULOS` | 🟡 | `ProfessionalActivity`, `EmploymentLink[]` |
 | Áreas de atuação | ✅ | `ResearchArea[]` |
 | Idiomas (proficiências XSD) | ✅ | `LanguageEntry[]` |
 | Prêmios (`PREMIO-TITULO`) | ✅ | `Award[]` |
-| Licenças, PII estendida | ⬜ | `identification.unmapped` |
+| Licenças | ⬜ | `document` |
+| CPF, nascimento, documentos e filiação | ⬜ | atributos em `document` (`DADOS-GERAIS`); sem campo tipado |
 
 ## PRODUÇÃO BIBLIOGRÁFICA
 
@@ -34,18 +35,20 @@ Documento **vivo**, alinhado ao XSD [`CurriculoLattes_12_09_2022`](https://githu
 
 ## PRODUÇÃO TÉCNICA
 
+Leitura e gravação do envelope em `TechnicalItem`: `DADOS-BASICOS-*`, `DETALHAMENTO-*`, `PALAVRAS-CHAVE`, `AREAS-DO-CONHECIMENTO`, `SETORES-DE-ATIVIDADE` e `INFORMACOES-ADICIONAIS`.
+
 | Seção XML | Estado | Tipo TS |
 | --- | --- | --- |
-| Patente, produto, software, trabalho técnico | ✅ | `TechnicalItem[]` |
-| `DEMAIS-TIPOS-DE-PRODUCAO-TECNICA` (apresentação, mídia, etc.) | 🟡 | `TechnicalItem[]` |
-| Demais tags XSD | ⬜ | `document` |
+| Patente, produto, software, trabalho técnico | ✅ | `TechnicalItem` |
+| `DEMAIS-TIPOS-DE-PRODUCAO-TECNICA` (apresentação, mídia, manutenção de obra, outra produção técnica) | ✅ | `TechnicalItem` |
+| Tags XSD de produção técnica ainda não mapeadas | ⬜ | `document` |
 
 ## DADOS COMPLEMENTARES
 
 | Seção XML | Estado | Tipo TS |
 | --- | --- | --- |
-| Formação complementar | ✅ | `ComplementaryTraining[]` |
-| Participação em eventos | ✅ | `EventParticipation[]` |
+| Formação complementar (nível, códigos, órgão, título em inglês) | ✅ | `ComplementaryTraining[]` |
+| Participação em eventos (básicos, detalhe, participantes) | ✅ | `EventParticipation[]` |
 | Informações adicionais instituições/cursos | ✅ | `AdditionalInstitution[]`, `AdditionalCourse[]` |
 | Orientações | 🟡 | `Advisory[]` |
 | Bancas, projetos | ⬜ | `complementary.unmapped` |
