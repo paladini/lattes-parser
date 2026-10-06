@@ -35,7 +35,7 @@ Arquivos exportados frequentemente declaram `ISO-8859-1`. `readCurriculum()` det
 
 ## Referência de schema
 
-- XSD versionado: [`DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd`](../DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd)
+- XSD versionado: [`DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd`](https://github.com/paladini/lattes-toolkit/blob/main/DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd)
 - Guia: [schema-xsd.md](./schema-xsd.md)
 - CNPq (Extrator): [Portal Memória — Extração de dados](https://memoria.cnpq.br/web/portal-lattes/extracoes-de-dados)
 
