@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <b>Edit exported Currículo Lattes XML from code, the CLI, or an AI agent.</b>
+  <b>A toolkit to edit a Currículo Lattes: read and write fields in the XML, from code, the CLI, or an AI agent.</b>
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
   <a href="./CONTRIBUTING.md">Contributing</a>
 </p>
 
-You export the XML on Plataforma Lattes, edit the file on your computer, and send it back with **Import XML**. The toolkit reads `CURRICULO-VITAE`, changes the fields you name, and writes the XML back. Sign-in and upload stay on Plataforma Lattes.
+Use it as an export and import process on Plataforma Lattes. You export the XML, lattes-toolkit reads the fields, changes the ones you name, and writes the file. You import that XML yourself, after signing in on Plataforma Lattes.
 
 Identification, education, professional activity, bibliographic and technical production, complementary data, awards, and advisories are typed fields and are written in the Plataforma Lattes XML format (XSD dated 12 Sep 2022). Anything without a typed field stays in the file. Each overwrite of an existing XML file keeps a copy under `.lattes-backup/`.
 
@@ -47,7 +47,7 @@ lattes-toolkit parse curriculo.xml
 lattes-toolkit set curriculo.xml identification.summary "New summary"
 ```
 
-`set` writes the same file and creates the backup. On Plataforma Lattes, use **Import XML**, review, and save.
+`set` writes the same file and creates the backup. Import the file on Plataforma Lattes, review, and save.
 
 | Command | Effect |
 | --- | --- |
@@ -84,7 +84,7 @@ Restrict what the agent can change:
 2. `applyCurriculumPatches` with an allowlist
 3. `writeCurriculum`
 4. Read the generated XML and check the fields
-5. **Import XML** on Plataforma Lattes
+5. Import the XML on Plataforma Lattes
 
 Example: [docs/integracao-ia.md](./docs/integracao-ia.md). Institutions that use the Extrator SOAP client import `@paladini/lattes-toolkit/extrator`.
 

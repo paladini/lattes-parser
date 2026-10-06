@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <b>Edite o XML exportado do Currículo Lattes por código, CLI ou agente de IA.</b>
+  <b>Toolkit para editar o Currículo Lattes: lê e grava campos no XML, por código, CLI ou agente de IA.</b>
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
   <a href="./CONTRIBUTING.md">Contribuir</a>
 </p>
 
-Você exporta o XML na Plataforma Lattes, altera o arquivo neste computador e devolve com **Importar XML**. O toolkit lê o `CURRICULO-VITAE`, muda os campos que você indicar e grava o XML de volta. Login e envio continuam na Plataforma Lattes.
+O uso passa por exportação e importação na Plataforma Lattes. Você exporta o XML, o lattes-toolkit lê os campos, altera o que você indicar e grava o arquivo. A importação do XML, com login, é feita por você na Plataforma Lattes.
 
 Identificação, formação, atuação, produção bibliográfica e técnica, dados complementares, prêmios e orientações entram no modelo tipado e saem no XML no formato da Plataforma Lattes (XSD de 12/09/2022). O que ainda não tem campo tipado permanece no arquivo. Cada gravação por cima de um XML existente deixa uma cópia em `.lattes-backup/`.
 
@@ -47,7 +47,7 @@ lattes-toolkit parse curriculo.xml
 lattes-toolkit set curriculo.xml identification.summary "Novo resumo"
 ```
 
-`set` grava no mesmo arquivo e cria o backup. Na Plataforma Lattes, use **Importar XML**, revise e salve.
+`set` grava no mesmo arquivo e cria o backup. Importe o arquivo na Plataforma Lattes, revise e salve.
 
 | Comando | Efeito |
 | --- | --- |
@@ -84,7 +84,7 @@ Limite o que o agente pode mudar:
 2. `applyCurriculumPatches` com allowlist
 3. `writeCurriculum`
 4. Ler o XML gerado e conferir os campos
-5. **Importar XML** na Plataforma Lattes
+5. Importar o XML na Plataforma Lattes
 
 Exemplo em [docs/integracao-ia.md](./docs/integracao-ia.md). Instituições com Extrator SOAP usam `@paladini/lattes-toolkit/extrator`.
 
