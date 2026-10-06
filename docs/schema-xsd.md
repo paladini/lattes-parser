@@ -17,6 +17,8 @@ lattes-toolkit validate curriculo.xml
 
 Usa `xmllint --schema` quando disponível. Se `xmllint` não estiver instalado, o comando informa `skipped` em vez de falhar o fluxo local.
 
+O pacote publicado inclui esse XSD. A validação procura `DEFINITIONS/` no diretório atual e, se o arquivo não estiver lá, usa o schema que vem junto com o pacote.
+
 O XSD versionado é o de 12/09/2022, com quatro atributos que o export atual da plataforma já envia e aquele arquivo original não declarava: `PCD` em `DADOS-GERAIS`, e `ELETRONICO`, `OUTRA-FORMA-DE-CONTATO` e `REDE-SOCIAL` em `ENDERECO`. Sem isso, `xmllint` recusa o fixture anonimizado. A tela Importar XML ainda valida por DTD, não por este XSD.
 
 Na API:

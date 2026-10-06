@@ -2477,7 +2477,7 @@
   </xs:element>
   <!-- NOVOS TIPOS DE REGISTRO OU PATENTE - INICIO -->
   <!--
-    O TIPO TITULARES SER? INCLU?DO NA PR?XIMA VERS?O
+    O TIPO TITULARES SERÁ INCLUÍDO NA PRÓXIMA VERSÃO
     <!ELEMENT TITULARES EMPTY>
     <!ATTLIST TITULARES
     	NOME CDATA  #IMPLIED
@@ -4414,7 +4414,7 @@
       <xs:attribute name="PREMIACAO"/>
     </xs:complexType>
   </xs:element>
-  <!-- INICIO - novos tipos de producao art?stica - novembro de 2011 -->
+  <!-- INICIO - novos tipos de producao artística - novembro de 2011 -->
   <xs:element name="ARTES-CENICAS">
     <xs:complexType>
       <xs:sequence>
@@ -4686,7 +4686,7 @@
       <xs:attribute name="CIDADE-DO-EVENTO"/>
     </xs:complexType>
   </xs:element>
-  <!-- FIM - novos tipos de producao art?stica - novembro de 2011 -->
+  <!-- FIM - novos tipos de producao artística - novembro de 2011 -->
   <xs:element name="ORIENTACOES-CONCLUIDAS">
     <xs:complexType>
       <xs:sequence>

@@ -54,7 +54,7 @@ Lista manifests em `.lattes-backup/`.
 
 ### `lattes-toolkit validate <arquivo.xml>`
 
-Valida contra o XSD em `DEFINITIONS/` usando `xmllint` (se instalado).
+Valida contra o XSD em `DEFINITIONS/` (diretório atual ou o schema publicado no pacote) usando `xmllint` (se instalado).
 
 ### `lattes-toolkit patch <arquivo.xml> <patches.json>`
 

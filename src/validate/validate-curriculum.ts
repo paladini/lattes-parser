@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
 export interface ValidateCurriculumResult {
@@ -13,7 +14,18 @@ const schemaFileName =
   "xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd";
 
 function resolveDefaultSchemaPath(): string {
-  return path.join(process.cwd(), "DEFINITIONS", schemaFileName);
+  const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+  const candidates = [
+    path.join(process.cwd(), "DEFINITIONS", schemaFileName),
+    path.join(moduleDir, "..", "DEFINITIONS", schemaFileName),
+    path.join(moduleDir, "..", "..", "DEFINITIONS", schemaFileName),
+  ];
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return candidates[0];
 }
 
 export function validateCurriculumXml(
