@@ -5,7 +5,7 @@ description: Como usar o XSD CurriculoLattes 12/09/2022, validação e diferenç
 
 # Schema XSD
 
-O arquivo [`DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd`](../DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd) é a referência de schema usada pelo toolkit para alinhar parse, sync e validação.
+O arquivo [`DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd`](https://github.com/paladini/lattes-toolkit/blob/main/DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd) é a referência de schema usada pelo toolkit para alinhar parse, sync e validação.
 
 Referência oficial CNPq: [Portal Memória - Extração de dados](https://memoria.cnpq.br/web/portal-lattes/extracoes-de-dados).
 
@@ -44,7 +44,7 @@ Histórico DTD / ontologia: [CONSCIENTIAS-LMPL](http://lmpl.cnpq.br/lmpl/?go=cv.
 
 ## Fixture anonimizada
 
-[`test/fixtures/curriculum-real-anonymized.xml`](../test/fixtures/curriculum-real-anonymized.xml) espelha um export real sem PII. Gere de novo com:
+[`test/fixtures/curriculum-real-anonymized.xml`](https://github.com/paladini/lattes-toolkit/blob/main/test/fixtures/curriculum-real-anonymized.xml) espelha um export real sem PII. Gere de novo com:
 
 ```bash
 npx tsx scripts/anonymize-curriculum-xml.ts

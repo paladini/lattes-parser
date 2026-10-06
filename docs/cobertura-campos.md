@@ -1,6 +1,6 @@
 # Cobertura de campos (XSD ↔ TypeScript)
 
-Documento **vivo**, alinhado ao XSD [`CurriculoLattes_12_09_2022`](../DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd).
+Documento **vivo**, alinhado ao XSD [`CurriculoLattes_12_09_2022`](https://github.com/paladini/lattes-toolkit/blob/main/DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd).
 
 ## Legenda
 
