@@ -3,14 +3,14 @@ import { InvalidLattesIdError, LattesId } from "../src/index.js";
 
 describe("LattesId", () => {
   it("parses 16-digit identifiers", () => {
-    expect(LattesId.parse("8907059238612691")).toEqual({
-      id: "8907059238612691",
+    expect(LattesId.parse("0000000000000001")).toEqual({
+      id: "0000000000000001",
     });
   });
 
   it("parses canonical URLs", () => {
-    expect(LattesId.parse("https://lattes.cnpq.br/8907059238612691")).toEqual({
-      id: "8907059238612691",
+    expect(LattesId.parse("https://lattes.cnpq.br/0000000000000001")).toEqual({
+      id: "0000000000000001",
     });
   });
 
@@ -20,16 +20,16 @@ describe("LattesId", () => {
 
   it("rejects invalid values", () => {
     expect(() => LattesId.parse("abc")).toThrow(InvalidLattesIdError);
-    expect(LattesId.isValid("8907059238612691")).toBe(true);
+    expect(LattesId.isValid("0000000000000001")).toBe(true);
     expect(LattesId.isValid("12345678901")).toBe(false);
   });
 
   it("builds canonical URLs", () => {
-    expect(LattesId.canonicalUrl("8907059238612691")).toBe(
-      "https://lattes.cnpq.br/8907059238612691",
+    expect(LattesId.canonicalUrl("0000000000000001")).toBe(
+      "https://lattes.cnpq.br/0000000000000001",
     );
     expect(
-      LattesId.canonicalUrl({ id: "8907059238612691" }),
-    ).toBe("https://lattes.cnpq.br/8907059238612691");
+      LattesId.canonicalUrl({ id: "0000000000000001" }),
+    ).toBe("https://lattes.cnpq.br/0000000000000001");
   });
 });

@@ -44,7 +44,7 @@ Histórico DTD / ontologia: [CONSCIENTIAS-LMPL](http://lmpl.cnpq.br/lmpl/?go=cv.
 
 ## Fixture anonimizada
 
-[`test/fixtures/curriculum-real-anonymized.xml`](https://github.com/paladini/lattes-toolkit/blob/main/test/fixtures/curriculum-real-anonymized.xml) espelha um export real sem PII. Gere de novo com:
+[`test/fixtures/curriculum-real-anonymized.xml`](https://github.com/paladini/lattes-toolkit/blob/main/test/fixtures/curriculum-real-anonymized.xml) espelha um export real, com identificador Lattes (`NUMERO-IDENTIFICADOR` e `NRO-ID-CNPQ`), nome, resumo, data de nascimento, data de emissão e CEP em valores sintéticos. Gere de novo com:
 
 ```bash
 npx tsx scripts/anonymize-curriculum-xml.ts

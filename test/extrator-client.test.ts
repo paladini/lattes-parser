@@ -93,11 +93,11 @@ describe("ExtratorClient", () => {
       endpointUrl: `${baseUrl}/srvcurriculo/WSCurriculo`,
     });
 
-    const zip = await client.getCurriculumCompacted("8907059238612691");
+    const zip = await client.getCurriculumCompacted("0000000000000001");
     expect(zip.byteLength).toBeGreaterThan(0);
 
-    const curriculum = await client.getCurriculum("8907059238612691");
-    expect(curriculum.id).toBe("8907059238612691");
+    const curriculum = await client.getCurriculum("0000000000000001");
+    expect(curriculum.id).toBe("0000000000000001");
     expect(curriculum.identification.fullName).toBe("Pesquisador Síntese");
   });
 
@@ -107,7 +107,7 @@ describe("ExtratorClient", () => {
       endpointUrl: `${baseUrl}/srvcurriculo/WSCurriculo`,
     });
 
-    await expect(client.getUpdatedAt("8907059238612691")).resolves.toBe(
+    await expect(client.getUpdatedAt("0000000000000001")).resolves.toBe(
       "15/03/2024 14:30:22",
     );
   });

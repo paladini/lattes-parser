@@ -42,6 +42,8 @@ await writeCurriculum(cv, "./curriculo.xml");
 
 Paths: notação com ponto e colchetes, por exemplo `identification.summary` ou `technicalProduction[0].title` quando o campo existir no modelo.
 
+`writeCurriculum` e `serializeCurriculum` aceitam `sections` para sincronizar só as seções alteradas. `sectionsFromPatchPaths` mapeia o primeiro segmento do path (`identification.summary`, `technicalProduction[0].title`) para o id da seção. Os comandos `set` e `patch` da CLI já gravam apenas essas seções. Sem `sections`, a sincronização continua completa e listas tipadas vazias não apagam o XML existente (prêmios continuam sendo removidos quando o array está vazio).
+
 Fluxo recomendado com validação:
 
 1. `readCurriculum`
@@ -51,3 +53,5 @@ Fluxo recomendado com validação:
 5. Importar o XML na Plataforma Lattes (manual)
 
 Schema e campos: [schema-xsd.md](./schema-xsd.md), [cobertura-campos.md](./cobertura-campos.md).
+
+Skill de edição para agentes: `.cursor/skills/lattes-curriculum-edit/` (`SKILL.md` e `fields.md`).

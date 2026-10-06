@@ -3,8 +3,10 @@ import type {
   AdditionalInstitution,
   ComplementaryData,
   ComplementaryTraining,
+  EventParticipant,
   EventParticipation,
 } from "../../types.js";
+import { parseProductionEnvelope } from "../production/envelope.js";
 import { asArray, asRecord, attr, pickUnmapped, type XmlRecord } from "../xml-utils.js";
 
 const COMPLEMENTARY_TAGS = [
@@ -26,6 +28,28 @@ const EVENT_TAGS = [
 
 function basicsTagForEvent(type: string): string {
   return `DADOS-BASICOS-DA-${type}`;
+}
+
+function mapEventParticipants(record: XmlRecord): EventParticipant[] {
+  return asArray(record["PARTICIPANTE-DE-EVENTOS-CONGRESSOS"]).flatMap((entry) => {
+    const node = asRecord(entry);
+    if (!node) {
+      return [];
+    }
+    const name = attr(node, "NOME-COMPLETO-DO-PARTICIPANTE-DE-EVENTOS-CONGRESSOS");
+    if (!name) {
+      return [];
+    }
+    const orderRaw = attr(node, "ORDEM-PARTICIPANTE");
+    const orderNumber = orderRaw === undefined ? Number.NaN : Number(orderRaw);
+    return [
+      {
+        name,
+        citationName: attr(node, "NOME-PARA-CITACAO-DO-PARTICIPANTE-DE-EVENTOS-CONGRESSOS"),
+        order: Number.isFinite(orderNumber) ? orderNumber : undefined,
+      },
+    ];
+  });
 }
 
 export function mapComplementaryData(
@@ -59,6 +83,12 @@ export function mapComplementaryData(
           startYear: attr(record, "ANO-DE-INICIO"),
           endYear: attr(record, "ANO-DE-CONCLUSAO"),
           status: attr(record, "STATUS-DO-CURSO"),
+          level: attr(record, "NIVEL"),
+          institutionCode: attr(record, "CODIGO-INSTITUICAO"),
+          organCode: attr(record, "CODIGO-ORGAO"),
+          organName: attr(record, "NOME-ORGAO"),
+          courseCode: attr(record, "CODIGO-CURSO"),
+          titleEnglish: attr(record, "NOME-CURSO-INGLES"),
           sequence: attr(record, "SEQUENCIA-FORMACAO"),
           raw: record,
         });
@@ -90,6 +120,8 @@ export function mapComplementaryData(
           eventName: attr(detail, "NOME-DO-EVENTO"),
           city: attr(detail, "CIDADE-DO-EVENTO"),
           sequence: attr(record, "SEQUENCIA-PRODUCAO"),
+          participants: mapEventParticipants(record),
+          ...parseProductionEnvelope(record),
           raw: record,
         });
       }

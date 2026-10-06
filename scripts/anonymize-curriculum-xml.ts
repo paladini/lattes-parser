@@ -1,20 +1,30 @@
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+const SYNTHETIC_LATTES_ID = "0000000000000001";
+
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const input = path.join(
-  root,
-  "DEFINITIONS",
-  "Definitions_Lattes_Curriculum_8907059238612691.xml",
-);
+const definitionsDir = path.join(root, "DEFINITIONS");
 const output = path.join(root, "test", "fixtures", "curriculum-real-anonymized.xml");
 
-if (!existsSync(input)) {
-  console.error(`Missing input: ${input}`);
+const inputs = readdirSync(definitionsDir).filter((name) =>
+  /^Definitions_Lattes_Curriculum_\d+\.xml$/.test(name),
+);
+
+if (inputs.length === 0) {
+  console.error(
+    `Missing input: place an export at ${definitionsDir}/Definitions_Lattes_Curriculum_*.xml`,
+  );
   process.exit(1);
 }
 
+if (inputs.length > 1) {
+  console.error(`Multiple exports in DEFINITIONS/: ${inputs.join(", ")}`);
+  process.exit(1);
+}
+
+const input = path.join(definitionsDir, inputs[0]!);
 let xml = readFileSync(input, "latin1");
 
 const replacements: Array<[RegExp, string]> = [
@@ -46,10 +56,26 @@ const replacements: Array<[RegExp, string]> = [
   [/TELEFONE="[^"]*"/g, 'TELEFONE="00000000"'],
   [/HOME-PAGE="[^"]*"/g, 'HOME-PAGE=""'],
   [/REDE-SOCIAL="[^"]*"/g, 'REDE-SOCIAL=""'],
+  [
+    /TEXTO-RESUMO-CV-RH="[^"]*"/g,
+    'TEXTO-RESUMO-CV-RH="Pesquisador anonimo atua em computacao."',
+  ],
+  [
+    /TEXTO-RESUMO-CV-RH-EN="[^"]*"/g,
+    'TEXTO-RESUMO-CV-RH-EN="Anonymous researcher working in computing."',
+  ],
+  [/DATA-NASCIMENTO="[^"]*"/g, 'DATA-NASCIMENTO="01011900"'],
+  [/DATA-DE-EMISSAO="[^"]*"/g, 'DATA-DE-EMISSAO="01011900"'],
+  [/CEP="[^"]*"/g, 'CEP="00000000"'],
 ];
 
 for (const [pattern, value] of replacements) {
   xml = xml.replace(pattern, value);
+}
+
+const idMatch = xml.match(/NUMERO-IDENTIFICADOR="(\d{16})"/);
+if (idMatch && idMatch[1] !== SYNTHETIC_LATTES_ID) {
+  xml = xml.split(idMatch[1]).join(SYNTHETIC_LATTES_ID);
 }
 
 writeFileSync(output, xml, "latin1");

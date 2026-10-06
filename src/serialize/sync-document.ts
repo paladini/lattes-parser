@@ -8,6 +8,7 @@ import type {
   ComplementaryTraining,
   Curriculum,
   EmploymentLink,
+  EventParticipant,
   EventParticipation,
   LanguageEntry,
   ProfessionalActivity,
@@ -16,15 +17,84 @@ import type {
   TechnicalItem,
 } from "../types.js";
 import { DEGREE_TAGS } from "../schema/degree-tags.js";
+import {
+  TECHNICAL_TITLE_READ_ATTRIBUTES,
+  TECHNICAL_YEAR_READ_ATTRIBUTES,
+  technicalSpecForItem,
+} from "../schema/technical-production-catalog.js";
 import { asArray, asRecord, type XmlRecord } from "../parse/xml-utils.js";
 import { syncAuthorsOnRecord } from "./authors-sync.js";
+import { syncProductionEnvelope } from "./production/envelope.js";
 
-const TECH_TAG_BY_TYPE: Record<string, string> = {
-  patent: "PATENTE",
-  technology_product: "PRODUTO-TECNOLOGICO",
-  software: "SOFTWARE",
-  technical_work: "TRABALHO-TECNICO",
+export type CurriculumSectionId =
+  | "identification"
+  | "academicBackground"
+  | "professionalActivities"
+  | "bibliographicProduction"
+  | "technicalProduction"
+  | "complementary"
+  | "advisories"
+  | "awards"
+  | "metadata";
+
+const CURRICULUM_SECTION_IDS: readonly CurriculumSectionId[] = [
+  "identification",
+  "academicBackground",
+  "professionalActivities",
+  "bibliographicProduction",
+  "technicalProduction",
+  "complementary",
+  "advisories",
+  "awards",
+  "metadata",
+];
+
+export interface SyncDocumentOptions {
+  sections?: CurriculumSectionId[];
+}
+
+const PATCH_PATH_HEAD_TO_SECTION: Record<string, CurriculumSectionId> = {
+  id: "metadata",
+  updatedAt: "metadata",
 };
+
+/** Maps patch paths to the curriculum sections those paths belong to. */
+export function sectionsFromPatchPaths(paths: string[]): CurriculumSectionId[] {
+  const seen = new Set<CurriculumSectionId>();
+  const sections: CurriculumSectionId[] = [];
+  for (const path of paths) {
+    const head = path.split(/[.[]/)[0] ?? "";
+    let id: CurriculumSectionId | undefined;
+    if ((CURRICULUM_SECTION_IDS as readonly string[]).includes(head)) {
+      id = head as CurriculumSectionId;
+    } else if (PATCH_PATH_HEAD_TO_SECTION[head]) {
+      id = PATCH_PATH_HEAD_TO_SECTION[head];
+    }
+    if (id && !seen.has(id)) {
+      seen.add(id);
+      sections.push(id);
+    }
+  }
+  return sections;
+}
+
+/** Like {@link sectionsFromPatchPaths}, but fails when no section would sync. */
+export function requireSectionsFromPatchPaths(paths: string[]): CurriculumSectionId[] {
+  const sections = sectionsFromPatchPaths(paths);
+  if (sections.length === 0) {
+    throw new Error(
+      `No curriculum section mapped for patch path(s): ${paths.join(", ")}`,
+    );
+  }
+  return sections;
+}
+
+function sectionSelected(
+  sections: CurriculumSectionId[] | undefined,
+  id: CurriculumSectionId,
+): boolean {
+  return sections === undefined || sections.includes(id);
+}
 
 function setAttr(record: XmlRecord, name: string, value: string | undefined): void {
   if (value === undefined) {
@@ -61,6 +131,45 @@ function writeArray(parent: XmlRecord, tag: string, entries: unknown[]): void {
   }
   parent[tag] = entries.length === 1 ? entries[0] : entries;
 }
+
+function hasChildElements(record: XmlRecord): boolean {
+  return Object.keys(record).some((key) => key !== "#text" && !key.startsWith("@_"));
+}
+
+const OWNED_TECHNICAL_TAGS = [
+  "PATENTE",
+  "PRODUTO-TECNOLOGICO",
+  "PROCESSOS-OU-TECNICAS",
+  "SOFTWARE",
+  "TRABALHO-TECNICO",
+] as const;
+
+const OWNED_DEMAIS_TECHNICAL_TAGS = [
+  "APRESENTACAO-DE-TRABALHO",
+  "MIDIA-SOCIAL-WEBSITE-BLOG",
+  "MANUTENCAO-DE-OBRA-ARTISTICA",
+  "OUTRA-PRODUCAO-TECNICA",
+  "CURSO-DE-CURTA-DURACAO-MINISTRADO",
+  "DESENVOLVIMENTO-DE-MATERIAL-DIDATICO-OU-INSTRUCIONAL",
+  "EDITORACAO",
+  "ORGANIZACAO-DE-EVENTO",
+  "PROGRAMA-DE-RADIO-OU-TV",
+] as const;
+
+const OWNED_BIBLIOGRAPHIC_TAGS = [
+  "ARTIGOS-PUBLICADOS",
+  "TRABALHOS-EM-EVENTOS",
+  "LIVROS-E-CAPITULOS",
+  "OUTRA-PRODUCAO-BIBLIOGRAFICA",
+  "DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA",
+] as const;
+
+const COMPLEMENTARY_LIST_TAGS = [
+  "FORMACAO-COMPLEMENTAR",
+  "PARTICIPACAO-EM-EVENTOS-CONGRESSOS",
+  "INFORMACOES-ADICIONAIS-INSTITUICOES",
+  "INFORMACOES-ADICIONAIS-CURSOS",
+] as const;
 
 function nodeInParentList(parent: XmlRecord, tag: string, node: XmlRecord): boolean {
   return asArray(parent[tag]).some((entry) => asRecord(entry) === node);
@@ -139,8 +248,25 @@ function createDegreeNode(degree: AcademicDegree, tag: string): XmlRecord {
   return node;
 }
 
-function syncAcademicBackground(dadosGerais: XmlRecord, degrees: AcademicDegree[]): void {
+function syncAcademicBackground(
+  dadosGerais: XmlRecord,
+  degrees: AcademicDegree[],
+  deleteWhenEmpty = false,
+): void {
   if (degrees.length === 0) {
+    if (!deleteWhenEmpty) {
+      return;
+    }
+    const formacao = asRecord(dadosGerais["FORMACAO-ACADEMICA-TITULACAO"]);
+    if (!formacao) {
+      return;
+    }
+    for (const tag of DEGREE_TAGS) {
+      delete formacao[tag];
+    }
+    if (!hasChildElements(formacao)) {
+      delete dadosGerais["FORMACAO-ACADEMICA-TITULACAO"];
+    }
     return;
   }
   const formacao = ensureChild(dadosGerais, "FORMACAO-ACADEMICA-TITULACAO");
@@ -183,8 +309,12 @@ function applyEmploymentLink(node: XmlRecord, link: EmploymentLink): void {
 function syncProfessionalActivities(
   dadosGerais: XmlRecord,
   activities: ProfessionalActivity[],
+  deleteWhenEmpty = false,
 ): void {
   if (activities.length === 0) {
+    if (deleteWhenEmpty) {
+      delete dadosGerais["ATUACOES-PROFISSIONAIS"];
+    }
     return;
   }
   const container = ensureChild(dadosGerais, "ATUACOES-PROFISSIONAIS");
@@ -268,6 +398,53 @@ function syncLanguages(dadosGerais: XmlRecord, languages: LanguageEntry[]): void
   writeArray(container, "IDIOMA", sortByTypedOrder(next, order));
 }
 
+function syncStreetAttr(
+  record: XmlRecord,
+  street: string | undefined,
+  preferred: string,
+  alternate?: string,
+): void {
+  if (street === undefined) {
+    return;
+  }
+  const preferredKey = `@_${preferred}`;
+  const alternateKey = alternate ? `@_${alternate}` : undefined;
+  const preferredValue = record[preferredKey];
+  const alternateValue = alternateKey ? record[alternateKey] : undefined;
+  if (typeof preferredValue === "string" && preferredValue !== "") {
+    setAttrPreserve(record, preferred, street);
+    return;
+  }
+  if (alternate && typeof alternateValue === "string" && alternateValue !== "") {
+    setAttrPreserve(record, alternate, street);
+    return;
+  }
+  if (preferredKey in record) {
+    setAttrPreserve(record, preferred, street);
+    return;
+  }
+  if (alternate && alternateKey && alternateKey in record) {
+    setAttrPreserve(record, alternate, street);
+    return;
+  }
+  setAttrPreserve(record, preferred, street);
+}
+
+function syncAddressLines(
+  record: XmlRecord,
+  address: ProfessionalAddress,
+  streetPreferred: string,
+  streetAlternate?: string,
+): void {
+  syncStreetAttr(record, address.street, streetPreferred, streetAlternate);
+  setAttrPreserve(record, "CEP", address.postalCode);
+  setAttrPreserve(record, "BAIRRO", address.neighborhood);
+  setAttrPreserve(record, "DDD", address.areaCode);
+  setAttrPreserve(record, "TELEFONE", address.phone);
+  setAttrPreserve(record, "E-MAIL", address.email);
+  setAttrPreserve(record, "HOME-PAGE", address.homepage);
+}
+
 function syncProfessionalAddress(
   dadosGerais: XmlRecord,
   address: ProfessionalAddress | undefined,
@@ -285,6 +462,7 @@ function syncProfessionalAddress(
   setAttrPreserve(prof, "CIDADE", address.city);
   setAttrPreserve(prof, "UF", address.state);
   setAttrPreserve(prof, "PAIS", address.country);
+  syncAddressLines(prof, address, "LOGRADOURO-COMPLEMENTO", "LOGRADOURO");
 }
 
 function awardItemTag(container: XmlRecord, node: XmlRecord | undefined): string {
@@ -403,8 +581,20 @@ function syncBibliographicList(
   containerTag: string | null,
   itemTag: string,
   items: BibliographicItem[],
+  deleteWhenEmpty = false,
 ): void {
   if (items.length === 0) {
+    if (!deleteWhenEmpty) {
+      return;
+    }
+    const container = containerTag ? asRecord(parent[containerTag]) : parent;
+    if (!container) {
+      return;
+    }
+    delete container[itemTag];
+    if (containerTag && !hasChildElements(container)) {
+      delete parent[containerTag];
+    }
     return;
   }
   const container = containerTag ? ensureChild(parent, containerTag) : parent;
@@ -436,58 +626,111 @@ function hasBibliographicItems(cv: Curriculum): boolean {
   );
 }
 
-function syncBibliographicProduction(root: XmlRecord, cv: Curriculum): void {
+function syncBibliographicProduction(
+  root: XmlRecord,
+  cv: Curriculum,
+  deleteWhenEmpty = false,
+): void {
   if (!hasBibliographicItems(cv)) {
+    if (!deleteWhenEmpty) {
+      return;
+    }
+    const bibliographic = asRecord(root["PRODUCAO-BIBLIOGRAFICA"]);
+    if (!bibliographic) {
+      return;
+    }
+    for (const tag of OWNED_BIBLIOGRAPHIC_TAGS) {
+      delete bibliographic[tag];
+    }
+    if (!hasChildElements(bibliographic)) {
+      delete root["PRODUCAO-BIBLIOGRAFICA"];
+    }
     return;
   }
   const bibliographic = ensureChild(root, "PRODUCAO-BIBLIOGRAFICA");
+  const production = cv.bibliographicProduction;
 
   syncBibliographicList(
     bibliographic,
     "ARTIGOS-PUBLICADOS",
     "ARTIGO-PUBLICADO",
-    cv.bibliographicProduction.journalArticles,
+    production.journalArticles,
+    deleteWhenEmpty,
   );
   syncBibliographicList(
     bibliographic,
     "TRABALHOS-EM-EVENTOS",
     "TRABALHO-EM-EVENTOS",
-    cv.bibliographicProduction.conferencePapers,
+    production.conferencePapers,
+    deleteWhenEmpty,
   );
 
-  const booksContainer = ensureChild(bibliographic, "LIVROS-E-CAPITULOS");
-  const books = cv.bibliographicProduction.booksAndChapters.filter(
-    (item) => item.type === "book",
-  );
-  const chapters = cv.bibliographicProduction.booksAndChapters.filter(
+  const books = production.booksAndChapters.filter((item) => item.type === "book");
+  const chapters = production.booksAndChapters.filter(
     (item) => item.type === "book_chapter",
   );
-  syncBibliographicList(booksContainer, null, bookItemTag("book"), books);
-  syncBibliographicList(booksContainer, null, bookItemTag("book_chapter"), chapters);
+  if (books.length === 0 && chapters.length === 0 && deleteWhenEmpty) {
+    delete bibliographic["LIVROS-E-CAPITULOS"];
+  } else {
+    const booksContainer = ensureChild(bibliographic, "LIVROS-E-CAPITULOS");
+    syncBibliographicList(booksContainer, null, bookItemTag("book"), books, deleteWhenEmpty);
+    syncBibliographicList(
+      booksContainer,
+      null,
+      bookItemTag("book_chapter"),
+      chapters,
+      deleteWhenEmpty,
+    );
+    if (deleteWhenEmpty && !hasChildElements(booksContainer)) {
+      delete bibliographic["LIVROS-E-CAPITULOS"];
+    }
+  }
 
   syncBibliographicList(
     bibliographic,
     null,
     "OUTRA-PRODUCAO-BIBLIOGRAFICA",
-    cv.bibliographicProduction.other,
+    production.other,
+    deleteWhenEmpty,
   );
-}
-
-function technicalBasicsTag(type: string): string {
-  switch (type) {
-    case "patent":
-      return "DADOS-BASICOS-DA-PATENTE";
-    case "technology_product":
-      return "DADOS-BASICOS-DO-PRODUTO-TECNOLOGICO";
-    case "software":
-      return "DADOS-BASICOS-DO-SOFTWARE";
-    default:
-      return "DADOS-BASICOS-DO-TRABALHO-TECNICO";
+  if (deleteWhenEmpty && production.other.length === 0) {
+    delete bibliographic["DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA"];
   }
 }
 
+function technicalBasicsTag(item: TechnicalItem): string {
+  return (
+    technicalSpecForItem(item.type, item.xmlTag)?.basicsTag ??
+    "DADOS-BASICOS-DO-TRABALHO-TECNICO"
+  );
+}
+
+function writeTechnicalTitle(basics: XmlRecord, item: TechnicalItem): void {
+  const present = TECHNICAL_TITLE_READ_ATTRIBUTES.find((name) => `@_${name}` in basics);
+  if (present) {
+    setAttrPreserve(basics, present, item.title);
+    return;
+  }
+  const spec = technicalSpecForItem(item.type, item.xmlTag);
+  if (spec) {
+    setAttrPreserve(basics, spec.titleAttribute, item.title);
+    return;
+  }
+  const hasAttributes = Object.keys(basics).some((key) => key.startsWith("@_"));
+  if (!hasAttributes) {
+    setAttrPreserve(basics, "TITULO", item.title);
+  }
+}
+
+function writeTechnicalYear(basics: XmlRecord, item: TechnicalItem): void {
+  const present = TECHNICAL_YEAR_READ_ATTRIBUTES.find((name) => `@_${name}` in basics);
+  const spec = technicalSpecForItem(item.type, item.xmlTag);
+  const attrName = present ?? spec?.yearAttribute ?? "ANO";
+  setAttrPreserve(basics, attrName, item.year);
+}
+
 function applyTechnicalFields(record: XmlRecord, item: TechnicalItem): void {
-  const basicsTag = technicalBasicsTag(item.type);
+  const basicsTag = technicalBasicsTag(item);
   let basics = asRecord(record[basicsTag]);
   if (!basics) {
     for (const [key, value] of Object.entries(record)) {
@@ -500,23 +743,9 @@ function applyTechnicalFields(record: XmlRecord, item: TechnicalItem): void {
   if (!basics) {
     basics = ensureChild(record, basicsTag);
   }
-  switch (item.type) {
-    case "patent":
-      setAttrPreserve(basics, "TITULO-PATENTE", item.title);
-      break;
-    case "technology_product":
-      setAttrPreserve(basics, "TITULO-DO-PRODUTO-TECNOLOGICO", item.title);
-      break;
-    case "software":
-      setAttrPreserve(basics, "TITULO-DO-SOFTWARE", item.title);
-      break;
-    default:
-      setAttrPreserve(basics, "TITULO-DO-TRABALHO-TECNICO", item.title);
-      setAttrPreserve(basics, "TITULO", item.title);
-      setAttrPreserve(basics, "TITULO-INGLES", item.title);
-      break;
-  }
-  setAttrPreserve(basics, "ANO", item.year);
+  syncProductionEnvelope(record, item);
+  writeTechnicalTitle(basics, item);
+  writeTechnicalYear(basics, item);
   setAttrPreserve(record, "SEQUENCIA-PRODUCAO", item.sequence);
   if (item.authors && item.authors.length > 0) {
     syncAuthorsOnRecord(record, item.authors);
@@ -530,7 +759,11 @@ function createTechnicalNode(item: TechnicalItem): XmlRecord {
 }
 
 function technicalTag(item: TechnicalItem): string {
-  return item.xmlTag ?? TECH_TAG_BY_TYPE[item.type] ?? "TRABALHO-TECNICO";
+  return (
+    item.xmlTag ??
+    technicalSpecForItem(item.type, item.xmlTag)?.xmlTag ??
+    "TRABALHO-TECNICO"
+  );
 }
 
 function syncTechnicalGroup(parent: XmlRecord, items: TechnicalItem[]): void {
@@ -554,8 +787,15 @@ function syncTechnicalGroup(parent: XmlRecord, items: TechnicalItem[]): void {
   }
 }
 
-function syncTechnicalProduction(root: XmlRecord, items: TechnicalItem[]): void {
+function syncTechnicalProduction(
+  root: XmlRecord,
+  items: TechnicalItem[],
+  deleteWhenEmpty = false,
+): void {
   if (items.length === 0) {
+    if (deleteWhenEmpty) {
+      delete root["PRODUCAO-TECNICA"];
+    }
     return;
   }
   const container = ensureChild(root, "PRODUCAO-TECNICA");
@@ -565,9 +805,27 @@ function syncTechnicalProduction(root: XmlRecord, items: TechnicalItem[]): void 
   );
 
   syncTechnicalGroup(container, topLevel);
+  if (deleteWhenEmpty) {
+    const present = new Set(topLevel.map(technicalTag));
+    for (const tag of OWNED_TECHNICAL_TAGS) {
+      if (!present.has(tag)) {
+        delete container[tag];
+      }
+    }
+  }
   if (demais.length > 0) {
     const demaisContainer = ensureChild(container, "DEMAIS-TIPOS-DE-PRODUCAO-TECNICA");
     syncTechnicalGroup(demaisContainer, demais);
+    if (deleteWhenEmpty) {
+      const present = new Set(demais.map(technicalTag));
+      for (const tag of OWNED_DEMAIS_TECHNICAL_TAGS) {
+        if (!present.has(tag)) {
+          delete demaisContainer[tag];
+        }
+      }
+    }
+  } else if (deleteWhenEmpty) {
+    delete container["DEMAIS-TIPOS-DE-PRODUCAO-TECNICA"];
   }
 }
 
@@ -669,7 +927,59 @@ function syncSimpleList<T extends { raw?: Record<string, unknown> }>(
   writeArray(parent, itemTag, sortByTypedOrder(next, order));
 }
 
-function syncComplementaryData(root: XmlRecord, cv: Curriculum): void {
+function syncEventParticipants(
+  node: XmlRecord,
+  participants: EventParticipant[] | undefined,
+): void {
+  if (participants === undefined) {
+    return;
+  }
+  if (participants.length === 0) {
+    delete node["PARTICIPANTE-DE-EVENTOS-CONGRESSOS"];
+    return;
+  }
+  const existing = asArray(node["PARTICIPANTE-DE-EVENTOS-CONGRESSOS"]).flatMap((entry) => {
+    const record = asRecord(entry);
+    return record ? [record] : [];
+  });
+  const next = participants.map((participant, index) => {
+    const record = existing[index] ?? {};
+    setAttrPreserve(
+      record,
+      "NOME-COMPLETO-DO-PARTICIPANTE-DE-EVENTOS-CONGRESSOS",
+      participant.name,
+    );
+    setAttrPreserve(
+      record,
+      "NOME-PARA-CITACAO-DO-PARTICIPANTE-DE-EVENTOS-CONGRESSOS",
+      participant.citationName,
+    );
+    if (participant.order !== undefined) {
+      setAttrPreserve(record, "ORDEM-PARTICIPANTE", String(participant.order));
+    }
+    return record;
+  });
+  writeArray(node, "PARTICIPANTE-DE-EVENTOS-CONGRESSOS", next);
+}
+
+function clearComplementaryLists(root: XmlRecord): void {
+  const complement = asRecord(root["DADOS-COMPLEMENTARES"]);
+  if (!complement) {
+    return;
+  }
+  for (const tag of COMPLEMENTARY_LIST_TAGS) {
+    delete complement[tag];
+  }
+  if (!hasChildElements(complement)) {
+    delete root["DADOS-COMPLEMENTARES"];
+  }
+}
+
+function syncComplementaryData(
+  root: XmlRecord,
+  cv: Curriculum,
+  deleteWhenEmpty = false,
+): void {
   const data = cv.complementary;
   const hasData =
     data.complementaryTraining.length > 0 ||
@@ -677,6 +987,9 @@ function syncComplementaryData(root: XmlRecord, cv: Curriculum): void {
     data.additionalInstitutions.length > 0 ||
     data.additionalCourses.length > 0;
   if (!hasData) {
+    if (deleteWhenEmpty) {
+      clearComplementaryLists(root);
+    }
     return;
   }
 
@@ -698,9 +1011,17 @@ function syncComplementaryData(root: XmlRecord, cv: Curriculum): void {
         setAttrPreserve(node, "ANO-DE-INICIO", entry.startYear);
         setAttrPreserve(node, "ANO-DE-CONCLUSAO", entry.endYear);
         setAttrPreserve(node, "STATUS-DO-CURSO", entry.status);
+        setAttrPreserve(node, "NIVEL", entry.level);
+        setAttrPreserve(node, "CODIGO-INSTITUICAO", entry.institutionCode);
+        setAttrPreserve(node, "CODIGO-ORGAO", entry.organCode);
+        setAttrPreserve(node, "NOME-ORGAO", entry.organName);
+        setAttrPreserve(node, "CODIGO-CURSO", entry.courseCode);
+        setAttrPreserve(node, "NOME-CURSO-INGLES", entry.titleEnglish);
         setAttrPreserve(node, "SEQUENCIA-FORMACAO", entry.sequence);
       });
     }
+  } else if (deleteWhenEmpty) {
+    delete complement["FORMACAO-COMPLEMENTAR"];
   }
 
   if (data.eventParticipation.length > 0) {
@@ -718,16 +1039,20 @@ function syncComplementaryData(root: XmlRecord, cv: Curriculum): void {
           asRecord(node[`DADOS-BASICOS-DA-${type}`]) ??
           asRecord(node[`DADOS-BASICOS-DE-${type}`]) ??
           ensureChild(node, `DADOS-BASICOS-DA-${type}`);
-        setAttrPreserve(basics, "TITULO", entry.title);
-        setAttrPreserve(basics, "ANO", entry.year);
         const detail =
           asRecord(node[`DETALHAMENTO-DA-${type}`]) ??
           asRecord(node[`DETALHAMENTO-DE-${type}`]) ??
           ensureChild(node, `DETALHAMENTO-DA-${type}`);
+        syncProductionEnvelope(node, entry);
+        setAttrPreserve(basics, "TITULO", entry.title);
+        setAttrPreserve(basics, "ANO", entry.year);
         setAttrPreserve(detail, "NOME-DO-EVENTO", entry.eventName);
         setAttrPreserve(detail, "CIDADE-DO-EVENTO", entry.city);
+        syncEventParticipants(node, entry.participants);
       });
     }
+  } else if (deleteWhenEmpty) {
+    delete complement["PARTICIPACAO-EM-EVENTOS-CONGRESSOS"];
   }
 
   if (data.additionalInstitutions.length > 0) {
@@ -742,6 +1067,8 @@ function syncComplementaryData(root: XmlRecord, cv: Curriculum): void {
         setAttrPreserve(node, "NOME-PAIS-INSTITUICAO", entry.country);
       },
     );
+  } else if (deleteWhenEmpty) {
+    delete complement["INFORMACOES-ADICIONAIS-INSTITUICOES"];
   }
 
   if (data.additionalCourses.length > 0) {
@@ -756,6 +1083,8 @@ function syncComplementaryData(root: XmlRecord, cv: Curriculum): void {
         setAttrPreserve(node, "NOME-INSTITUICAO", entry.institutionName);
       },
     );
+  } else if (deleteWhenEmpty) {
+    delete complement["INFORMACOES-ADICIONAIS-CURSOS"];
   }
 }
 
@@ -791,61 +1120,117 @@ function syncRootMetadata(root: XmlRecord, cv: Curriculum): void {
   setAttrPreserve(root, "FORMATO-HORA-ATUALIZACAO", cv.metadata.timeFormat ?? "HHMMSS");
 }
 
-function syncAdvisories(root: XmlRecord, cv: Curriculum): void {
-  if (cv.advisories.completed.length === 0 && cv.advisories.inProgress.length === 0) {
+function syncAdvisories(
+  root: XmlRecord,
+  cv: Curriculum,
+  deleteWhenEmpty = false,
+): void {
+  const completedEmpty = cv.advisories.completed.length === 0;
+  const inProgressEmpty = cv.advisories.inProgress.length === 0;
+  if (completedEmpty && inProgressEmpty) {
+    if (!deleteWhenEmpty) {
+      return;
+    }
+    const complement = asRecord(root["DADOS-COMPLEMENTARES"]);
+    if (!complement) {
+      return;
+    }
+    delete complement["ORIENTACOES-CONCLUIDAS"];
+    delete complement["ORIENTACOES-EM-ANDAMENTO"];
+    if (!hasChildElements(complement)) {
+      delete root["DADOS-COMPLEMENTARES"];
+    }
     return;
   }
   const complement = ensureChild(root, "DADOS-COMPLEMENTARES");
-  syncAdvisoryGroup(
-    complement,
-    "ORIENTACOES-CONCLUIDAS",
-    COMPLETED_ADVISORY_TAGS,
-    cv.advisories.completed,
-  );
-  syncAdvisoryGroup(
-    complement,
-    "ORIENTACOES-EM-ANDAMENTO",
-    IN_PROGRESS_ADVISORY_TAGS,
-    cv.advisories.inProgress,
-  );
+  if (completedEmpty && deleteWhenEmpty) {
+    delete complement["ORIENTACOES-CONCLUIDAS"];
+  } else {
+    syncAdvisoryGroup(
+      complement,
+      "ORIENTACOES-CONCLUIDAS",
+      COMPLETED_ADVISORY_TAGS,
+      cv.advisories.completed,
+    );
+  }
+  if (inProgressEmpty && deleteWhenEmpty) {
+    delete complement["ORIENTACOES-EM-ANDAMENTO"];
+  } else {
+    syncAdvisoryGroup(
+      complement,
+      "ORIENTACOES-EM-ANDAMENTO",
+      IN_PROGRESS_ADVISORY_TAGS,
+      cv.advisories.inProgress,
+    );
+  }
 }
 
 /** Applies typed Curriculum fields onto the XML document tree before serialization. */
-export function syncCvToDocument(cv: Curriculum): void {
+export function syncCvToDocument(cv: Curriculum, options?: SyncDocumentOptions): void {
+  const sections = options?.sections;
+  const selected = (id: CurriculumSectionId) => sectionSelected(sections, id);
+  const deleteWhenEmpty = sections !== undefined;
   const root = cv.document;
   const dadosGerais = asRecord(root["DADOS-GERAIS"]) ?? {};
   root["DADOS-GERAIS"] = dadosGerais;
 
-  setAttr(dadosGerais, "NOME-COMPLETO", cv.identification.fullName);
-  setAttrPreserve(
-    dadosGerais,
-    "NOME-EM-CITACOES-BIBLIOGRAFICAS",
-    cv.identification.citationName,
-  );
-  setAttrPreserve(dadosGerais, "NOME-CITACOES", cv.identification.citationName);
-  syncSummaryAndOtherInfo(dadosGerais, cv);
+  if (selected("identification")) {
+    setAttr(dadosGerais, "NOME-COMPLETO", cv.identification.fullName);
+    setAttrPreserve(
+      dadosGerais,
+      "NOME-EM-CITACOES-BIBLIOGRAFICAS",
+      cv.identification.citationName,
+    );
+    setAttrPreserve(dadosGerais, "NOME-CITACOES", cv.identification.citationName);
+    syncSummaryAndOtherInfo(dadosGerais, cv);
 
-  syncProfessionalAddress(dadosGerais, cv.identification.professionalAddress);
-  if (cv.identification.residentialAddress) {
-    const endereco = ensureChild(dadosGerais, "ENDERECO");
-    let residential = asRecord(cv.identification.residentialAddress.raw);
-    if (!residential || asRecord(endereco["ENDERECO-RESIDENCIAL"]) !== residential) {
-      residential = ensureChild(endereco, "ENDERECO-RESIDENCIAL");
+    syncProfessionalAddress(dadosGerais, cv.identification.professionalAddress);
+    if (cv.identification.addressContact || cv.identification.residentialAddress) {
+      const endereco = ensureChild(dadosGerais, "ENDERECO");
+      const contact = cv.identification.addressContact;
+      if (contact) {
+        setAttrPreserve(endereco, "FLAG-DE-PREFERENCIA", contact.preference);
+        setAttrPreserve(endereco, "ELETRONICO", contact.electronic);
+        setAttrPreserve(endereco, "OUTRA-FORMA-DE-CONTATO", contact.otherContact);
+        setAttrPreserve(endereco, "REDE-SOCIAL", contact.socialNetwork);
+      }
+      if (cv.identification.residentialAddress) {
+        let residential = asRecord(cv.identification.residentialAddress.raw);
+        if (!residential || asRecord(endereco["ENDERECO-RESIDENCIAL"]) !== residential) {
+          residential = ensureChild(endereco, "ENDERECO-RESIDENCIAL");
+        }
+        syncAddressLines(residential, cv.identification.residentialAddress, "LOGRADOURO");
+        setAttrPreserve(residential, "CIDADE", cv.identification.residentialAddress.city);
+        setAttrPreserve(residential, "UF", cv.identification.residentialAddress.state);
+        setAttrPreserve(residential, "PAIS", cv.identification.residentialAddress.country);
+      }
     }
-    setAttrPreserve(residential, "CIDADE", cv.identification.residentialAddress.city);
-    setAttrPreserve(residential, "UF", cv.identification.residentialAddress.state);
-    setAttrPreserve(residential, "PAIS", cv.identification.residentialAddress.country);
+    syncResearchAreas(dadosGerais, cv.identification.researchAreas);
+    syncLanguages(dadosGerais, cv.identification.languages);
   }
-  syncResearchAreas(dadosGerais, cv.identification.researchAreas);
-  syncLanguages(dadosGerais, cv.identification.languages);
-  syncAcademicBackground(dadosGerais, cv.academicBackground);
-  syncProfessionalActivities(dadosGerais, cv.professionalActivities);
-  syncAwards(dadosGerais, cv.awards);
 
-  syncRootMetadata(root, cv);
-
-  syncBibliographicProduction(root, cv);
-  syncTechnicalProduction(root, cv.technicalProduction);
-  syncComplementaryData(root, cv);
-  syncAdvisories(root, cv);
+  if (selected("academicBackground")) {
+    syncAcademicBackground(dadosGerais, cv.academicBackground, deleteWhenEmpty);
+  }
+  if (selected("professionalActivities")) {
+    syncProfessionalActivities(dadosGerais, cv.professionalActivities, deleteWhenEmpty);
+  }
+  if (selected("awards")) {
+    syncAwards(dadosGerais, cv.awards);
+  }
+  if (selected("metadata")) {
+    syncRootMetadata(root, cv);
+  }
+  if (selected("bibliographicProduction")) {
+    syncBibliographicProduction(root, cv, deleteWhenEmpty);
+  }
+  if (selected("technicalProduction")) {
+    syncTechnicalProduction(root, cv.technicalProduction, deleteWhenEmpty);
+  }
+  if (selected("complementary")) {
+    syncComplementaryData(root, cv, deleteWhenEmpty);
+  }
+  if (selected("advisories")) {
+    syncAdvisories(root, cv, deleteWhenEmpty);
+  }
 }

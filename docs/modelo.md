@@ -10,7 +10,11 @@ Pacote: `@paladini/lattes-toolkit`. O XML raiz é `CURRICULO-VITAE` (`NUMERO-IDE
 | `DATA-ATUALIZACAO` + `HORA-ATUALIZACAO` | `Curriculum.updatedAt` |
 | `DADOS-GERAIS@NOME-COMPLETO` | `identification.fullName` |
 | `DADOS-GERAIS/RESUMO-CV` | `identification.summary` |
+| `DADOS-GERAIS/ENDERECO` (`FLAG-DE-PREFERENCIA`, `ELETRONICO`, `REDE-SOCIAL`) | `identification.addressContact` |
 | `DADOS-GERAIS/ENDERECO/ENDERECO-PROFISSIONAL` | `identification.professionalAddress` |
+| `DADOS-GERAIS/ENDERECO/ENDERECO-RESIDENCIAL` | `identification.residentialAddress` |
+| `DADOS-COMPLEMENTARES/FORMACAO-COMPLEMENTAR/*` | `complementary.complementaryTraining[]` |
+| `DADOS-COMPLEMENTARES/PARTICIPACAO-EM-EVENTOS-CONGRESSOS/*` | `complementary.eventParticipation[]` |
 | `DADOS-GERAIS/FORMACAO-ACADEMICA-TITULACAO/*` | `academicBackground[]` |
 | `DADOS-GERAIS/ATUACOES-PROFISSIONAIS/*` | `professionalActivities[]` |
 | `DADOS-GERAIS/AREAS-DE-ATUACAO/*` | `identification.researchAreas[]` |
@@ -19,9 +23,24 @@ Pacote: `@paladini/lattes-toolkit`. O XML raiz é `CURRICULO-VITAE` (`NUMERO-IDE
 | `PRODUCAO-BIBLIOGRAFICA/ARTIGOS-PUBLICADOS/*` | `bibliographicProduction.journalArticles[]` |
 | `PRODUCAO-BIBLIOGRAFICA/TRABALHOS-EM-EVENTOS/*` | `bibliographicProduction.conferencePapers[]` |
 | `PRODUCAO-BIBLIOGRAFICA/LIVROS-E-CAPITULOS/*` | `bibliographicProduction.booksAndChapters[]` |
-| `PRODUCAO-TECNICA/*` | `technicalProduction[]` |
+| `PRODUCAO-TECNICA/*` | `technicalProduction[]` (`TechnicalItem`) |
 | `DADOS-COMPLEMENTARES/ORIENTACOES-*` | `advisories.completed` / `advisories.inProgress` |
 | `OUTRA-PRODUCAO` (inteiro) | `unmapped.OUTRA-PRODUCAO` |
+
+## Produção técnica (`TechnicalItem`)
+
+Cada item de `technicalProduction` mantém `title` e `year` lidos dos atributos de `DADOS-BASICOS-*`, mais `authors`. O restante do bloco XSD fica no mesmo objeto:
+
+| Campo | Origem no XML |
+| --- | --- |
+| `basics` | Atributos do primeiro filho `DADOS-BASICOS*` (nome sem o prefixo `@_`) |
+| `detail` | Atributos do primeiro filho `DETALHAMENTO*` |
+| `keywords` | `PALAVRAS-CHAVE` (`PALAVRA-CHAVE-1` a `PALAVRA-CHAVE-6`) |
+| `knowledgeAreas` | `AREAS-DO-CONHECIMENTO` / `AREA-DO-CONHECIMENTO-1` a `3` (`majorArea`, `area`, `subArea`, `specialty`) |
+| `activitySectors` | `SETORES-DE-ATIVIDADE` (`SETOR-DE-ATIVIDADE-1` a `3`) |
+| `additionalInfo` | `INFORMACOES-ADICIONAIS` (`description`, `descriptionEnglish`) |
+
+Na gravação, o título volta para o atributo de título que já existe no nó (`TITULO-DO-SOFTWARE`, `TITULO-DO-PRODUTO`, `TITULO-DO-PROCESSO`, `TITULO` ou `TITULO-DO-TRABALHO-TECNICO`, conforme o XSD de cada tipo). Atributos desconhecidos e filhos como `AUTORES` permanecem no nó.
 
 ## Campos `unmapped`
 
@@ -37,6 +56,6 @@ Arquivos exportados frequentemente declaram `ISO-8859-1`. `readCurriculum()` det
 
 - XSD versionado: [`DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd`](https://github.com/paladini/lattes-toolkit/blob/main/DEFINITIONS/xml_cvbase_src_main_resources_CurriculoLattes_12_09_2022.xsd)
 - Guia: [schema-xsd.md](./schema-xsd.md)
-- CNPq (Extrator): [Portal Memória — Extração de dados](https://memoria.cnpq.br/web/portal-lattes/extracoes-de-dados)
+- CNPq (Extrator): [Portal Memória - Extração de dados](https://memoria.cnpq.br/web/portal-lattes/extracoes-de-dados)
 
 Atributos importantes na raiz `CURRICULO-VITAE`: `SISTEMA-ORIGEM-XML`, `NUMERO-IDENTIFICADOR`, `DATA-ATUALIZACAO`, `HORA-ATUALIZACAO`.
