@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0 - 2026-10-06
+
+### Breaking
+
+- `Curriculum` now requires `metadata` and `complementary`.
+- Professional activity is written through `links` (`VINCULOS`), not a `CARGO` attribute on the parent element.
+- Awards serialize as `PREMIO-TITULO`. Citation names serialize as `NOME-EM-CITACOES-BIBLIOGRAFICAS`. Authors serialize as sibling `AUTORES` elements, matching the XSD.
+- Summary text is written to `RESUMO-CV` attributes (`TEXTO-RESUMO-CV-RH` and `TEXTO-RESUMO-CV-RH-EN`).
+
+### Added
+
+- Typed parse and sync aligned with CurriculoLattes XSD 12/09/2022 and real export layouts: technical production (including `DEMAIS-TIPOS-DE-PRODUCAO-TECNICA`), complementary training, events, additional institutions and courses, academic degree tags, languages, and addresses.
+- Selective sync so complex sections that were not edited are left in place.
+- `validateCurriculumXml`, CLI `lattes-toolkit validate` (optional `xmllint`), and `writeCurriculum(..., { validate: true })`.
+- CLI `lattes-toolkit patch` with an allowlist.
+- Versioned XSD under `DEFINITIONS/`, anonymized golden fixture, and schema docs.
+
+XSD validation does not guarantee that Plataforma Lattes will accept the file. The import UI still documents a DTD. Real curriculum exports with personal data stay gitignored.
+
 ## 1.2.0 - 2026-10-05
 
 ### Changed
