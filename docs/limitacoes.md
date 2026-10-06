@@ -14,7 +14,7 @@ Fluxo de produto: **exportar (manual) → parse → editar → serialize → Imp
 - Parse do formato XML da Plataforma (`CURRICULO-VITAE`) para o tipo `Curriculum`
 - **Serialize** de volta para XML com round-trip via `document` + `unmapped`
 - **Backup** automático antes de sobrescrever XML (`.lattes-backup/`)
-- CLI workspace: `init`, `parse`, `get`, `set`, `serialize`, `restore`, `backup list`
+- CLI workspace: `init`, `parse`, `get`, `set`, `serialize`, `validate`, `patch`, `restore`, `backup list`
 - Leitura de buffer/string, incluindo ZIP com um XML dentro
 - Detecção de encoding (`ISO-8859-1`, etc.) e entidades XML
 - Preservação de nós desconhecidos em `unmapped`

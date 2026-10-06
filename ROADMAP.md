@@ -2,18 +2,17 @@
 
 Independent project — not a CNPq roadmap. Priorities may shift with community feedback.
 
-## 1.1.x (current)
+## 2.0 (current)
 
 - [x] Serialize + `writeCurriculum` with `document` tree
 - [x] Automatic `.lattes-backup/` before overwrite
-- [x] CLI: init, parse, get, set, serialize, restore, backup list
+- [x] CLI: init, parse, get, set, serialize, restore, backup list, validate, patch
 - [x] Patch API + IA contract (docs)
-- [x] Broader `syncCvToDocument` for typed sections already parsed
+- [x] XSD-aligned sync for sections used in real exports (authors, summary, awards, technical production, complementary data)
 
 ## Near term
 
-- Expand XSD coverage (projects, boards, patents) — see [docs/cobertura-campos.md](./docs/cobertura-campos.md)
-- CLI `patch` from JSON file
+- Expand XSD coverage (boards, projects, artistic production, personal identification) - see [docs/cobertura-campos.md](./docs/cobertura-campos.md)
 - Optional DTD validation flag (off by default)
 - Example external AI skill (separate repo)
 
