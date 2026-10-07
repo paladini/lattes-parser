@@ -59,7 +59,7 @@ Leitura e gravação do envelope em `TechnicalItem`: `DADOS-BASICOS-*`, `DETALHA
 
 | Seção XML | Estado | Tipo TS |
 | --- | --- | --- |
-| Produção artística/cultural | ⬜ | `Curriculum.unmapped` |
+| Produção artística/cultural e `DEMAIS-TRABALHOS` | ✅ | `artisticProduction` (`ArtisticItem[]`). Orientações concluídas dentro de `OUTRA-PRODUCAO` continuam só no `document` |
 
 ## Validação
 

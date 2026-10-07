@@ -45,6 +45,7 @@ export type {
   CurriculumIdentification,
   BibliographicProduction,
   BibliographicItem,
+  ArtisticItem,
   TechnicalItem,
   KnowledgeAreaEntry,
   ProductionAdditionalInfo,

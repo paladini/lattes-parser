@@ -187,6 +187,17 @@ export interface ProductionEnvelope {
   additionalInfo?: ProductionAdditionalInfo;
 }
 
+export interface ArtisticItem extends ProductionEnvelope {
+  type: string;
+  xmlTag: string;
+  containerTag?: string;
+  title: string;
+  year?: string;
+  sequence?: string;
+  authors?: Author[];
+  raw?: Record<string, unknown>;
+}
+
 export interface TechnicalItem extends ProductionEnvelope {
   type: string;
   xmlTag?: string;
@@ -347,6 +358,8 @@ export interface Curriculum {
   professionalActivities: ProfessionalActivity[];
   bibliographicProduction: BibliographicProduction;
   technicalProduction: TechnicalItem[];
+  /** `OUTRA-PRODUCAO` artistic and cultural items. Completed advisories stay on `document`. */
+  artisticProduction: ArtisticItem[];
   complementary: ComplementaryData;
   advisories: AdvisorySection;
   awards: Award[];

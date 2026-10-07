@@ -23,6 +23,7 @@ import { parseLattesDateTime } from "./dates.js";
 import { mapProjectParticipations } from "./sections/atuacao-profissional.js";
 import { mapComplementaryData } from "./sections/dados-complementares.js";
 import { parseProductionEnvelope } from "./production/envelope.js";
+import { mapArtisticProduction } from "./sections/producao-artistica.js";
 import { mapTechnicalProduction } from "./sections/producao-tecnica.js";
 import {
   asArray,
@@ -649,6 +650,7 @@ export function parseCurriculum(xml: string): Curriculum {
       ]),
     },
     technicalProduction: mapTechnicalProduction(technical),
+    artisticProduction: mapArtisticProduction(document["OUTRA-PRODUCAO"]),
     complementary,
     advisories,
     awards: mapAwards(dadosGerais["PREMIOS-TITULOS"]),
