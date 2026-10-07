@@ -59,6 +59,7 @@ export type {
   AdvisorySection,
   AcademicDegree,
   ProfessionalActivity,
+  ProfessionalFunctionEntry,
   ProjectParticipation,
   ResearchProject,
   ResearchProjectFunder,

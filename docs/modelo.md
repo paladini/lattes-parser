@@ -2,7 +2,7 @@
 
 Pacote: `@paladini/lattes-toolkit`. O XML raiz é `CURRICULO-VITAE` (`NUMERO-IDENTIFICADOR`, `DATA-ATUALIZACAO`, `HORA-ATUALIZACAO`).
 
-## Mapa principal (v1)
+## Mapa principal
 
 | XML | Campo TypeScript |
 | --- | --- |
@@ -19,6 +19,7 @@ Pacote: `@paladini/lattes-toolkit`. O XML raiz é `CURRICULO-VITAE` (`NUMERO-IDE
 | `DADOS-GERAIS/FORMACAO-ACADEMICA-TITULACAO/*` | `academicBackground[]` |
 | `DADOS-GERAIS/ATUACOES-PROFISSIONAIS/*` | `professionalActivities[]` |
 | `ATUACAO-PROFISSIONAL/ATIVIDADES-DE-PARTICIPACAO-EM-PROJETO/*` | `professionalActivities[].projectParticipations[]` |
+| `ATUACAO-PROFISSIONAL/ATIVIDADES-DE-*` (direção, ensino, extensão, etc.) | `professionalActivities[].functionActivities[]` |
 | `DADOS-GERAIS/AREAS-DE-ATUACAO/*` | `identification.researchAreas[]` |
 | `DADOS-GERAIS/IDIOMAS/*` | `identification.languages[]` |
 | `DADOS-GERAIS/LICENCAS/LICENCA` | `identification.licenses[]` |
@@ -33,6 +34,18 @@ Pacote: `@paladini/lattes-toolkit`. O XML raiz é `CURRICULO-VITAE` (`NUMERO-IDE
 | `OUTRA-PRODUCAO/ORIENTACOES-CONCLUIDAS/*` | `advisories.completed[]` (leitura também aceita o bloco antigo em `DADOS-COMPLEMENTARES`) |
 | `DADOS-COMPLEMENTARES/ORIENTACOES-EM-ANDAMENTO/*` | `advisories.inProgress[]` |
 | `OUTRA-PRODUCAO/PRODUCAO-ARTISTICA-CULTURAL/*` e `DEMAIS-TRABALHOS` | `artisticProduction[]` (`ArtisticItem`) |
+
+## Formação acadêmica (`AcademicDegree`)
+
+| Campo | Origem no XML |
+| --- | --- |
+| `courseName` | `NOME-CURSO` (nome do curso ou programa) |
+| `title` | Título de conclusão na tag correta (`TITULO-DO-TRABALHO-DE-CONCLUSAO-DE-CURSO` em `GRADUACAO`, `TITULO-DA-MONOGRAFIA`, `TITULO-DA-DISSERTACAO-TESE`, etc.) |
+| `xmlTag` | Tag XSD (`GRADUACAO`, `MESTRADO`, …) |
+
+## Atividades dentro do vínculo (`ProfessionalFunctionEntry`)
+
+Cada item de `functionActivities` corresponde a uma linha em um bloco `ATIVIDADES-DE-*`. Período e órgão são campos próprios; demais atributos XSD da função ficam em `specifics`. Filhos aninhados (por exemplo `DISCIPLINA` no ensino) permanecem em `raw`.
 
 ## Produção técnica (`TechnicalItem`)
 
@@ -51,7 +64,7 @@ Na gravação, o título volta para o atributo de título que já existe no nó 
 
 ## Campos `unmapped`
 
-Cada seção mapeada expõe `unmapped: Record<string, unknown>` com filhos XML ainda não modelados. A raiz `Curriculum.unmapped` guarda blocos de topo não tratados (ex.: `OUTRA-PRODUCAO`).
+Cada seção mapeada expõe `unmapped: Record<string, unknown>` com filhos XML ainda não modelados. A raiz `Curriculum.unmapped` guarda blocos de topo não tratados. `OUTRA-PRODUCAO` é parseada em `artisticProduction` e orientações concluídas; o que sobrar permanece no `document`.
 
 Isso evita perda silenciosa quando o CNPq adiciona tags novas.
 

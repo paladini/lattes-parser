@@ -52,21 +52,68 @@ Typed fields an agent may patch. Source: the TypeScript model and [docs/cobertur
 
 ## Academic background and professional activity
 
+Formal education is `academicBackground[]`. `courseName` is `NOME-CURSO`. `title` is the conclusion work, written to the XSD attribute for `xmlTag` (TCC on `GRADUACAO`, monograph on `ESPECIALIZACAO`, dissertation or thesis on `MESTRADO` and `DOUTORADO`).
+
+`xmlTag`: `GRADUACAO`, `ESPECIALIZACAO`, `APERFEICOAMENTO`, `MESTRADO`, `MESTRADO-PROFISSIONALIZANTE`, `DOUTORADO`, `POS-DOUTORADO`, `CURSO-TECNICO-PROFISSIONALIZANTE`, `ENSINO-MEDIO-SEGUNDO-GRAU`, `ENSINO-FUNDAMENTAL-PRIMEIRO-GRAU`, `RESIDENCIA-MEDICA`, `LIVRE-DOCENCIA`.
+
+Replace the whole list only to remove an item. Keep parsed objects, including `raw`.
+
+- `academicBackground`
+- `academicBackground[0].xmlTag`
 - `academicBackground[0].level`
+- `academicBackground[0].courseName`
 - `academicBackground[0].title`
 - `academicBackground[0].institution`
 - `academicBackground[0].startYear`
 - `academicBackground[0].endYear`
 - `academicBackground[0].status`
+
+Professional experience is `professionalActivities[]`. With `links`, the job title is `functionalRole`, not `role`. Free-text bond notes live on `links[0].raw` as `@_OUTRAS-INFORMACOES`.
+
+`functionActivities[0].category` must match `xmlContainerTag` and `xmlItemTag`:
+
+| category | xmlContainerTag | xmlItemTag |
+| --- | --- | --- |
+| `direction_and_administration` | `ATIVIDADES-DE-DIRECAO-E-ADMINISTRACAO` | `DIRECAO-E-ADMINISTRACAO` |
+| `research_and_development` | `ATIVIDADES-DE-PESQUISA-E-DESENVOLVIMENTO` | `PESQUISA-E-DESENVOLVIMENTO` |
+| `teaching` | `ATIVIDADES-DE-ENSINO` | `ENSINO` |
+| `internship` | `ATIVIDADES-DE-ESTAGIO` | `ESTAGIO` |
+| `specialized_technical_service` | `ATIVIDADES-DE-SERVICO-TECNICO-ESPECIALIZADO` | `SERVICO-TECNICO-ESPECIALIZADO` |
+| `university_extension` | `ATIVIDADES-DE-EXTENSAO-UNIVERSITARIA` | `EXTENSAO-UNIVERSITARIA` |
+| `training_delivered` | `ATIVIDADES-DE-TREINAMENTO-MINISTRADO` | `TREINAMENTO-MINISTRADO` |
+| `other_scientific_activity` | `OUTRAS-ATIVIDADES-TECNICO-CIENTIFICA` | `OUTRA-ATIVIDADE-TECNICO-CIENTIFICA` |
+| `board_commission_consultancy` | `ATIVIDADES-DE-CONSELHO-COMISSAO-E-CONSULTORIA` | `CONSELHO-COMISSAO-E-CONSULTORIA` |
+
+Tag-specific attributes (`CARGO-OU-FUNCAO`, `NOME-CURSO`, `TIPO-ENSINO`, and the rest) go in `specifics`. An empty `functionActivities` array deletes those XML blocks on that job.
+
+- `professionalActivities`
 - `professionalActivities[0].institution`
+- `professionalActivities[0].institutionCode`
 - `professionalActivities[0].role`
 - `professionalActivities[0].startYear`
 - `professionalActivities[0].endYear`
+- `professionalActivities[0].links`
 - `professionalActivities[0].links[0].linkType`
 - `professionalActivities[0].links[0].functionalRole`
 - `professionalActivities[0].links[0].weeklyHours`
-
-Employment links are partial coverage. Prefer editing fields that already exist on the item.
+- `professionalActivities[0].links[0].exclusive`
+- `professionalActivities[0].links[0].startMonth`
+- `professionalActivities[0].links[0].startYear`
+- `professionalActivities[0].links[0].endMonth`
+- `professionalActivities[0].links[0].endYear`
+- `professionalActivities[0].links[0].raw`
+- `professionalActivities[0].functionActivities`
+- `professionalActivities[0].functionActivities[0].category`
+- `professionalActivities[0].functionActivities[0].xmlContainerTag`
+- `professionalActivities[0].functionActivities[0].xmlItemTag`
+- `professionalActivities[0].functionActivities[0].periodFlag`
+- `professionalActivities[0].functionActivities[0].startMonth`
+- `professionalActivities[0].functionActivities[0].startYear`
+- `professionalActivities[0].functionActivities[0].endMonth`
+- `professionalActivities[0].functionActivities[0].endYear`
+- `professionalActivities[0].functionActivities[0].organName`
+- `professionalActivities[0].functionActivities[0].unitName`
+- `professionalActivities[0].functionActivities[0].specifics`
 
 ## Bibliographic production
 
@@ -108,8 +155,11 @@ Accepted papers, newspapers, and other XSD bibliographic types stay in `bibliogr
 
 ## Complementary data
 
-`ComplementaryTraining` includes `level`, `institutionCode`, `organCode`, `organName`, `courseCode`, and `titleEnglish`.
+`ComplementaryTraining` is a short course, extension, or complementary specialization. `title` is the course name. `type` is one of `FORMACAO-COMPLEMENTAR-CURSO-DE-CURTA-DURACAO`, `FORMACAO-COMPLEMENTAR-DE-EXTENSAO-UNIVERSITARIA`, `FORMACAO-COMPLEMENTAR-DE-APERFEICOAMENTO`, `FORMACAO-COMPLEMENTAR-DE-ESPECIALIZACAO`, `OUTROS`.
 
+Replace `complementary.complementaryTraining` only to remove an item. Keep parsed objects.
+
+- `complementary.complementaryTraining`
 - `complementary.complementaryTraining[0].type`
 - `complementary.complementaryTraining[0].title`
 - `complementary.complementaryTraining[0].titleEnglish`
@@ -155,7 +205,6 @@ Advisories include the production envelope. Completed items serialize under `OUT
 
 These stay on `document` or `unmapped`. Do not add allowlist paths for them.
 
-- Bancas and projects: `complementary.unmapped`
-- Artistic and cultural production (`OUTRA-PRODUCAO`): `Curriculum.unmapped`
 - PII attributes on `DADOS-GERAIS` (CPF, birth, identity documents, parentage): attributes on `document`, no typed field
-- Licenses (`LICENCAS`): `document`
+- Bond free text other than `@_OUTRAS-INFORMACOES` copied through `links[].raw`
+- Nested siblings under a function activity (`DISCIPLINA` and similar): `functionActivities[].raw`

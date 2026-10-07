@@ -66,6 +66,9 @@ export interface LanguageEntry {
 export interface AcademicDegree {
   xmlTag?: string;
   level: string;
+  /** Course or program name (`NOME-CURSO` in XML). */
+  courseName?: string;
+  /** Thesis, monograph, or conclusion work title (tag-specific attribute in XML). */
   title?: string;
   institution?: string;
   startYear?: string;
@@ -135,6 +138,26 @@ export interface ProjectParticipation {
   raw?: Record<string, unknown>;
 }
 
+/** One row under an `ATIVIDADES-DE-*` block inside `ATUACAO-PROFISSIONAL`. */
+export interface ProfessionalFunctionEntry {
+  category: string;
+  xmlContainerTag: string;
+  xmlItemTag: string;
+  sequence?: string;
+  periodFlag?: string;
+  startMonth?: string;
+  startYear?: string;
+  endMonth?: string;
+  endYear?: string;
+  organCode?: string;
+  organName?: string;
+  unitCode?: string;
+  unitName?: string;
+  /** Attributes outside the common period/org block (e.g. `TIPO-ENSINO`, `CARGO-OU-FUNCAO`). */
+  specifics: Record<string, string>;
+  raw?: Record<string, unknown>;
+}
+
 export interface ProfessionalActivity {
   institution?: string;
   institutionCode?: string;
@@ -143,6 +166,7 @@ export interface ProfessionalActivity {
   endYear?: string;
   links: EmploymentLink[];
   projectParticipations: ProjectParticipation[];
+  functionActivities: ProfessionalFunctionEntry[];
   raw?: Record<string, unknown>;
 }
 
