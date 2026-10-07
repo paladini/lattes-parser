@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.5.0 - 2026-10-06
+
+### Added
+
+- Event participation now includes fairs, exhibitions, and olympiads (`PARTICIPACAO-EM-FEIRA`, `PARTICIPACAO-EM-EXPOSICAO`, `PARTICIPACAO-EM-OLIMPIADA`), with the same basics, detail, and `PARTICIPANTE-DE-EVENTOS-CONGRESSOS` shape as other events.
+
 ## 2.4.0 - 2026-10-06
 
 ### Added
