@@ -30,7 +30,7 @@ Documento **vivo**, alinhado ao XSD [`CurriculoLattes_12_09_2022`](https://githu
 
 | Seção XML | Estado | Tipo TS |
 | --- | --- | --- |
-| Artigos, eventos, livros/capítulos (flat + aninhado) | 🟡 | `BibliographicItem[]` |
+| Artigos publicados, aceitos, textos em jornais, eventos, livros/capítulos, partitura, prefácio e tradução | ✅ | `BibliographicItem[]` (`acceptedArticles`, `newspaperTexts`, `other.xmlTag`) |
 | Autores (`AUTORES` irmãos) | ✅ | `Author[]` |
 | Aceitos, jornais, demais tipos XSD | ⬜ | `bibliographicProduction.unmapped` |
 

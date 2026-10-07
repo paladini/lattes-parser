@@ -24,6 +24,9 @@ Pacote: `@paladini/lattes-toolkit`. O XML raiz é `CURRICULO-VITAE` (`NUMERO-IDE
 | `DADOS-GERAIS/LICENCAS/LICENCA` | `identification.licenses[]` |
 | `DADOS-GERAIS/PREMIOS-TITULOS/*` | `awards[]` |
 | `PRODUCAO-BIBLIOGRAFICA/ARTIGOS-PUBLICADOS/*` | `bibliographicProduction.journalArticles[]` |
+| `PRODUCAO-BIBLIOGRAFICA/ARTIGOS-ACEITOS-PARA-PUBLICACAO/*` | `bibliographicProduction.acceptedArticles[]` |
+| `PRODUCAO-BIBLIOGRAFICA/TEXTOS-EM-JORNAIS-OU-REVISTAS/*` | `bibliographicProduction.newspaperTexts[]` |
+| `DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA/TRADUCAO`, `PARTITURA-MUSICAL`, `PREFACIO-POSFACIO` | `bibliographicProduction.other[]` (`xmlTag`) |
 | `PRODUCAO-BIBLIOGRAFICA/TRABALHOS-EM-EVENTOS/*` | `bibliographicProduction.conferencePapers[]` |
 | `PRODUCAO-BIBLIOGRAFICA/LIVROS-E-CAPITULOS/*` | `bibliographicProduction.booksAndChapters[]` |
 | `PRODUCAO-TECNICA/*` | `technicalProduction[]` (`TechnicalItem`) |
