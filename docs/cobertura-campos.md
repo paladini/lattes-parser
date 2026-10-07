@@ -23,7 +23,7 @@ Documento **vivo**, alinhado ao XSD [`CurriculoLattes_12_09_2022`](https://githu
 | Áreas de atuação | ✅ | `ResearchArea[]` |
 | Idiomas (proficiências XSD) | ✅ | `LanguageEntry[]` |
 | Prêmios (`PREMIO-TITULO`) | ✅ | `Award[]` |
-| Licenças | ⬜ | `document` |
+| Licenças (`LICENCAS` / `LICENCA`) | ✅ | `identification.licenses` (`License[]`) |
 | CPF, nascimento, documentos e filiação | ⬜ | atributos em `document` (`DADOS-GERAIS`); sem campo tipado |
 
 ## PRODUÇÃO BIBLIOGRÁFICA

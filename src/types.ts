@@ -291,6 +291,15 @@ export interface ComplementaryData {
   unmapped: UnmappedNodes;
 }
 
+export interface License {
+  type?: string;
+  startDateFormat?: string;
+  startDate?: string;
+  endDateFormat?: string;
+  endDate?: string;
+  raw?: Record<string, unknown>;
+}
+
 export interface CurriculumIdentification {
   fullName: string;
   citationName?: string;
@@ -302,6 +311,8 @@ export interface CurriculumIdentification {
   residentialAddress?: ProfessionalAddress;
   researchAreas: ResearchArea[];
   languages: LanguageEntry[];
+  /** Maternity and other leaves from `LICENCAS`. Personal identifiers stay untyped. */
+  licenses: License[];
   unmapped: UnmappedNodes;
 }
 

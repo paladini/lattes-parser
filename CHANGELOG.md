@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.6.0 - 2026-10-06
+
+### Added
+
+- Typed maternity and other leaves as `identification.licenses` (`LICENCAS` / `LICENCA`). CPF, birth date, documents, and family names stay on the document tree. Hand-built `CurriculumIdentification` objects need `licenses: []`.
+
 ## 2.5.0 - 2026-10-06
 
 ### Added
