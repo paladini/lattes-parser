@@ -15,7 +15,10 @@ export type {
   SyncDocumentOptions,
 } from "./serialize/sync-document.js";
 export { validateCurriculumXml } from "./validate/validate-curriculum.js";
-export type { ValidateCurriculumResult } from "./validate/validate-curriculum.js";
+export type {
+  ValidateCurriculumOptions,
+  ValidateCurriculumResult,
+} from "./validate/validate-curriculum.js";
 export {
   backupBeforeWrite,
   listBackups,

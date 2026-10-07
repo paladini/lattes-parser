@@ -13,7 +13,7 @@ Independent project — not a CNPq roadmap. Priorities may shift with community 
 ## Near term
 
 - Expand XSD coverage (boards, projects, artistic production, personal identification) - see [docs/cobertura-campos.md](./docs/cobertura-campos.md)
-- Optional DTD validation flag (off by default)
+- [x] Optional DTD validation flag (off by default)
 - Example external AI skill (separate repo)
 
 ## Later

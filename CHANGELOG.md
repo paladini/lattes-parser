@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.3.0 - 2026-10-06
+
+### Added
+
+- Optional DTD check, off by default: `lattes-toolkit validate <file> --dtd <file.dtd>` and `validateCurriculumXml(xml, { dtd: true, dtdPath })`. The package does not ship or download a DTD. A missing file or missing `xmllint` returns `skipped`. The default command still validates the XSD only.
+
 ## 2.2.0 - 2026-10-06
 
 ### Added

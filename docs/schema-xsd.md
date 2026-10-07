@@ -29,13 +29,26 @@ import { validateCurriculumXml } from "@paladini/lattes-toolkit";
 const result = validateCurriculumXml(xmlString);
 ```
 
-`writeCurriculum(cv, path, { validate: true })` valida antes de gravar (falha se `xmllint` ausente).
+`writeCurriculum(cv, path, { validate: true })` valida o XSD antes de gravar (falha se `xmllint` ausente). Essa opção não liga a DTD.
 
 ## DTD (Plataforma Lattes) vs XSD (Extrator)
 
 A UI **Importar XML** exige conformidade com a **DTD** do currículo. O XSD do Extrator é a gramática mais completa para integração e testes neste projeto. Passar na validação XSD **não garante** aceite na UI, mas reduz erros estruturais.
 
-Histórico DTD / ontologia: [CONSCIENTIAS-LMPL](http://lmpl.cnpq.br/lmpl/?go=cv.jsp).
+A DTD não vem neste repositório e o toolkit não baixa uma em tempo de execução. Quem tiver o arquivo local pode ligar a checagem, desligada por padrão:
+
+```bash
+lattes-toolkit validate curriculo.xml --dtd caminho/para/curriculo.dtd
+```
+
+```ts
+const result = validateCurriculumXml(xmlString, {
+  dtd: true,
+  dtdPath: "caminho/para/curriculo.dtd",
+});
+```
+
+Sem `dtdPath`, com arquivo ausente, ou sem `xmllint`, o resultado é `skipped` (o fluxo local não quebra). Histórico da DTD e da ontologia: [CONSCIENTIAS-LMPL](http://lmpl.cnpq.br/lmpl/?go=cv.jsp). A página descreve o modelo; ela não é um download automático deste projeto.
 
 ## Convenções comuns
 

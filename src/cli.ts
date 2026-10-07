@@ -22,9 +22,33 @@ function usage(): never {
   lattes-toolkit serialize <file.json> -o <out.xml>
   lattes-toolkit backup list [dir]
   lattes-toolkit restore [--last|<backup-id>] [dir]
-  lattes-toolkit validate <file.xml>
+  lattes-toolkit validate <file.xml> [--dtd [file.dtd]]
   lattes-toolkit patch <file.xml> <patches.json>`);
   process.exit(1);
+}
+
+function parseValidateArgs(rest: string[]): {
+  file?: string;
+  dtd: boolean;
+  dtdPath?: string;
+} {
+  let dtd = false;
+  let dtdPath: string | undefined;
+  const positional: string[] = [];
+  for (let i = 0; i < rest.length; i++) {
+    const arg = rest[i];
+    if (arg === "--dtd") {
+      dtd = true;
+      const next = rest[i + 1];
+      if (next && !next.startsWith("-")) {
+        dtdPath = next;
+        i += 1;
+      }
+      continue;
+    }
+    positional.push(arg);
+  }
+  return { file: positional[0], dtd, dtdPath };
 }
 
 async function loadCurriculumFromFile(filePath: string) {
@@ -120,12 +144,16 @@ async function main(): Promise<void> {
   }
 
   if (cmd === "validate") {
-    const file = rest[0];
-    if (!file) {
+    const parsed = parseValidateArgs(rest);
+    if (!parsed.file) {
       usage();
     }
-    const xml = await readFile(file, "latin1");
-    const result = validateCurriculumXml(xml, { xmlPath: path.resolve(file) });
+    const xml = await readFile(parsed.file, "latin1");
+    const result = validateCurriculumXml(xml, {
+      xmlPath: path.resolve(parsed.file),
+      dtd: parsed.dtd,
+      dtdPath: parsed.dtdPath,
+    });
     if (result.skipped) {
       console.log(JSON.stringify({ skipped: true, reason: result.reason }, null, 2));
       process.exit(0);
