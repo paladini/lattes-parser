@@ -1,4 +1,10 @@
+import {
+  PROFESSIONAL_FUNCTION_COMMON_ATTRS,
+  PROFESSIONAL_FUNCTION_COMMON_XML_ATTRS,
+  PROFESSIONAL_FUNCTION_SPECS,
+} from "../../schema/professional-function-catalog.js";
 import type {
+  ProfessionalFunctionEntry,
   ProjectParticipation,
   ResearchProject,
   ResearchProjectFunder,
@@ -75,6 +81,59 @@ function mapResearchProject(record: XmlRecord): ResearchProject | undefined {
     funders: mapFunders(record),
     raw: record,
   };
+}
+
+function mapFunctionEntry(
+  spec: (typeof PROFESSIONAL_FUNCTION_SPECS)[number],
+  record: XmlRecord,
+): ProfessionalFunctionEntry {
+  const specifics: Record<string, string> = {};
+  for (const [key, value] of Object.entries(record)) {
+    if (!key.startsWith("@_") || typeof value !== "string") {
+      continue;
+    }
+    const xmlName = key.slice(2);
+    if (!PROFESSIONAL_FUNCTION_COMMON_XML_ATTRS.has(xmlName)) {
+      specifics[xmlName] = value;
+    }
+  }
+  return {
+    category: spec.category,
+    xmlContainerTag: spec.containerTag,
+    xmlItemTag: spec.itemTag,
+    sequence: attr(record, PROFESSIONAL_FUNCTION_COMMON_ATTRS.sequence),
+    periodFlag: attr(record, PROFESSIONAL_FUNCTION_COMMON_ATTRS.periodFlag),
+    startMonth: attr(record, PROFESSIONAL_FUNCTION_COMMON_ATTRS.startMonth),
+    startYear: attr(record, PROFESSIONAL_FUNCTION_COMMON_ATTRS.startYear),
+    endMonth: attr(record, PROFESSIONAL_FUNCTION_COMMON_ATTRS.endMonth),
+    endYear: attr(record, PROFESSIONAL_FUNCTION_COMMON_ATTRS.endYear),
+    organCode: attr(record, PROFESSIONAL_FUNCTION_COMMON_ATTRS.organCode),
+    organName: attr(record, PROFESSIONAL_FUNCTION_COMMON_ATTRS.organName),
+    unitCode: attr(record, PROFESSIONAL_FUNCTION_COMMON_ATTRS.unitCode),
+    unitName: attr(record, PROFESSIONAL_FUNCTION_COMMON_ATTRS.unitName),
+    specifics,
+    raw: record,
+  };
+}
+
+export function mapProfessionalFunctionActivities(
+  activity: XmlRecord,
+): ProfessionalFunctionEntry[] {
+  const entries: ProfessionalFunctionEntry[] = [];
+  for (const spec of PROFESSIONAL_FUNCTION_SPECS) {
+    const container = asRecord(activity[spec.containerTag]);
+    if (!container) {
+      continue;
+    }
+    for (const entry of asArray(container[spec.itemTag])) {
+      const record = asRecord(entry);
+      if (!record) {
+        continue;
+      }
+      entries.push(mapFunctionEntry(spec, record));
+    }
+  }
+  return entries;
 }
 
 export function mapProjectParticipations(activity: XmlRecord): ProjectParticipation[] {

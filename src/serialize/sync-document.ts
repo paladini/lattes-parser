@@ -17,6 +17,7 @@ import type {
   License,
   ProfessionalActivity,
   ProfessionalAddress,
+  ProfessionalFunctionEntry,
   ProjectParticipation,
   ResearchProject,
   ResearchProjectFunder,
@@ -28,7 +29,16 @@ import {
   ARTISTIC_SPECS_BY_XML_TAG,
   ARTISTIC_TYPE_SPECS,
 } from "../schema/artistic-production-catalog.js";
-import { DEGREE_TAGS } from "../schema/degree-tags.js";
+import { DEGREE_TAGS, type DegreeTag } from "../schema/degree-tags.js";
+import {
+  DEGREE_CONCLUSION_TITLE_ATTR,
+  DEGREE_CONCLUSION_TITLE_ATTRS,
+  DEGREE_TAGS_WITH_COURSE_NAME,
+} from "../schema/degree-title-attrs.js";
+import {
+  PROFESSIONAL_FUNCTION_COMMON_ATTRS,
+  PROFESSIONAL_FUNCTION_SPECS,
+} from "../schema/professional-function-catalog.js";
 import {
   TECHNICAL_TITLE_READ_ATTRIBUTES,
   TECHNICAL_TYPE_SPECS,
@@ -248,18 +258,22 @@ function inferDegreeTag(degree: AcademicDegree, formacao: XmlRecord): string {
   return "GRADUACAO";
 }
 
-function applyDegreeFields(node: XmlRecord, degree: AcademicDegree): void {
+function applyDegreeFields(node: XmlRecord, degree: AcademicDegree, tag: DegreeTag): void {
   setAttrPreserve(node, "NIVEL", degree.level);
-  setAttrPreserve(
-    node,
-    "TITULO-DA-MONOGRAFIA",
-    degree.title,
-  );
-  setAttrPreserve(
-    node,
-    "TITULO-DA-DISSERTACAO-TESE",
-    degree.title,
-  );
+  if (DEGREE_TAGS_WITH_COURSE_NAME.has(tag)) {
+    setAttrPreserve(node, "NOME-CURSO", degree.courseName);
+  }
+  const titleAttr = DEGREE_CONCLUSION_TITLE_ATTR[tag];
+  if (titleAttr) {
+    if (degree.title !== undefined) {
+      for (const attrName of DEGREE_CONCLUSION_TITLE_ATTRS) {
+        if (attrName !== titleAttr) {
+          setAttr(node, attrName, undefined);
+        }
+      }
+    }
+    setAttrPreserve(node, titleAttr, degree.title);
+  }
   setAttrPreserve(node, "NOME-INSTITUICAO", degree.institution);
   setAttrPreserve(node, "ANO-DE-INICIO", degree.startYear);
   setAttrPreserve(node, "ANO-DE-CONCLUSAO", degree.endYear);
@@ -267,9 +281,9 @@ function applyDegreeFields(node: XmlRecord, degree: AcademicDegree): void {
   setAttrPreserve(node, "SEQUENCIA-FORMACAO", degree.sequence);
 }
 
-function createDegreeNode(degree: AcademicDegree, tag: string): XmlRecord {
+function createDegreeNode(degree: AcademicDegree, tag: DegreeTag): XmlRecord {
   const node: XmlRecord = {};
-  applyDegreeFields(node, degree);
+  applyDegreeFields(node, degree, tag);
   if (!node["@_NIVEL"]) {
     setAttrPreserve(node, "NIVEL", tag.replace(/-/g, " "));
   }
@@ -302,10 +316,10 @@ function syncAcademicBackground(
   const order = orderIndexMap(degrees);
 
   for (const degree of degrees) {
-    const tag = inferDegreeTag(degree, formacao);
+    const tag = inferDegreeTag(degree, formacao) as DegreeTag;
     let node = asRecord(degree.raw);
     if (node && nodeInParentList(formacao, tag, node)) {
-      applyDegreeFields(node, degree);
+      applyDegreeFields(node, degree, tag);
     } else {
       node = createDegreeNode(degree, tag);
       const current = asArray(formacao[tag]);
@@ -386,6 +400,51 @@ function applyResearchProject(node: XmlRecord, project: ResearchProject): void {
   syncResearchProjectFunders(node, project.funders);
 }
 
+function applyProfessionalFunctionEntry(
+  node: XmlRecord,
+  entry: ProfessionalFunctionEntry,
+): void {
+  setAttrPreserve(node, PROFESSIONAL_FUNCTION_COMMON_ATTRS.sequence, entry.sequence);
+  setAttrPreserve(node, PROFESSIONAL_FUNCTION_COMMON_ATTRS.periodFlag, entry.periodFlag);
+  setAttrPreserve(node, PROFESSIONAL_FUNCTION_COMMON_ATTRS.startMonth, entry.startMonth);
+  setAttrPreserve(node, PROFESSIONAL_FUNCTION_COMMON_ATTRS.startYear, entry.startYear);
+  setAttrPreserve(node, PROFESSIONAL_FUNCTION_COMMON_ATTRS.endMonth, entry.endMonth);
+  setAttrPreserve(node, PROFESSIONAL_FUNCTION_COMMON_ATTRS.endYear, entry.endYear);
+  setAttrPreserve(node, PROFESSIONAL_FUNCTION_COMMON_ATTRS.organCode, entry.organCode);
+  setAttrPreserve(node, PROFESSIONAL_FUNCTION_COMMON_ATTRS.organName, entry.organName);
+  setAttrPreserve(node, PROFESSIONAL_FUNCTION_COMMON_ATTRS.unitCode, entry.unitCode);
+  setAttrPreserve(node, PROFESSIONAL_FUNCTION_COMMON_ATTRS.unitName, entry.unitName);
+  for (const [name, value] of Object.entries(entry.specifics)) {
+    setAttrPreserve(node, name, value);
+  }
+}
+
+function syncProfessionalFunctionActivities(
+  activityNode: XmlRecord,
+  entries: ProfessionalFunctionEntry[] | undefined,
+): void {
+  if (entries === undefined) {
+    return;
+  }
+  const byContainer = new Map<string, ProfessionalFunctionEntry[]>();
+  for (const entry of entries) {
+    const list = byContainer.get(entry.xmlContainerTag) ?? [];
+    list.push(entry);
+    byContainer.set(entry.xmlContainerTag, list);
+  }
+  for (const spec of PROFESSIONAL_FUNCTION_SPECS) {
+    const group = byContainer.get(spec.containerTag) ?? [];
+    if (group.length === 0) {
+      delete activityNode[spec.containerTag];
+      continue;
+    }
+    const container = ensureChild(activityNode, spec.containerTag);
+    syncSimpleList(container, spec.itemTag, group, (node, item) => {
+      applyProfessionalFunctionEntry(node, item);
+    });
+  }
+}
+
 function syncProjectParticipations(
   activityNode: XmlRecord,
   participations: ProjectParticipation[] | undefined,
@@ -457,6 +516,7 @@ function syncProfessionalActivities(
       setAttrPreserve(node, "ANO-DE-FIM", activity.endYear);
     }
     syncProjectParticipations(node, activity.projectParticipations);
+    syncProfessionalFunctionActivities(node, activity.functionActivities);
     next.push(node);
   }
 

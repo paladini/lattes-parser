@@ -17,9 +17,10 @@ Documento **vivo**, alinhado ao XSD [`CurriculoLattes_12_09_2022`](https://githu
 | Identificação (nome, citação, resumo XSD) | ✅ | `CurriculumIdentification` |
 | Metadados raiz (`SISTEMA-ORIGEM-XML`, formatos) | ✅ | `CurriculumMetadata` |
 | Endereço profissional, residencial e contato (`ELETRONICO`, `REDE-SOCIAL` no `ENDERECO`) | ✅ | `ProfessionalAddress`, `AddressContact` |
-| Formação acadêmica (tags XSD principais) | ✅ | `AcademicDegree[]` |
-| Atuação profissional + `VINCULOS` | 🟡 | `ProfessionalActivity`, `EmploymentLink[]` |
+| Formação acadêmica (tags XSD principais; `NOME-CURSO` em `courseName`, título de conclusão em `title`) | ✅ | `AcademicDegree[]` |
+| Atuação profissional + `VINCULOS` | ✅ | `ProfessionalActivity`, `EmploymentLink[]` |
 | Participação em projeto (`PROJETO-DE-PESQUISA`, equipe) | ✅ | `ProjectParticipation[]`, `ResearchProject[]` |
+| Demais `ATIVIDADES-DE-*` (direção, ensino, extensão, etc.) | ✅ | `ProfessionalFunctionEntry[]` em `functionActivities` |
 | Áreas de atuação | ✅ | `ResearchArea[]` |
 | Idiomas (proficiências XSD) | ✅ | `LanguageEntry[]` |
 | Prêmios (`PREMIO-TITULO`) | ✅ | `Award[]` |
@@ -32,7 +33,7 @@ Documento **vivo**, alinhado ao XSD [`CurriculoLattes_12_09_2022`](https://githu
 | --- | --- | --- |
 | Artigos publicados, aceitos, textos em jornais, eventos, livros/capítulos, partitura, prefácio e tradução | ✅ | `BibliographicItem[]` (`acceptedArticles`, `newspaperTexts`, `other.xmlTag`) |
 | Autores (`AUTORES` irmãos) | ✅ | `Author[]` |
-| Aceitos, jornais, demais tipos XSD | ⬜ | `bibliographicProduction.unmapped` |
+| Tags bibliográficas fora do catálogo tipado | ⬜ | `bibliographicProduction.unmapped` |
 
 ## PRODUÇÃO TÉCNICA
 
@@ -53,7 +54,7 @@ Leitura e gravação do envelope em `TechnicalItem`: `DADOS-BASICOS-*`, `DETALHA
 | Informações adicionais instituições/cursos | ✅ | `AdditionalInstitution[]`, `AdditionalCourse[]` |
 | Orientações concluídas (`OUTRA-PRODUCAO`) e em andamento, inclusive graduação, especialização e iniciação científica | ✅ | `Advisory[]` com envelope de produção |
 | Bancas de conclusão e bancas julgadoras | ✅ | `BoardParticipation[]` em `complementary.boards` |
-| Projetos e demais atividades de atuação | ⬜ | `document` / `complementary.unmapped` |
+| Demais blocos em `DADOS-COMPLEMENTARES` sem tipo dedicado | ⬜ | `complementary.unmapped` |
 
 ## OUTRA-PRODUCAO
 

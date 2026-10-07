@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.12.1 - 2026-10-07
+
+### Added
+
+- Typed parse and sync for the nine `ATIVIDADES-DE-*` blocks under professional activity (direction, research, teaching, internship, technical service, extension, training, other scientific activity, board/commission). Items use `ProfessionalFunctionEntry` on `professionalActivities[].functionActivities`. Nested siblings such as `DISCIPLINA` stay on `raw`. Hand-built `ProfessionalActivity` objects need `functionActivities: []`.
+- `AcademicDegree.courseName` maps to `NOME-CURSO`. Conclusion work titles serialize to the XSD attribute for each formation tag (for example `TITULO-DO-TRABALHO-DE-CONCLUSAO-DE-CURSO` on `GRADUACAO`, not duplicated on monograph or dissertation attributes).
+
+### Notes
+
+- npm `2.12.0` was published without a matching Git tag and without `courseName`. Prefer `2.12.1` or later.
+
 ## 2.11.1 - 2026-10-06
 
 ### Fixed

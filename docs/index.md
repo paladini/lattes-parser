@@ -22,7 +22,7 @@ features:
     details: XML exportado vira TypeScript; ao gravar, os campos tipados editados são escritos no arquivo e o restante permanece em unmapped.
   - icon: 🛠️
     title: CLI
-    details: lattes-toolkit parse, get, set, patch, validate e serialize no arquivo local.
+    details: lattes-toolkit parse, get, set, diff, patch, validate e serialize no arquivo local.
   - icon: 🤖
     title: Agentes de IA
     details: applyCurriculumPatches com allowlist. Depois você importa o XML na Plataforma Lattes.

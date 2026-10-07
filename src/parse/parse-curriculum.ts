@@ -1,5 +1,6 @@
 import { InvalidCurriculumXmlError } from "../errors.js";
 import { DEGREE_TAGS } from "../schema/degree-tags.js";
+import { readDegreeConclusionTitle } from "../schema/degree-title-attrs.js";
 import type {
   AcademicDegree,
   Advisory,
@@ -20,7 +21,10 @@ import {
   readSummaryText,
 } from "./authors.js";
 import { parseLattesDateTime } from "./dates.js";
-import { mapProjectParticipations } from "./sections/atuacao-profissional.js";
+import {
+  mapProfessionalFunctionActivities,
+  mapProjectParticipations,
+} from "./sections/atuacao-profissional.js";
 import { mapComplementaryData } from "./sections/dados-complementares.js";
 import { parseProductionEnvelope } from "./production/envelope.js";
 import { mapArtisticProduction } from "./sections/producao-artistica.js";
@@ -133,10 +137,17 @@ function mapAcademicBackground(node: unknown): AcademicDegree[] {
       degrees.push({
         xmlTag: tag,
         level: attr(record, "NIVEL") ?? tag.replace(/-/g, " "),
-        title:
-          attr(record, "TITULO-DA-MONOGRAFIA") ??
-          attr(record, "TITULO-DA-DISSERTACAO-TESE") ??
-          attr(record, "TITULO-DO-TRABALHO-DE-CONCLUSAO-DE-CURSO"),
+        courseName: attr(record, "NOME-CURSO"),
+        title: readDegreeConclusionTitle({
+          "TITULO-DA-MONOGRAFIA": attr(record, "TITULO-DA-MONOGRAFIA"),
+          "TITULO-DA-DISSERTACAO-TESE": attr(record, "TITULO-DA-DISSERTACAO-TESE"),
+          "TITULO-DO-TRABALHO-DE-CONCLUSAO-DE-CURSO": attr(
+            record,
+            "TITULO-DO-TRABALHO-DE-CONCLUSAO-DE-CURSO",
+          ),
+          "TITULO-DA-RESIDENCIA-MEDICA": attr(record, "TITULO-DA-RESIDENCIA-MEDICA"),
+          "TITULO-DO-TRABALHO": attr(record, "TITULO-DO-TRABALHO"),
+        }),
         institution: attr(record, "NOME-INSTITUICAO"),
         startYear: attr(record, "ANO-DE-INICIO"),
         endYear: attr(record, "ANO-DE-CONCLUSAO"),
@@ -196,6 +207,7 @@ function mapProfessionalActivities(node: unknown): ProfessionalActivity[] {
         endYear: primaryLink?.endYear ?? attr(record, "ANO-DE-FIM"),
         links,
         projectParticipations: mapProjectParticipations(record),
+        functionActivities: mapProfessionalFunctionActivities(record),
         raw: record,
       },
     ];
