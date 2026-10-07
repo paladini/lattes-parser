@@ -1064,32 +1064,50 @@ function syncTechnicalProduction(
 }
 
 function advisoryBasicsTag(advisory: Advisory): string {
+  const raw = asRecord(advisory.raw);
   const candidates = [
+    `DADOS-BASICOS-DA-${advisory.type}`,
     `DADOS-BASICOS-DE-${advisory.type}`,
     `DADOS-BASICOS-${advisory.type}`,
-    "DADOS-BASICOS-DE-ORIENTACOES-CONCLUIDAS",
   ];
-  for (const tag of candidates) {
-    const raw = asRecord(advisory.raw);
-    if (raw && asRecord(raw[tag])) {
-      return tag;
+  if (raw) {
+    for (const tag of candidates) {
+      if (asRecord(raw[tag])) {
+        return tag;
+      }
+    }
+    for (const [key, value] of Object.entries(raw)) {
+      if (key.startsWith("DADOS-BASICOS") && asRecord(value)) {
+        return key;
+      }
     }
   }
-  return candidates[0];
+  return advisory.status === "in_progress" ? candidates[0] : candidates[1];
 }
 
 function applyAdvisoryFields(record: XmlRecord, advisory: Advisory): void {
+  syncProductionEnvelope(record, advisory);
   const basicsTag = advisoryBasicsTag(advisory);
   const basics = ensureChild(record, basicsTag);
+  setAttrPreserve(basics, "ANO", advisory.year);
   if (advisory.status === "completed") {
     setAttrPreserve(basics, "NOME-DO-ORIENTADO", advisory.studentName);
     setAttrPreserve(basics, "TITULO-DO-TRABALHO-DE-CONCLUSAO", advisory.title);
-  } else {
-    setAttrPreserve(basics, "NOME-DO-ORIENTANDO", advisory.studentName);
-    setAttrPreserve(basics, "TITULO-DO-TRABALHO", advisory.title);
+    setAttrPreserve(basics, "NOME-INSTITUICAO", advisory.institution);
+    return;
   }
-  setAttrPreserve(basics, "NOME-INSTITUICAO", advisory.institution);
-  setAttrPreserve(basics, "ANO", advisory.year);
+
+  setAttrPreserve(basics, "TITULO-DO-TRABALHO", advisory.title);
+  const studentOnBasics =
+    "@_NOME-DO-ORIENTANDO" in basics || "@_NOME-DO-ORIENTADO" in basics;
+  if (studentOnBasics) {
+    setAttrPreserve(basics, "NOME-DO-ORIENTANDO", advisory.studentName);
+    setAttrPreserve(basics, "NOME-INSTITUICAO", advisory.institution);
+    return;
+  }
+  const detail = ensureChild(record, basicsTag.replace("DADOS-BASICOS", "DETALHAMENTO"));
+  setAttrPreserve(detail, "NOME-DO-ORIENTANDO", advisory.studentName);
+  setAttrPreserve(detail, "NOME-INSTITUICAO", advisory.institution);
 }
 
 function createAdvisoryNode(advisory: Advisory): XmlRecord {
@@ -1109,6 +1127,9 @@ const IN_PROGRESS_ADVISORY_TAGS = [
   "ORIENTACAO-EM-ANDAMENTO-DE-MESTRADO",
   "ORIENTACAO-EM-ANDAMENTO-DE-DOUTORADO",
   "ORIENTACAO-EM-ANDAMENTO-DE-POS-DOUTORADO",
+  "ORIENTACAO-EM-ANDAMENTO-DE-APERFEICOAMENTO-ESPECIALIZACAO",
+  "ORIENTACAO-EM-ANDAMENTO-DE-GRADUACAO",
+  "ORIENTACAO-EM-ANDAMENTO-DE-INICIACAO-CIENTIFICA",
   "OUTRAS-ORIENTACOES-EM-ANDAMENTO",
 ] as const;
 
@@ -1454,6 +1475,23 @@ function syncRootMetadata(root: XmlRecord, cv: Curriculum): void {
   setAttrPreserve(root, "FORMATO-HORA-ATUALIZACAO", cv.metadata.timeFormat ?? "HHMMSS");
 }
 
+function deleteCompletedAdvisories(root: XmlRecord): void {
+  const other = asRecord(root["OUTRA-PRODUCAO"]);
+  if (other) {
+    delete other["ORIENTACOES-CONCLUIDAS"];
+    if (!hasChildElements(other)) {
+      delete root["OUTRA-PRODUCAO"];
+    }
+  }
+  const complement = asRecord(root["DADOS-COMPLEMENTARES"]);
+  if (complement) {
+    delete complement["ORIENTACOES-CONCLUIDAS"];
+    if (!hasChildElements(complement)) {
+      delete root["DADOS-COMPLEMENTARES"];
+    }
+  }
+}
+
 function syncAdvisories(
   root: XmlRecord,
   cv: Curriculum,
@@ -1465,33 +1503,45 @@ function syncAdvisories(
     if (!deleteWhenEmpty) {
       return;
     }
+    deleteCompletedAdvisories(root);
     const complement = asRecord(root["DADOS-COMPLEMENTARES"]);
-    if (!complement) {
-      return;
-    }
-    delete complement["ORIENTACOES-CONCLUIDAS"];
-    delete complement["ORIENTACOES-EM-ANDAMENTO"];
-    if (!hasChildElements(complement)) {
-      delete root["DADOS-COMPLEMENTARES"];
+    if (complement) {
+      delete complement["ORIENTACOES-EM-ANDAMENTO"];
+      if (!hasChildElements(complement)) {
+        delete root["DADOS-COMPLEMENTARES"];
+      }
     }
     return;
   }
-  const complement = ensureChild(root, "DADOS-COMPLEMENTARES");
   if (completedEmpty && deleteWhenEmpty) {
-    delete complement["ORIENTACOES-CONCLUIDAS"];
-  } else {
+    deleteCompletedAdvisories(root);
+  } else if (!completedEmpty) {
+    const other = ensureChild(root, "OUTRA-PRODUCAO");
     syncAdvisoryGroup(
-      complement,
+      other,
       "ORIENTACOES-CONCLUIDAS",
       COMPLETED_ADVISORY_TAGS,
       cv.advisories.completed,
     );
+    const complement = asRecord(root["DADOS-COMPLEMENTARES"]);
+    if (complement) {
+      delete complement["ORIENTACOES-CONCLUIDAS"];
+      if (!hasChildElements(complement)) {
+        delete root["DADOS-COMPLEMENTARES"];
+      }
+    }
   }
   if (inProgressEmpty && deleteWhenEmpty) {
-    delete complement["ORIENTACOES-EM-ANDAMENTO"];
-  } else {
+    const complement = asRecord(root["DADOS-COMPLEMENTARES"]);
+    if (complement) {
+      delete complement["ORIENTACOES-EM-ANDAMENTO"];
+      if (!hasChildElements(complement)) {
+        delete root["DADOS-COMPLEMENTARES"];
+      }
+    }
+  } else if (!inProgressEmpty) {
     syncAdvisoryGroup(
-      complement,
+      ensureChild(root, "DADOS-COMPLEMENTARES"),
       "ORIENTACOES-EM-ANDAMENTO",
       IN_PROGRESS_ADVISORY_TAGS,
       cv.advisories.inProgress,

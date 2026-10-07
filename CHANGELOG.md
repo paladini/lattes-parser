@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.9.0 - 2026-10-06
+
+### Added
+
+- Completed advisories are read from `OUTRA-PRODUCAO` and from the legacy `DADOS-COMPLEMENTARES` location, then written under `OUTRA-PRODUCAO` without removing artistic production. In-progress advisories now include specialization, graduation, and scientific initiation, and `Advisory` carries the production envelope. Hand-built `Advisory` objects need the envelope fields (`basics`, `detail`, `keywords`, `knowledgeAreas`, `activitySectors`).
+
 ## 2.8.0 - 2026-10-06
 
 ### Added

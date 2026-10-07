@@ -209,7 +209,7 @@ export interface TechnicalItem extends ProductionEnvelope {
   raw?: Record<string, unknown>;
 }
 
-export interface Advisory {
+export interface Advisory extends ProductionEnvelope {
   type: string;
   studentName?: string;
   title?: string;

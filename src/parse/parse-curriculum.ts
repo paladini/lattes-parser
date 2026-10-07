@@ -389,78 +389,93 @@ function mapAddressBlock(
   };
 }
 
-function mapAdvisories(complement: XmlRecord | undefined): {
+const COMPLETED_ADVISORY_TAGS = [
+  "ORIENTACOES-CONCLUIDAS-PARA-MESTRADO",
+  "ORIENTACOES-CONCLUIDAS-PARA-DOUTORADO",
+  "ORIENTACOES-CONCLUIDAS-PARA-POS-DOUTORADO",
+  "OUTRAS-ORIENTACOES-CONCLUIDAS",
+] as const;
+
+const IN_PROGRESS_ADVISORY_TAGS = [
+  "ORIENTACAO-EM-ANDAMENTO-DE-MESTRADO",
+  "ORIENTACAO-EM-ANDAMENTO-DE-DOUTORADO",
+  "ORIENTACAO-EM-ANDAMENTO-DE-POS-DOUTORADO",
+  "ORIENTACAO-EM-ANDAMENTO-DE-APERFEICOAMENTO-ESPECIALIZACAO",
+  "ORIENTACAO-EM-ANDAMENTO-DE-GRADUACAO",
+  "ORIENTACAO-EM-ANDAMENTO-DE-INICIACAO-CIENTIFICA",
+  "OUTRAS-ORIENTACOES-EM-ANDAMENTO",
+] as const;
+
+function mapAdvisoryEntries(
+  root: XmlRecord | undefined,
+  tags: readonly string[],
+  status: Advisory["status"],
+): Advisory[] {
+  if (!root) {
+    return [];
+  }
+  const advisories: Advisory[] = [];
+  for (const tag of tags) {
+    for (const entry of asArray(root[tag])) {
+      const record = asRecord(entry);
+      if (!record) {
+        continue;
+      }
+      const basics =
+        asRecord(record[`DADOS-BASICOS-DA-${tag}`]) ??
+        asRecord(record[`DADOS-BASICOS-DE-${tag}`]) ??
+        asRecord(record[`DADOS-BASICOS-${tag}`]) ??
+        childByPrefix(record, "DADOS-BASICOS") ??
+        record;
+      const detail = childByPrefix(record, "DETALHAMENTO");
+      advisories.push({
+        type: tag,
+        studentName:
+          attr(basics, "NOME-DO-ORIENTADO") ??
+          attr(basics, "NOME-DO-ORIENTANDO") ??
+          attr(detail, "NOME-DO-ORIENTANDO") ??
+          attr(detail, "NOME-DO-ORIENTADO"),
+        title:
+          attr(basics, "TITULO-DO-TRABALHO-DE-CONCLUSAO") ??
+          attr(basics, "TITULO-DO-TRABALHO") ??
+          attr(detail, "TITULO-DO-TRABALHO"),
+        institution: attr(basics, "NOME-INSTITUICAO") ?? attr(detail, "NOME-INSTITUICAO"),
+        year: attr(basics, "ANO") ?? attr(detail, "ANO"),
+        status,
+        ...parseProductionEnvelope(record),
+        raw: record,
+      });
+    }
+  }
+  return advisories;
+}
+
+function mapAdvisories(
+  complement: XmlRecord | undefined,
+  otherProduction: XmlRecord | undefined,
+): {
   completed: Advisory[];
   inProgress: Advisory[];
   unmapped: Record<string, unknown>;
 } {
-  const completed: Advisory[] = [];
-  const inProgress: Advisory[] = [];
-
-  const completedRoot = asRecord(complement?.["ORIENTACOES-CONCLUIDAS"]);
-  if (completedRoot) {
-    for (const tag of [
-      "ORIENTACOES-CONCLUIDAS-PARA-MESTRADO",
-      "ORIENTACOES-CONCLUIDAS-PARA-DOUTORADO",
-      "ORIENTACOES-CONCLUIDAS-PARA-POS-DOUTORADO",
-      "OUTRAS-ORIENTACOES-CONCLUIDAS",
-    ] as const) {
-      for (const entry of asArray(completedRoot[tag])) {
-        const record = asRecord(entry);
-        if (!record) {
-          continue;
-        }
-        const basics =
-          asRecord(record[`DADOS-BASICOS-DE-${tag}`]) ??
-          asRecord(record[`DADOS-BASICOS-${tag}`]) ??
-          asRecord(record["DADOS-BASICOS-DE-ORIENTACOES-CONCLUIDAS"]) ??
-          record;
-        completed.push({
-          type: tag,
-          studentName: attr(basics, "NOME-DO-ORIENTADO"),
-          title: attr(basics, "TITULO-DO-TRABALHO-DE-CONCLUSAO"),
-          institution: attr(basics, "NOME-INSTITUICAO"),
-          year: attr(basics, "ANO"),
-          status: "completed",
-          raw: record,
-        });
-      }
-    }
-  }
-
-  const inProgressRoot = asRecord(complement?.["ORIENTACOES-EM-ANDAMENTO"]);
-  if (inProgressRoot) {
-    for (const tag of [
-      "ORIENTACAO-EM-ANDAMENTO-DE-MESTRADO",
-      "ORIENTACAO-EM-ANDAMENTO-DE-DOUTORADO",
-      "ORIENTACAO-EM-ANDAMENTO-DE-POS-DOUTORADO",
-      "OUTRAS-ORIENTACOES-EM-ANDAMENTO",
-    ] as const) {
-      for (const entry of asArray(inProgressRoot[tag])) {
-        const record = asRecord(entry);
-        if (!record) {
-          continue;
-        }
-        const basics =
-          asRecord(record[`DADOS-BASICOS-DE-${tag}`]) ??
-          asRecord(record[`DADOS-BASICOS-${tag}`]) ??
-          record;
-        inProgress.push({
-          type: tag,
-          studentName: attr(basics, "NOME-DO-ORIENTANDO"),
-          title: attr(basics, "TITULO-DO-TRABALHO"),
-          institution: attr(basics, "NOME-INSTITUICAO"),
-          year: attr(basics, "ANO"),
-          status: "in_progress",
-          raw: record,
-        });
-      }
-    }
-  }
-
   return {
-    completed,
-    inProgress,
+    completed: [
+      ...mapAdvisoryEntries(
+        asRecord(otherProduction?.["ORIENTACOES-CONCLUIDAS"]),
+        COMPLETED_ADVISORY_TAGS,
+        "completed",
+      ),
+      ...mapAdvisoryEntries(
+        asRecord(complement?.["ORIENTACOES-CONCLUIDAS"]),
+        COMPLETED_ADVISORY_TAGS,
+        "completed",
+      ),
+    ],
+    inProgress: mapAdvisoryEntries(
+      asRecord(complement?.["ORIENTACOES-EM-ANDAMENTO"]),
+      IN_PROGRESS_ADVISORY_TAGS,
+      "in_progress",
+    ),
     unmapped: pickUnmapped(complement, [
       "ORIENTACOES-CONCLUIDAS",
       "ORIENTACOES-EM-ANDAMENTO",
@@ -542,7 +557,7 @@ export function parseCurriculum(xml: string): Curriculum {
   const endereco = asRecord(dadosGerais["ENDERECO"]);
 
   const resumoNode = asRecord(dadosGerais["RESUMO-CV"]);
-  const advisories = mapAdvisories(complement);
+  const advisories = mapAdvisories(complement, asRecord(document["OUTRA-PRODUCAO"]));
   const complementary = mapComplementaryData(complement);
 
   return {

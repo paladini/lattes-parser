@@ -51,7 +51,7 @@ Leitura e gravação do envelope em `TechnicalItem`: `DADOS-BASICOS-*`, `DETALHA
 | Formação complementar (nível, códigos, órgão, título em inglês) | ✅ | `ComplementaryTraining[]` |
 | Participação em eventos, incluindo feira, exposição e olimpíada | ✅ | `EventParticipation[]` |
 | Informações adicionais instituições/cursos | ✅ | `AdditionalInstitution[]`, `AdditionalCourse[]` |
-| Orientações | 🟡 | `Advisory[]` |
+| Orientações concluídas (`OUTRA-PRODUCAO`) e em andamento, inclusive graduação, especialização e iniciação científica | ✅ | `Advisory[]` com envelope de produção |
 | Bancas de conclusão e bancas julgadoras | ✅ | `BoardParticipation[]` em `complementary.boards` |
 | Projetos e demais atividades de atuação | ⬜ | `document` / `complementary.unmapped` |
 
@@ -59,7 +59,7 @@ Leitura e gravação do envelope em `TechnicalItem`: `DADOS-BASICOS-*`, `DETALHA
 
 | Seção XML | Estado | Tipo TS |
 | --- | --- | --- |
-| Produção artística/cultural e `DEMAIS-TRABALHOS` | ✅ | `artisticProduction` (`ArtisticItem[]`). Orientações concluídas dentro de `OUTRA-PRODUCAO` continuam só no `document` |
+| Produção artística/cultural e `DEMAIS-TRABALHOS` | ✅ | `artisticProduction` (`ArtisticItem[]`). A gravação não apaga `ORIENTACOES-CONCLUIDAS` irmãs |
 
 ## Validação
 

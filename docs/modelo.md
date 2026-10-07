@@ -30,9 +30,9 @@ Pacote: `@paladini/lattes-toolkit`. O XML raiz é `CURRICULO-VITAE` (`NUMERO-IDE
 | `PRODUCAO-BIBLIOGRAFICA/TRABALHOS-EM-EVENTOS/*` | `bibliographicProduction.conferencePapers[]` |
 | `PRODUCAO-BIBLIOGRAFICA/LIVROS-E-CAPITULOS/*` | `bibliographicProduction.booksAndChapters[]` |
 | `PRODUCAO-TECNICA/*` | `technicalProduction[]` (`TechnicalItem`) |
-| `DADOS-COMPLEMENTARES/ORIENTACOES-*` | `advisories.completed` / `advisories.inProgress` |
+| `OUTRA-PRODUCAO/ORIENTACOES-CONCLUIDAS/*` | `advisories.completed[]` (leitura também aceita o bloco antigo em `DADOS-COMPLEMENTARES`) |
+| `DADOS-COMPLEMENTARES/ORIENTACOES-EM-ANDAMENTO/*` | `advisories.inProgress[]` |
 | `OUTRA-PRODUCAO/PRODUCAO-ARTISTICA-CULTURAL/*` e `DEMAIS-TRABALHOS` | `artisticProduction[]` (`ArtisticItem`) |
-| `OUTRA-PRODUCAO/ORIENTACOES-CONCLUIDAS` | permanece no `document` até a tipagem de orientações |
 
 ## Produção técnica (`TechnicalItem`)
 
