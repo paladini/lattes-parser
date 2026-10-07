@@ -20,7 +20,7 @@ Independent project — not a CNPq roadmap. Priorities may shift with community 
 
 - [x] Config file `lattes.config.json` (backup dir, retention)
 - [x] Richer diff helper for human review before import
-- Performance tuning for very large XML exports
+- [x] Performance tuning for very large XML exports (technical sync no longer scans every sibling per item; parser left as-is after measurement)
 
 ## Non-goals
 

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.11.1 - 2026-10-06
+
+### Fixed
+
+- Writing a curriculum with many technical items no longer scans the whole sibling list for each item. On a synthetic 3.6 MB file with 12,000 items, sync went from about 440 ms to about 54 ms. Read stayed about 500 ms, and the XML parser is unchanged.
+
 ## 2.11.0 - 2026-10-06
 
 ### Added
