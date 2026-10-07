@@ -47,6 +47,41 @@ const TOP_LEVEL_SPECS: TechnicalTypeSpec[] = [
     titleAttribute: "TITULO-DO-TRABALHO-TECNICO",
     yearAttribute: "ANO",
   },
+  {
+    typeLabel: "registered_cultivar",
+    xmlTag: "CULTIVAR-REGISTRADA",
+    basicsTag: "DADOS-BASICOS-DA-CULTIVAR",
+    titleAttribute: "DENOMINACAO",
+    yearAttribute: "ANO-SOLICITACAO",
+  },
+  {
+    typeLabel: "protected_cultivar",
+    xmlTag: "CULTIVAR-PROTEGIDA",
+    basicsTag: "DADOS-BASICOS-DA-CULTIVAR",
+    titleAttribute: "DENOMINACAO",
+    yearAttribute: "ANO-SOLICITACAO",
+  },
+  {
+    typeLabel: "industrial_design",
+    xmlTag: "DESENHO-INDUSTRIAL",
+    basicsTag: "DADOS-BASICOS-DO-DESENHO-INDUSTRIAL",
+    titleAttribute: "TITULO",
+    yearAttribute: "ANO-DESENVOLVIMENTO",
+  },
+  {
+    typeLabel: "trademark",
+    xmlTag: "MARCA",
+    basicsTag: "DADOS-BASICOS-DA-MARCA",
+    titleAttribute: "TITULO",
+    yearAttribute: "ANO-DESENVOLVIMENTO",
+  },
+  {
+    typeLabel: "integrated_circuit_topography",
+    xmlTag: "TOPOGRAFIA-DE-CIRCUITO-INTEGRADO",
+    basicsTag: "DADOS-BASICOS-DA-TOPOGRAFIA-DE-CIRCUITO-INTEGRADO",
+    titleAttribute: "TITULO",
+    yearAttribute: "ANO-DESENVOLVIMENTO",
+  },
 ];
 
 const DEMAIS_SPECS: TechnicalTypeSpec[] = [
@@ -122,6 +157,30 @@ const DEMAIS_SPECS: TechnicalTypeSpec[] = [
     titleAttribute: "TITULO",
     yearAttribute: "ANO",
   },
+  {
+    typeLabel: "map_or_chart",
+    xmlTag: "CARTA-MAPA-OU-SIMILAR",
+    containerTag: DEMAIS_CONTAINER,
+    basicsTag: "DADOS-BASICOS-DE-CARTA-MAPA-OU-SIMILAR",
+    titleAttribute: "TITULO",
+    yearAttribute: "ANO",
+  },
+  {
+    typeLabel: "scale_model",
+    xmlTag: "MAQUETE",
+    containerTag: DEMAIS_CONTAINER,
+    basicsTag: "DADOS-BASICOS-DA-MAQUETE",
+    titleAttribute: "TITULO",
+    yearAttribute: "ANO",
+  },
+  {
+    typeLabel: "research_report",
+    xmlTag: "RELATORIO-DE-PESQUISA",
+    containerTag: DEMAIS_CONTAINER,
+    basicsTag: "DADOS-BASICOS-DO-RELATORIO-DE-PESQUISA",
+    titleAttribute: "TITULO",
+    yearAttribute: "ANO",
+  },
 ];
 
 export const TECHNICAL_TYPE_SPECS: readonly TechnicalTypeSpec[] = [
@@ -145,12 +204,14 @@ export const TECHNICAL_TITLE_READ_ATTRIBUTES: readonly string[] = [
   "TITULO-PATENTE",
   "TITULO",
   "TITULO-INGLES",
+  "DENOMINACAO",
 ];
 
 export const TECHNICAL_YEAR_READ_ATTRIBUTES: readonly string[] = [
   "ANO",
   "ANO-DESENVOLVIMENTO",
   "ANO-DO-TRABALHO",
+  "ANO-SOLICITACAO",
 ];
 
 export function technicalSpecForItem(type: string, xmlTag?: string): TechnicalTypeSpec | undefined {

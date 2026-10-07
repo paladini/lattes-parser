@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.4.0 - 2026-10-06
+
+### Added
+
+- Typed technical production for registered and protected cultivars (`DENOMINACAO`), industrial design, trademarks, integrated-circuit topography, maps, scale models, and research reports. Unknown technical tags stay on the document tree.
+
 ## 2.3.0 - 2026-10-06
 
 ### Added
