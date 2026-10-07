@@ -192,6 +192,17 @@ function nodeInParentList(parent: XmlRecord, tag: string, node: XmlRecord): bool
   return asArray(parent[tag]).some((entry) => asRecord(entry) === node);
 }
 
+function parentNodeSet(parent: XmlRecord, tag: string): Set<XmlRecord> {
+  const present = new Set<XmlRecord>();
+  for (const entry of asArray(parent[tag])) {
+    const record = asRecord(entry);
+    if (record) {
+      present.add(record);
+    }
+  }
+  return present;
+}
+
 function orderIndexMap<T extends { raw?: Record<string, unknown> }>(
   items: T[],
 ): Map<XmlRecord, number> {
@@ -1005,11 +1016,12 @@ function syncTechnicalGroup(parent: XmlRecord, items: TechnicalItem[]): void {
   for (const tag of tags) {
     const subset = items.filter((item) => technicalTag(item) === tag);
     const order = orderIndexMap(subset);
+    const present = parentNodeSet(parent, tag);
     const next: XmlRecord[] = [];
 
     for (const item of subset) {
       let node = asRecord(item.raw);
-      if (node && nodeInParentList(parent, tag, node)) {
+      if (node && present.has(node)) {
         applyTechnicalFields(node, item);
       } else {
         node = createTechnicalNode(item);
