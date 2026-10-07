@@ -8,6 +8,7 @@ import type {
   Curriculum,
   EmploymentLink,
   LanguageEntry,
+  License,
   ProfessionalActivity,
   ProfessionalAddress,
   ResearchArea,
@@ -255,6 +256,29 @@ function mapLanguages(node: unknown): LanguageEntry[] {
         speaking: attr(record, "PROFICIENCIA-DE-FALA"),
         writing: attr(record, "PROFICIENCIA-DE-ESCRITA"),
         comprehension: attr(record, "PROFICIENCIA-DE-COMPREENSAO"),
+        raw: record,
+      },
+    ];
+  });
+}
+
+function mapLicenses(dadosGerais: XmlRecord): License[] {
+  const container = asRecord(dadosGerais["LICENCAS"]);
+  if (!container) {
+    return [];
+  }
+  return asArray(container["LICENCA"]).flatMap((entry) => {
+    const record = asRecord(entry);
+    if (!record) {
+      return [];
+    }
+    return [
+      {
+        type: attr(record, "TIPO-LICENCA"),
+        startDateFormat: attr(record, "FORMATO-DATA-INICIO-LICENCA"),
+        startDate: attr(record, "DATA-INICIO-LICENCA"),
+        endDateFormat: attr(record, "FORMATO-DATA-FIM-LICENCA"),
+        endDate: attr(record, "DATA-FIM-LICENCA"),
         raw: record,
       },
     ];
@@ -528,7 +552,9 @@ export function parseCurriculum(xml: string): Curriculum {
       residentialAddress: mapAddressBlock(endereco, "ENDERECO-RESIDENCIAL", ["LOGRADOURO"]),
       researchAreas: mapResearchAreas(dadosGerais["AREAS-DE-ATUACAO"]),
       languages: mapLanguages(dadosGerais["IDIOMAS"]),
+      licenses: mapLicenses(dadosGerais),
       unmapped: pickUnmapped(dadosGerais, [
+        "LICENCAS",
         "RESUMO-CV",
         "OUTRAS-INFORMACOES-RELEVANTES",
         "ENDERECO",

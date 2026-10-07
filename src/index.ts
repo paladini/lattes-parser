@@ -59,6 +59,7 @@ export type {
   ResearchProjectTeamMember,
   ResearchArea,
   LanguageEntry,
+  License,
   ProfessionalAddress,
   AddressContact,
   Award,

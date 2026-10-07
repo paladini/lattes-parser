@@ -13,6 +13,7 @@ import type {
   EventParticipant,
   EventParticipation,
   LanguageEntry,
+  License,
   ProfessionalActivity,
   ProfessionalAddress,
   ProjectParticipation,
@@ -1260,6 +1261,24 @@ function syncComplementaryData(
   }
 }
 
+function syncLicenses(dadosGerais: XmlRecord, licenses: License[]): void {
+  if (licenses.length === 0) {
+    delete dadosGerais["LICENCAS"];
+    return;
+  }
+  const container = ensureChild(dadosGerais, "LICENCAS");
+  const nodes = licenses.map((license) => {
+    const node: XmlRecord = { ...(asRecord(license.raw) ?? {}) };
+    setAttrPreserve(node, "TIPO-LICENCA", license.type);
+    setAttrPreserve(node, "FORMATO-DATA-INICIO-LICENCA", license.startDateFormat);
+    setAttrPreserve(node, "DATA-INICIO-LICENCA", license.startDate);
+    setAttrPreserve(node, "FORMATO-DATA-FIM-LICENCA", license.endDateFormat);
+    setAttrPreserve(node, "DATA-FIM-LICENCA", license.endDate);
+    return node;
+  });
+  writeArray(container, "LICENCA", nodes);
+}
+
 function syncSummaryAndOtherInfo(dadosGerais: XmlRecord, cv: Curriculum): void {
   if (cv.identification.summary !== undefined) {
     const resumo = ensureChild(dadosGerais, "RESUMO-CV");
@@ -1379,6 +1398,7 @@ export function syncCvToDocument(cv: Curriculum, options?: SyncDocumentOptions):
     }
     syncResearchAreas(dadosGerais, cv.identification.researchAreas);
     syncLanguages(dadosGerais, cv.identification.languages);
+    syncLicenses(dadosGerais, cv.identification.licenses ?? []);
   }
 
   if (selected("academicBackground")) {
