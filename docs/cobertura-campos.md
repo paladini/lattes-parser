@@ -63,7 +63,7 @@ Leitura e gravação do envelope em `TechnicalItem`: `DADOS-BASICOS-*`, `DETALHA
 
 ## Validação
 
-- CLI: `lattes-toolkit validate arquivo.xml` (XSD via `xmllint`)
+- CLI: `lattes-toolkit validate arquivo.xml` (XSD via `xmllint`). `validate --dtd arquivo.dtd` é opcional e não substitui o XSD.
 - Ver [schema-xsd.md](./schema-xsd.md)
 
 ## Contribuir

@@ -56,7 +56,7 @@ lattes-toolkit set curriculo.xml identification.summary "Novo resumo"
 | `set` | Altera um campo e grava o XML |
 | `patch` | Aplica vários campos a partir de um JSON com allowlist |
 | `serialize` | Converte um JSON `Curriculum` em XML |
-| `validate` | Confere o XML com o XSD do repositório (`xmllint`) |
+| `validate` | Confere o XML com o XSD do repositório (`xmllint`). `--dtd` usa uma DTD local e fica desligado por padrão |
 | `restore --last` | Restaura o snapshot mais recente |
 
 Referência: [docs/cli.md](./docs/cli.md). Campos tipados: [docs/cobertura-campos.md](./docs/cobertura-campos.md).

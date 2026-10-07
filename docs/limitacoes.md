@@ -30,7 +30,7 @@ Fluxo de produto: **exportar o XML na Plataforma Lattes → ler e gravar campos 
 | Login automático ou clicar **Enviar** no Importar XML por você | Fora de escopo; você faz na Plataforma Lattes após editar o arquivo |
 | Upload automático / bot na UI do CNPq | Fora de escopo |
 | Consulta por CPF na v1 | Dado pessoal (LGPD) |
-| Validação XSD garantida em todo ambiente | Requer `xmllint`; a UI da Plataforma Lattes usa DTD |
+| Validação XSD ou DTD garantida em todo ambiente | Requer `xmllint`. A DTD da UI não vem no pacote; `validate --dtd` só roda se você passar o arquivo local |
 | Garantir 100% do schema | Best-effort; CNPq adiciona tags |
 
 ## Termos de uso

@@ -52,9 +52,15 @@ Converte JSON `Curriculum` (com `document`) em XML. Backup se `saida.xml` já ex
 
 Lista manifests em `.lattes-backup/`.
 
-### `lattes-toolkit validate <arquivo.xml>`
+### `lattes-toolkit validate <arquivo.xml> [--dtd [arquivo.dtd]]`
 
-Valida contra o XSD em `DEFINITIONS/` (diretório atual ou o schema publicado no pacote) usando `xmllint` (se instalado).
+Sem `--dtd`, valida contra o XSD em `DEFINITIONS/` (diretório atual ou o schema publicado no pacote) usando `xmllint` (se instalado).
+
+`--dtd` é opcional e fica desligado por padrão. Ele troca a checagem para uma DTD local (`xmllint --dtdvalid`). O pacote não inclui essa DTD e não baixa arquivo nenhum. Sem caminho, ou se o arquivo não existir, ou se `xmllint` não estiver no PATH, o comando imprime `skipped` e sai com código 0.
+
+```bash
+lattes-toolkit validate curriculo.xml --dtd C:\gramaticas\curriculo.dtd
+```
 
 ### `lattes-toolkit patch <arquivo.xml> <patches.json>`
 
