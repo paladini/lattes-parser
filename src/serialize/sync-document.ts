@@ -25,6 +25,7 @@ import type {
 import { DEGREE_TAGS } from "../schema/degree-tags.js";
 import {
   TECHNICAL_TITLE_READ_ATTRIBUTES,
+  TECHNICAL_TYPE_SPECS,
   TECHNICAL_YEAR_READ_ATTRIBUTES,
   technicalSpecForItem,
 } from "../schema/technical-production-catalog.js";
@@ -146,25 +147,13 @@ function hasChildElements(record: XmlRecord): boolean {
   return Object.keys(record).some((key) => key !== "#text" && !key.startsWith("@_"));
 }
 
-const OWNED_TECHNICAL_TAGS = [
-  "PATENTE",
-  "PRODUTO-TECNOLOGICO",
-  "PROCESSOS-OU-TECNICAS",
-  "SOFTWARE",
-  "TRABALHO-TECNICO",
-] as const;
+const OWNED_TECHNICAL_TAGS = TECHNICAL_TYPE_SPECS.filter(
+  (spec) => !spec.containerTag,
+).map((spec) => spec.xmlTag);
 
-const OWNED_DEMAIS_TECHNICAL_TAGS = [
-  "APRESENTACAO-DE-TRABALHO",
-  "MIDIA-SOCIAL-WEBSITE-BLOG",
-  "MANUTENCAO-DE-OBRA-ARTISTICA",
-  "OUTRA-PRODUCAO-TECNICA",
-  "CURSO-DE-CURTA-DURACAO-MINISTRADO",
-  "DESENVOLVIMENTO-DE-MATERIAL-DIDATICO-OU-INSTRUCIONAL",
-  "EDITORACAO",
-  "ORGANIZACAO-DE-EVENTO",
-  "PROGRAMA-DE-RADIO-OU-TV",
-] as const;
+const OWNED_DEMAIS_TECHNICAL_TAGS = TECHNICAL_TYPE_SPECS.filter(
+  (spec) => spec.containerTag === "DEMAIS-TIPOS-DE-PRODUCAO-TECNICA",
+).map((spec) => spec.xmlTag);
 
 const OWNED_BIBLIOGRAPHIC_TAGS = [
   "ARTIGOS-PUBLICADOS",

@@ -42,7 +42,7 @@ Leitura e gravação do envelope em `TechnicalItem`: `DADOS-BASICOS-*`, `DETALHA
 | --- | --- | --- |
 | Patente, produto, software, trabalho técnico | ✅ | `TechnicalItem` |
 | `DEMAIS-TIPOS-DE-PRODUCAO-TECNICA` (apresentação, mídia, manutenção de obra, outra produção técnica) | ✅ | `TechnicalItem` |
-| Tags XSD de produção técnica ainda não mapeadas | ⬜ | `document` |
+| Cultivar registrada/protegida, desenho industrial, marca, topografia de circuito, carta/mapa, maquete, relatório de pesquisa | ✅ | `TechnicalItem` (`DENOMINACAO` no cultivar) |
 
 ## DADOS COMPLEMENTARES
 
