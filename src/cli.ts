@@ -1,8 +1,8 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import {
-  DEFAULT_BACKUP_DIR,
   listBackups,
+  resolveBackupSettings,
   restoreBackup,
   restoreLatestBackup,
 } from "./backup/store.js";
@@ -64,8 +64,9 @@ async function main(): Promise<void> {
 
   if (cmd === "init") {
     const dir = path.resolve(rest[0] ?? ".");
-    await mkdir(path.join(dir, DEFAULT_BACKUP_DIR), { recursive: true });
-    console.log(`Initialized ${path.join(dir, DEFAULT_BACKUP_DIR)}`);
+    const { backupRoot } = await resolveBackupSettings(dir);
+    await mkdir(backupRoot, { recursive: true });
+    console.log(`Initialized ${backupRoot}`);
     return;
   }
 
@@ -135,8 +136,9 @@ async function main(): Promise<void> {
   if (cmd === "backup") {
     const sub = rest[0];
     if (sub === "list") {
-      const dir = path.resolve(rest[1] ?? ".", DEFAULT_BACKUP_DIR);
-      const items = await listBackups(dir);
+      const workspace = path.resolve(rest[1] ?? ".");
+      const { backupRoot } = await resolveBackupSettings(workspace);
+      const items = await listBackups(backupRoot);
       console.log(JSON.stringify(items, null, 2));
       return;
     }
@@ -190,7 +192,7 @@ async function main(): Promise<void> {
     const workspaceDir = useLast
       ? path.resolve(positional[0] ?? ".")
       : path.resolve(positional[1] ?? ".");
-    const backupRoot = path.join(workspaceDir, DEFAULT_BACKUP_DIR);
+    const { backupRoot } = await resolveBackupSettings(workspaceDir);
     if (useLast) {
       const target = await restoreLatestBackup(backupRoot);
       console.log(`Restored ${target}`);

@@ -22,7 +22,7 @@
 
 Use it as an export and import process on Plataforma Lattes. You export the XML, lattes-toolkit reads the fields, changes the ones you name, and writes the file. You import that XML yourself, after signing in on Plataforma Lattes.
 
-Identification, education, professional activity, bibliographic and technical production, complementary data, awards, and advisories are typed fields and are written in the Plataforma Lattes XML format (XSD dated 12 Sep 2022). Anything without a typed field stays in the file. Each overwrite of an existing XML file keeps a copy under `.lattes-backup/`.
+Identification, education, professional activity, bibliographic and technical production, complementary data, awards, and advisories are typed fields and are written in the Plataforma Lattes XML format (XSD dated 12 Sep 2022). Anything without a typed field stays in the file. Each overwrite of an existing XML file keeps a copy under `.lattes-backup/`. An optional `lattes.config.json` changes that folder and how many snapshots to keep.
 
 ## Install
 

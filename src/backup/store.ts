@@ -9,6 +9,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import path from "node:path";
+import { loadLattesConfig } from "./config.js";
 
 export const DEFAULT_BACKUP_DIR = ".lattes-backup";
 export const DEFAULT_RETENTION = 20;
@@ -28,11 +29,30 @@ export interface BackupRef {
   manifest: BackupManifest;
 }
 
-export function resolveBackupRoot(targetFile: string, overrideDir?: string): string {
-  if (overrideDir) {
-    return path.resolve(overrideDir);
-  }
-  return path.join(path.dirname(path.resolve(targetFile)), DEFAULT_BACKUP_DIR);
+export async function resolveBackupSettings(
+  startDir: string,
+  overrideDir?: string,
+): Promise<{ backupRoot: string; retention: number }> {
+  const config = await loadLattesConfig(startDir);
+  const envDir =
+    process.env.LATTES_TOOLKIT_BACKUP_DIR ?? process.env.LATTES_PARSER_BACKUP_DIR;
+  const chosen = overrideDir ?? envDir ?? config.backupDir;
+  const backupRoot = chosen
+    ? path.resolve(startDir, chosen)
+    : path.join(startDir, DEFAULT_BACKUP_DIR);
+  return {
+    backupRoot,
+    retention: config.retention ?? DEFAULT_RETENTION,
+  };
+}
+
+export async function resolveBackupRoot(
+  targetFile: string,
+  overrideDir?: string,
+): Promise<string> {
+  const startDir = path.dirname(path.resolve(targetFile));
+  const settings = await resolveBackupSettings(startDir, overrideDir);
+  return settings.backupRoot;
 }
 
 function timestampId(date = new Date()): string {
@@ -55,12 +75,11 @@ export async function backupBeforeWrite(
     return null;
   }
 
-  const backupRoot = resolveBackupRoot(
-    absTarget,
-    options?.backupDir ??
-      process.env.LATTES_TOOLKIT_BACKUP_DIR ??
-      process.env.LATTES_PARSER_BACKUP_DIR,
+  const settings = await resolveBackupSettings(
+    path.dirname(absTarget),
+    options?.backupDir,
   );
+  const backupRoot = settings.backupRoot;
   const id = timestampId();
   const backupDir = path.join(backupRoot, id);
   await mkdir(backupDir, { recursive: true });
@@ -79,7 +98,7 @@ export async function backupBeforeWrite(
   const manifestPath = path.join(backupDir, "manifest.json");
   await writeFile(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
 
-  await pruneBackups(backupRoot, DEFAULT_RETENTION);
+  await pruneBackups(backupRoot, settings.retention, absTarget);
 
   return { backupDir, manifestPath, filePath, manifest };
 }
@@ -139,9 +158,16 @@ export async function restoreLatestBackup(backupRoot: string): Promise<string> {
   return restoreBackup(backupRoot, list[0].id);
 }
 
-async function pruneBackups(backupRoot: string, keep: number): Promise<void> {
-  const list = await listBackups(backupRoot);
-  for (const old of list.slice(keep)) {
+async function pruneBackups(
+  backupRoot: string,
+  keep: number,
+  sourcePath: string,
+): Promise<void> {
+  const wanted = path.resolve(sourcePath);
+  const mine = (await listBackups(backupRoot)).filter(
+    (item) => path.resolve(item.sourcePath) === wanted,
+  );
+  for (const old of mine.slice(keep)) {
     await rm(path.join(backupRoot, old.id), { recursive: true, force: true });
   }
 }
