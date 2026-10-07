@@ -22,6 +22,7 @@ import {
 import { parseLattesDateTime } from "./dates.js";
 import { mapProjectParticipations } from "./sections/atuacao-profissional.js";
 import { mapComplementaryData } from "./sections/dados-complementares.js";
+import { parseProductionEnvelope } from "./production/envelope.js";
 import { mapTechnicalProduction } from "./sections/producao-tecnica.js";
 import {
   asArray,
@@ -44,43 +45,41 @@ function mapBibliographicItems(
     if (!record) {
       return [];
     }
-    const basics =
-      asRecord(record["DADOS-BASICOS-DO-ARTIGO"]) ??
-      asRecord(record["DADOS-BASICOS-DO-TRABALHO"]) ??
-      asRecord(record["DADOS-BASICOS-DO-LIVRO"]) ??
-      asRecord(record["DADOS-BASICOS-DO-CAPITULO"]) ??
-      asRecord(record["DADOS-BASICOS-DE-OUTRAS-PRODUCOES-BIBLIOGRAFICAS"]) ??
-      asRecord(record["DADOS-BASICOS-DE-OUTRA-PRODUCAO"]) ??
-      record;
+    const basics = childByPrefix(record, "DADOS-BASICOS") ?? record;
 
     const title =
-      attr(basics, "TITULO-DO-ARTIGO") ??
-      attr(basics, "TITULO-DO-TRABALHO") ??
-      attr(basics, "TITULO-DO-LIVRO") ??
-      attr(basics, "TITULO") ??
-      textContent(basics);
+      firstPresentAttr(basics, [
+        "TITULO-DO-ARTIGO",
+        "TITULO-DO-TRABALHO",
+        "TITULO-DO-LIVRO",
+        "TITULO-DO-TEXTO",
+        "TITULO",
+      ]) ?? textContent(basics);
 
     if (!title) {
       return [];
     }
 
-    const detail =
-      asRecord(record["DETALHAMENTO-DO-ARTIGO"]) ??
-      asRecord(record["DETALHAMENTO-DO-TRABALHO"]) ??
-      asRecord(record["DETALHAMENTO-DO-LIVRO"]) ??
-      asRecord(record["DETALHAMENTO-DO-CAPITULO"]);
+    const detail = childByPrefix(record, "DETALHAMENTO");
 
     return [
       {
         type: typeLabel,
+        xmlTag: itemTag,
         title,
-        year: attr(basics, "ANO-DO-ARTIGO") ?? attr(basics, "ANO-DO-TRABALHO"),
+        year: firstPresentAttr(basics, [
+          "ANO-DO-ARTIGO",
+          "ANO-DO-TRABALHO",
+          "ANO-DO-TEXTO",
+          "ANO",
+        ]),
         authors: mapAuthors(record),
         journalOrEvent:
           attr(detail, "TITULO-DO-PERIODICO-OU-REVISTA") ??
           attr(detail, "NOME-DO-EVENTO"),
         doi: attr(detail, "DOI"),
         sequence: attr(record, "SEQUENCIA-PRODUCAO"),
+        ...parseProductionEnvelope(record),
         raw: record,
       },
     ];
@@ -285,7 +284,23 @@ function mapLicenses(dadosGerais: XmlRecord): License[] {
   });
 }
 
-function firstPresentAttr(record: XmlRecord, names: readonly string[]): string | undefined {
+function childByPrefix(record: XmlRecord, prefix: string): XmlRecord | undefined {
+  for (const [key, value] of Object.entries(record)) {
+    if (!key.startsWith(prefix)) {
+      continue;
+    }
+    const child = asRecord(value);
+    if (child) {
+      return child;
+    }
+  }
+  return undefined;
+}
+
+function firstPresentAttr(record: XmlRecord | undefined, names: readonly string[]): string | undefined {
+  if (!record) {
+    return undefined;
+  }
   for (const name of names) {
     const value = attr(record, name);
     if (value) {
@@ -580,6 +595,16 @@ export function parseCurriculum(xml: string): Curriculum {
         "ARTIGO-PUBLICADO",
         "journal_article",
       ),
+      acceptedArticles: mapBibliographicItems(
+        asRecord(bibliographic["ARTIGOS-ACEITOS-PARA-PUBLICACAO"]),
+        "ARTIGO-ACEITO-PARA-PUBLICACAO",
+        "accepted_article",
+      ),
+      newspaperTexts: mapBibliographicItems(
+        asRecord(bibliographic["TEXTOS-EM-JORNAIS-OU-REVISTAS"]),
+        "TEXTO-EM-JORNAL-OU-REVISTA",
+        "newspaper_text",
+      ),
       conferencePapers: mapBibliographicItems(
         conferenceContainer,
         "TRABALHO-EM-EVENTOS",
@@ -596,6 +621,21 @@ export function parseCurriculum(xml: string): Curriculum {
           asRecord(bibliographic["DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA"]),
           "OUTRA-PRODUCAO-BIBLIOGRAFICA",
           "other_bibliographic",
+        ),
+        ...mapBibliographicItems(
+          asRecord(bibliographic["DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA"]),
+          "PARTITURA-MUSICAL",
+          "musical_score",
+        ),
+        ...mapBibliographicItems(
+          asRecord(bibliographic["DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA"]),
+          "PREFACIO-POSFACIO",
+          "preface",
+        ),
+        ...mapBibliographicItems(
+          asRecord(bibliographic["DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA"]),
+          "TRADUCAO",
+          "translation",
         ),
       ],
       unmapped: pickUnmapped(bibliographic, [

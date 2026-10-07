@@ -153,8 +153,9 @@ export interface Author {
   raw?: Record<string, unknown>;
 }
 
-export interface BibliographicItem {
+export interface BibliographicItem extends ProductionEnvelope {
   type: string;
+  xmlTag?: string;
   title: string;
   year?: string;
   authors: Author[];
@@ -318,8 +319,13 @@ export interface CurriculumIdentification {
 
 export interface BibliographicProduction {
   journalArticles: BibliographicItem[];
+  /** `ARTIGOS-ACEITOS-PARA-PUBLICACAO`, kept apart from published articles. */
+  acceptedArticles: BibliographicItem[];
+  /** `TEXTOS-EM-JORNAIS-OU-REVISTAS`. */
+  newspaperTexts: BibliographicItem[];
   conferencePapers: BibliographicItem[];
   booksAndChapters: BibliographicItem[];
+  /** Includes scores, prefaces, and translations, distinguished by `xmlTag`. */
   other: BibliographicItem[];
   unmapped: UnmappedNodes;
 }

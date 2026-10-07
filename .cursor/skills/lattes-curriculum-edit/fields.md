@@ -70,7 +70,7 @@ Employment links are partial coverage. Prefer editing fields that already exist 
 
 ## Bibliographic production
 
-Partial coverage (`BibliographicItem`). Typed arrays: `journalArticles`, `conferencePapers`, `booksAndChapters`, `other`.
+Typed coverage (`BibliographicItem` plus the production envelope). Arrays: `journalArticles`, `acceptedArticles`, `newspaperTexts`, `conferencePapers`, `booksAndChapters`, `other` (`xmlTag` for scores, prefaces, and translations).
 
 - `bibliographicProduction.journalArticles[0].title`
 - `bibliographicProduction.journalArticles[0].year`

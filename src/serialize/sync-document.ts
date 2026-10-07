@@ -158,10 +158,18 @@ const OWNED_DEMAIS_TECHNICAL_TAGS = TECHNICAL_TYPE_SPECS.filter(
 
 const OWNED_BIBLIOGRAPHIC_TAGS = [
   "ARTIGOS-PUBLICADOS",
+  "ARTIGOS-ACEITOS-PARA-PUBLICACAO",
+  "TEXTOS-EM-JORNAIS-OU-REVISTAS",
   "TRABALHOS-EM-EVENTOS",
   "LIVROS-E-CAPITULOS",
   "OUTRA-PRODUCAO-BIBLIOGRAFICA",
   "DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA",
+] as const;
+
+const DEMAIS_BIBLIOGRAPHIC_TAGS = [
+  "PARTITURA-MUSICAL",
+  "PREFACIO-POSFACIO",
+  "TRADUCAO",
 ] as const;
 
 const COMPLEMENTARY_LIST_TAGS = [
@@ -599,55 +607,149 @@ function syncAwards(dadosGerais: XmlRecord, awards: Award[]): void {
   }
 }
 
-function bibliographicBasicsTag(type: string): string {
-  switch (type) {
+function bibliographicBasicsTag(item: BibliographicItem): string {
+  switch (item.xmlTag) {
+    case "TEXTO-EM-JORNAL-OU-REVISTA":
+      return "DADOS-BASICOS-DO-TEXTO";
+    case "PARTITURA-MUSICAL":
+      return "DADOS-BASICOS-DA-PARTITURA";
+    case "PREFACIO-POSFACIO":
+      return "DADOS-BASICOS-DO-PREFACIO-POSFACIO";
+    case "TRADUCAO":
+      return "DADOS-BASICOS-DA-TRADUCAO";
+    default:
+      break;
+  }
+  switch (item.type) {
     case "journal_article":
+    case "accepted_article":
       return "DADOS-BASICOS-DO-ARTIGO";
+    case "newspaper_text":
+      return "DADOS-BASICOS-DO-TEXTO";
     case "conference_paper":
       return "DADOS-BASICOS-DO-TRABALHO";
     case "book":
     case "book_chapter":
       return "DADOS-BASICOS-DO-LIVRO";
     default:
-      return "DADOS-BASICOS-DE-OUTRAS-PRODUCOES-BIBLIOGRAFICAS";
+      return "DADOS-BASICOS-DE-OUTRA-PRODUCAO";
   }
 }
 
-function bibliographicDetailTag(type: string): string {
-  switch (type) {
+function bibliographicDetailTag(item: BibliographicItem): string {
+  switch (item.xmlTag) {
+    case "TEXTO-EM-JORNAL-OU-REVISTA":
+      return "DETALHAMENTO-DO-TEXTO";
+    case "PARTITURA-MUSICAL":
+      return "DETALHAMENTO-DA-PARTITURA";
+    case "PREFACIO-POSFACIO":
+      return "DETALHAMENTO-DO-PREFACIO-POSFACIO";
+    case "TRADUCAO":
+      return "DETALHAMENTO-DA-TRADUCAO";
+    default:
+      break;
+  }
+  switch (item.type) {
     case "journal_article":
+    case "accepted_article":
       return "DETALHAMENTO-DO-ARTIGO";
+    case "newspaper_text":
+      return "DETALHAMENTO-DO-TEXTO";
     case "conference_paper":
       return "DETALHAMENTO-DO-TRABALHO";
     case "book":
     case "book_chapter":
       return "DETALHAMENTO-DO-LIVRO";
     default:
-      return "DETALHAMENTO";
+      return "DETALHAMENTO-DE-OUTRA-PRODUCAO";
   }
 }
 
-function applyBibliographicFields(record: XmlRecord, item: BibliographicItem): void {
-  const basics = ensureChild(record, bibliographicBasicsTag(item.type));
-  const detail = ensureChild(record, bibliographicDetailTag(item.type));
+function bibliographicTitleAttribute(item: BibliographicItem): string {
+  if (item.xmlTag === "TEXTO-EM-JORNAL-OU-REVISTA" || item.type === "newspaper_text") {
+    return "TITULO-DO-TEXTO";
+  }
+  if (item.type === "journal_article" || item.type === "accepted_article") {
+    return "TITULO-DO-ARTIGO";
+  }
+  if (item.type === "conference_paper") {
+    return "TITULO-DO-TRABALHO";
+  }
+  if (item.type === "book" || item.type === "book_chapter") {
+    return "TITULO-DO-LIVRO";
+  }
+  return "TITULO";
+}
 
-  if (item.type === "journal_article") {
-    setAttrPreserve(basics, "TITULO-DO-ARTIGO", item.title);
-    setAttrPreserve(basics, "ANO-DO-ARTIGO", item.year);
+function existingOrChild(record: XmlRecord, prefix: string, fallbackTag: string): XmlRecord {
+  const preferred = asRecord(record[fallbackTag]);
+  if (preferred) {
+    return preferred;
+  }
+  for (const [key, value] of Object.entries(record)) {
+    if (key.startsWith(prefix)) {
+      const child = asRecord(value);
+      if (child) {
+        return child;
+      }
+    }
+  }
+  return ensureChild(record, fallbackTag);
+}
+
+function existingAttr(record: XmlRecord, names: readonly string[]): string | undefined {
+  return names.find((name) => `@_${name}` in record);
+}
+
+function bibliographicYearAttribute(item: BibliographicItem): string {
+  if (item.xmlTag === "TEXTO-EM-JORNAL-OU-REVISTA" || item.type === "newspaper_text") {
+    return "ANO-DO-TEXTO";
+  }
+  if (item.type === "journal_article" || item.type === "accepted_article") {
+    return "ANO-DO-ARTIGO";
+  }
+  if (
+    item.type === "conference_paper" ||
+    item.type === "book" ||
+    item.type === "book_chapter"
+  ) {
+    return "ANO-DO-TRABALHO";
+  }
+  return "ANO";
+}
+
+function applyBibliographicFields(record: XmlRecord, item: BibliographicItem): void {
+  syncProductionEnvelope(record, item);
+  const basics = existingOrChild(record, "DADOS-BASICOS", bibliographicBasicsTag(item));
+  const detail = existingOrChild(record, "DETALHAMENTO", bibliographicDetailTag(item));
+  setAttrPreserve(
+    basics,
+    existingAttr(basics, [
+      "TITULO-DO-ARTIGO",
+      "TITULO-DO-TRABALHO",
+      "TITULO-DO-LIVRO",
+      "TITULO-DO-TEXTO",
+      "TITULO",
+    ]) ?? bibliographicTitleAttribute(item),
+    item.title,
+  );
+  setAttrPreserve(
+    basics,
+    existingAttr(basics, ["ANO-DO-ARTIGO", "ANO-DO-TRABALHO", "ANO-DO-TEXTO", "ANO"]) ??
+      bibliographicYearAttribute(item),
+    item.year,
+  );
+
+  if (item.type === "journal_article" || item.type === "accepted_article") {
     setAttrPreserve(detail, "TITULO-DO-PERIODICO-OU-REVISTA", item.journalOrEvent);
     setAttrPreserve(detail, "DOI", item.doi);
   } else if (item.type === "conference_paper") {
-    setAttrPreserve(basics, "TITULO-DO-TRABALHO", item.title);
-    setAttrPreserve(basics, "ANO-DO-TRABALHO", item.year);
     setAttrPreserve(detail, "NOME-DO-EVENTO", item.journalOrEvent);
     setAttrPreserve(detail, "DOI", item.doi);
   } else if (item.type === "book" || item.type === "book_chapter") {
-    setAttrPreserve(basics, "TITULO-DO-LIVRO", item.title);
-    setAttrPreserve(basics, "ANO-DO-TRABALHO", item.year);
     setAttrPreserve(detail, "DOI", item.doi);
-  } else {
-    setAttrPreserve(basics, "TITULO", item.title);
-    setAttrPreserve(basics, "ANO-DO-TRABALHO", item.year);
+  } else if (item.doi) {
+    setAttrPreserve(detail, "DOI", item.doi);
   }
 
   if (item.authors.length > 0) {
@@ -711,6 +813,8 @@ function hasBibliographicItems(cv: Curriculum): boolean {
   const bib = cv.bibliographicProduction;
   return (
     bib.journalArticles.length > 0 ||
+    bib.acceptedArticles.length > 0 ||
+    bib.newspaperTexts.length > 0 ||
     bib.conferencePapers.length > 0 ||
     bib.booksAndChapters.length > 0 ||
     bib.other.length > 0
@@ -750,6 +854,20 @@ function syncBibliographicProduction(
   );
   syncBibliographicList(
     bibliographic,
+    "ARTIGOS-ACEITOS-PARA-PUBLICACAO",
+    "ARTIGO-ACEITO-PARA-PUBLICACAO",
+    production.acceptedArticles,
+    deleteWhenEmpty,
+  );
+  syncBibliographicList(
+    bibliographic,
+    "TEXTOS-EM-JORNAIS-OU-REVISTAS",
+    "TEXTO-EM-JORNAL-OU-REVISTA",
+    production.newspaperTexts,
+    deleteWhenEmpty,
+  );
+  syncBibliographicList(
+    bibliographic,
     "TRABALHOS-EM-EVENTOS",
     "TRABALHO-EM-EVENTOS",
     production.conferencePapers,
@@ -777,14 +895,32 @@ function syncBibliographicProduction(
     }
   }
 
+  const demaisTags = new Set<string>(DEMAIS_BIBLIOGRAPHIC_TAGS);
+  const plainOther = production.other.filter(
+    (item) => !item.xmlTag || !demaisTags.has(item.xmlTag),
+  );
+  const demaisItems = production.other.filter(
+    (item) => item.xmlTag !== undefined && demaisTags.has(item.xmlTag),
+  );
   syncBibliographicList(
     bibliographic,
     null,
     "OUTRA-PRODUCAO-BIBLIOGRAFICA",
-    production.other,
+    plainOther,
     deleteWhenEmpty,
   );
-  if (deleteWhenEmpty && production.other.length === 0) {
+  if (demaisItems.length > 0) {
+    const demais = ensureChild(bibliographic, "DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA");
+    for (const tag of DEMAIS_BIBLIOGRAPHIC_TAGS) {
+      syncBibliographicList(
+        demais,
+        null,
+        tag,
+        demaisItems.filter((item) => item.xmlTag === tag),
+        deleteWhenEmpty,
+      );
+    }
+  } else if (deleteWhenEmpty && plainOther.length === 0) {
     delete bibliographic["DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA"];
   }
 }

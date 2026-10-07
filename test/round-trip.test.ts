@@ -98,6 +98,11 @@ describe("serialize round-trip", () => {
       ],
       journalOrEvent: "Revista Nova",
       doi: "10.0000/new",
+      basics: {},
+      detail: {},
+      keywords: [],
+      knowledgeAreas: [],
+      activitySectors: [],
     });
     cv.awards = [];
 

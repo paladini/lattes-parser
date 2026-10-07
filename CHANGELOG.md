@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.7.0 - 2026-10-06
+
+### Added
+
+- Bibliographic production now types accepted articles (`acceptedArticles`), newspaper and magazine texts (`newspaperTexts`), and musical scores, prefaces, and translations on `other` with `xmlTag`. Items share the production envelope. Title attributes follow the XSD tag (`TITULO-DO-TEXTO` for newspaper texts, `TITULO` for translations). Hand-built `BibliographicProduction` objects need the new arrays, and each `BibliographicItem` needs the envelope fields.
+
 ## 2.6.0 - 2026-10-06
 
 ### Added
