@@ -6,7 +6,7 @@ Independent project — not a CNPq roadmap. Priorities may shift with community 
 
 - [x] Serialize + `writeCurriculum` with `document` tree
 - [x] Automatic `.lattes-backup/` before overwrite
-- [x] CLI: init, parse, get, set, serialize, restore, backup list, validate, patch
+- [x] CLI: init, parse, get, set, serialize, restore, backup list, validate, patch, diff
 - [x] Patch API + IA contract (docs)
 - [x] XSD-aligned sync for sections used in real exports (authors, summary, awards, technical production, complementary data)
 
@@ -19,7 +19,7 @@ Independent project — not a CNPq roadmap. Priorities may shift with community 
 ## Later
 
 - [x] Config file `lattes.config.json` (backup dir, retention)
-- Richer diff helper for human review before import
+- [x] Richer diff helper for human review before import
 - Performance tuning for very large XML exports
 
 ## Non-goals

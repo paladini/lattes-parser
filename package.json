@@ -1,6 +1,6 @@
 {
   "name": "@paladini/lattes-toolkit",
-  "version": "2.10.0",
+  "version": "2.11.0",
   "description": "Toolkit to edit exported Currículo Lattes XML programmatically, via CLI or automated AI agents. Independent project for the platform XML format. Not affiliated with CNPq.",
   "bin": {
     "lattes-toolkit": "./dist/cli.js"

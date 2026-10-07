@@ -37,6 +37,14 @@ Em TypeScript: `readCurriculum`, `setCurriculumValue`, `writeCurriculum`.
 
 Cada gravação que substitui o XML dispara backup. Ver [backups.md](./backups.md).
 
+Antes de importar, compare o arquivo editado com o export original ou com um snapshot:
+
+```bash
+lattes-toolkit diff curriculo.xml.original curriculo.xml
+```
+
+A saída lista campos tipados alterados (`identification.summary`, `technicalProduction[0].title`). O código de saída é 1 quando há diferença. O comando só lê os dois arquivos locais.
+
 ## 4. Reimportar (manual)
 
 1. Na Plataforma Lattes: **Importar** → **Importar XML**.
