@@ -3,6 +3,7 @@ import type {
   AdditionalCourse,
   AdditionalInstitution,
   Advisory,
+  ArtisticItem,
   Award,
   BibliographicItem,
   BoardParticipant,
@@ -23,6 +24,10 @@ import type {
   ResearchArea,
   TechnicalItem,
 } from "../types.js";
+import {
+  ARTISTIC_SPECS_BY_XML_TAG,
+  ARTISTIC_TYPE_SPECS,
+} from "../schema/artistic-production-catalog.js";
 import { DEGREE_TAGS } from "../schema/degree-tags.js";
 import {
   TECHNICAL_TITLE_READ_ATTRIBUTES,
@@ -44,6 +49,7 @@ export type CurriculumSectionId =
   | "professionalActivities"
   | "bibliographicProduction"
   | "technicalProduction"
+  | "artisticProduction"
   | "complementary"
   | "advisories"
   | "awards"
@@ -55,6 +61,7 @@ const CURRICULUM_SECTION_IDS: readonly CurriculumSectionId[] = [
   "professionalActivities",
   "bibliographicProduction",
   "technicalProduction",
+  "artisticProduction",
   "complementary",
   "advisories",
   "awards",
@@ -1492,6 +1499,107 @@ function syncAdvisories(
   }
 }
 
+function applyArtisticFields(record: XmlRecord, item: ArtisticItem): void {
+  const spec = ARTISTIC_SPECS_BY_XML_TAG[item.xmlTag];
+  const basicsTag = spec?.basicsTag ?? "DADOS-BASICOS";
+  let basics = asRecord(record[basicsTag]);
+  if (!basics) {
+    for (const [key, value] of Object.entries(record)) {
+      if (key.startsWith("DADOS-BASICOS") && asRecord(value)) {
+        basics = asRecord(value);
+        break;
+      }
+    }
+  }
+  if (!basics) {
+    basics = ensureChild(record, basicsTag);
+  }
+  syncProductionEnvelope(record, item);
+  const presentTitle = Object.keys(basics).find(
+    (key) => key.startsWith("@_TITULO") || key === "@_DENOMINACAO",
+  );
+  if (presentTitle) {
+    basics[presentTitle] = item.title;
+  } else {
+    setAttrPreserve(basics, "TITULO", item.title);
+  }
+  setAttrPreserve(basics, "ANO", item.year);
+  setAttrPreserve(record, "SEQUENCIA-PRODUCAO", item.sequence);
+  if (item.authors && item.authors.length > 0) {
+    syncAuthorsOnRecord(record, item.authors);
+  }
+}
+
+function syncArtisticGroup(parent: XmlRecord, items: ArtisticItem[]): void {
+  const tags = [...new Set(items.map((item) => item.xmlTag))];
+  for (const tag of tags) {
+    const subset = items.filter((item) => item.xmlTag === tag);
+    const next = subset.map((item) => {
+      let node = asRecord(item.raw);
+      if (!node || !nodeInParentList(parent, tag, node)) {
+        node = {};
+      }
+      applyArtisticFields(node, item);
+      return node;
+    });
+    writeArray(parent, tag, next);
+  }
+}
+
+function syncArtisticProduction(
+  root: XmlRecord,
+  items: ArtisticItem[],
+  deleteWhenEmpty = false,
+): void {
+  const culturalTag = "PRODUCAO-ARTISTICA-CULTURAL";
+  const ownedCultural = ARTISTIC_TYPE_SPECS.filter((spec) => spec.containerTag).map(
+    (spec) => spec.xmlTag,
+  );
+  if (items.length === 0) {
+    if (!deleteWhenEmpty) {
+      return;
+    }
+    const other = asRecord(root["OUTRA-PRODUCAO"]);
+    if (!other) {
+      return;
+    }
+    const cultural = asRecord(other[culturalTag]);
+    if (cultural) {
+      for (const tag of ownedCultural) {
+        delete cultural[tag];
+      }
+      if (!hasChildElements(cultural)) {
+        delete other[culturalTag];
+      }
+    }
+    delete other["DEMAIS-TRABALHOS"];
+    return;
+  }
+
+  const other = ensureChild(root, "OUTRA-PRODUCAO");
+  const culturalItems = items.filter((item) => item.containerTag === culturalTag);
+  const otherWorks = items.filter((item) => item.xmlTag === "DEMAIS-TRABALHOS");
+  if (culturalItems.length > 0) {
+    const cultural = ensureChild(other, culturalTag);
+    syncArtisticGroup(cultural, culturalItems);
+    if (deleteWhenEmpty) {
+      const present = new Set(culturalItems.map((item) => item.xmlTag));
+      for (const tag of ownedCultural) {
+        if (!present.has(tag)) {
+          delete cultural[tag];
+        }
+      }
+    }
+  } else if (deleteWhenEmpty) {
+    delete other[culturalTag];
+  }
+  if (otherWorks.length > 0) {
+    syncArtisticGroup(other, otherWorks);
+  } else if (deleteWhenEmpty) {
+    delete other["DEMAIS-TRABALHOS"];
+  }
+}
+
 /** Applies typed Curriculum fields onto the XML document tree before serialization. */
 export function syncCvToDocument(cv: Curriculum, options?: SyncDocumentOptions): void {
   const sections = options?.sections;
@@ -1554,6 +1662,9 @@ export function syncCvToDocument(cv: Curriculum, options?: SyncDocumentOptions):
   }
   if (selected("technicalProduction")) {
     syncTechnicalProduction(root, cv.technicalProduction, deleteWhenEmpty);
+  }
+  if (selected("artisticProduction")) {
+    syncArtisticProduction(root, cv.artisticProduction ?? [], deleteWhenEmpty);
   }
   if (selected("complementary")) {
     syncComplementaryData(root, cv, deleteWhenEmpty);

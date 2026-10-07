@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.8.0 - 2026-10-06
+
+### Added
+
+- Typed artistic and cultural production as `artisticProduction` (`ArtisticItem`), including `DEMAIS-TRABALHOS`. Completed advisories and unknown siblings under `OUTRA-PRODUCAO` stay on the document tree. Hand-built `Curriculum` objects need `artisticProduction: []`.
+
 ## 2.7.0 - 2026-10-06
 
 ### Added
