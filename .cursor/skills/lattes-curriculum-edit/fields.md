@@ -141,7 +141,7 @@ Accepted papers, newspapers, and other XSD bibliographic types stay in `bibliogr
 
 ## Advisories and awards
 
-Advisory coverage is partial.
+Advisories include the production envelope. Completed items serialize under `OUTRA-PRODUCAO`; in-progress items stay under `DADOS-COMPLEMENTARES`.
 
 - `advisories.completed[0].title`
 - `advisories.completed[0].studentName`
