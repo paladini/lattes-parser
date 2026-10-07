@@ -31,6 +31,8 @@ export {
 export type { BackupManifest, BackupRef } from "./backup/store.js";
 export { loadLattesConfig } from "./backup/config.js";
 export type { LattesConfig } from "./backup/config.js";
+export { diffCurricula, formatCurriculumDiff } from "./diff/diff-curriculum.js";
+export type { CurriculumDiffEntry } from "./diff/diff-curriculum.js";
 export { getCurriculumValue, setCurriculumValue } from "./patch/paths.js";
 export {
   applyCurriculumPatches,

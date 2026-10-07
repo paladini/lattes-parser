@@ -6,6 +6,7 @@ import {
   restoreBackup,
   restoreLatestBackup,
 } from "./backup/store.js";
+import { diffCurricula, formatCurriculumDiff } from "./diff/diff-curriculum.js";
 import { readCurriculum } from "./io/read-curriculum.js";
 import { writeCurriculum } from "./io/write-curriculum.js";
 import { applyCurriculumPatches } from "./patch/apply-patches.js";
@@ -23,7 +24,8 @@ function usage(): never {
   lattes-toolkit backup list [dir]
   lattes-toolkit restore [--last|<backup-id>] [dir]
   lattes-toolkit validate <file.xml> [--dtd [file.dtd]]
-  lattes-toolkit patch <file.xml> <patches.json>`);
+  lattes-toolkit patch <file.xml> <patches.json>
+  lattes-toolkit diff <before.xml> <after.xml>`);
   process.exit(1);
 }
 
@@ -162,6 +164,18 @@ async function main(): Promise<void> {
     }
     console.log(JSON.stringify({ valid: result.valid, errors: result.errors }, null, 2));
     process.exit(result.valid ? 0 : 1);
+  }
+
+  if (cmd === "diff") {
+    const [beforeFile, afterFile] = rest;
+    if (!beforeFile || !afterFile) {
+      usage();
+    }
+    const before = await loadCurriculumFromFile(beforeFile);
+    const after = await loadCurriculumFromFile(afterFile);
+    const text = formatCurriculumDiff(diffCurricula(before, after));
+    console.log(text);
+    process.exit(text === "No differences." ? 0 : 1);
   }
 
   if (cmd === "patch") {

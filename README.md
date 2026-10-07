@@ -54,6 +54,7 @@ lattes-toolkit set curriculo.xml identification.summary "Novo resumo"
 | `parse` | Resumo JSON do arquivo (XML ou ZIP) |
 | `get` | Lê um campo (`identification.summary`, listas com `[0]`) |
 | `set` | Altera um campo e grava o XML |
+| `diff` | Compara dois XML e lista campos tipados alterados. Sai com código 1 se houver diferença |
 | `patch` | Aplica vários campos a partir de um JSON com allowlist |
 | `serialize` | Converte um JSON `Curriculum` em XML |
 | `validate` | Confere o XML com o XSD do repositório (`xmllint`). `--dtd` usa uma DTD local e fica desligado por padrão |

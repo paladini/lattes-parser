@@ -1,6 +1,6 @@
 ---
 title: Referência CLI
-description: "Comandos do lattes-toolkit: init, parse, get, set, serialize, backup list e restore para editar XML Lattes localmente."
+description: "Comandos do lattes-toolkit: init, parse, get, set, diff, serialize, backup list e restore para editar XML Lattes localmente."
 ---
 
 # Referência CLI
@@ -61,6 +61,27 @@ Sem `--dtd`, valida contra o XSD em `DEFINITIONS/` (diretório atual ou o schema
 ```bash
 lattes-toolkit validate curriculo.xml --dtd C:\gramaticas\curriculo.dtd
 ```
+
+### `lattes-toolkit diff <antes.xml> <depois.xml>`
+
+Compara dois currículos já parseados e imprime o que mudou no modelo tipado, com o mesmo caminho dos patches:
+
+```bash
+lattes-toolkit diff backup.xml curriculo.xml
+```
+
+Exemplo de saída:
+
+```text
+changed identification.summary
+- Resumo original.
++ Resumo revisado.
+changed technicalProduction[0].title
+- Ferramenta exemplo
++ Ferramenta revisada
+```
+
+Tags que existem só em `document` ou `unmapped` aparecem pelo nome (`document tag added ...`, `unmapped tag removed ...`), sem o conteúdo do nó. O comando não envia o arquivo. Sai com código 1 quando há diferença e 0 quando os dois currículos são iguais.
 
 ### `lattes-toolkit patch <arquivo.xml> <patches.json>`
 

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.11.0 - 2026-10-06
+
+### Added
+
+- `lattes-toolkit diff before.xml after.xml` prints typed changes with patch paths (`identification.summary`, `technicalProduction[0].title`). Tags that exist only on `document` or `unmapped` are listed by name. Exit code is 1 when the curricula differ. The command does not upload the file.
+
 ## 2.10.0 - 2026-10-06
 
 ### Added
