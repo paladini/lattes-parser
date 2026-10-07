@@ -18,7 +18,7 @@ Independent project — not a CNPq roadmap. Priorities may shift with community 
 
 ## Later
 
-- Config file `lattes.config.json` (backup dir, retention)
+- [x] Config file `lattes.config.json` (backup dir, retention)
 - Richer diff helper for human review before import
 - Performance tuning for very large XML exports
 

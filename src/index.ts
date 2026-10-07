@@ -22,12 +22,15 @@ export type {
 export {
   backupBeforeWrite,
   listBackups,
+  resolveBackupSettings,
   restoreBackup,
   restoreLatestBackup,
   DEFAULT_BACKUP_DIR,
   DEFAULT_RETENTION,
 } from "./backup/store.js";
 export type { BackupManifest, BackupRef } from "./backup/store.js";
+export { loadLattesConfig } from "./backup/config.js";
+export type { LattesConfig } from "./backup/config.js";
 export { getCurriculumValue, setCurriculumValue } from "./patch/paths.js";
 export {
   applyCurriculumPatches,

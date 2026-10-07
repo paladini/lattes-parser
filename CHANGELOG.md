@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.10.0 - 2026-10-06
+
+### Added
+
+- Optional `lattes.config.json` with `backupDir` and `retention`. The file is found by walking up from the XML directory. Defaults stay `.lattes-backup/` and 20 snapshots. Retention deletes only snapshots of the file being written. `LATTES_TOOLKIT_BACKUP_DIR` and an explicit `backupDir` option still override the config.
+
 ## 2.9.0 - 2026-10-06
 
 ### Added

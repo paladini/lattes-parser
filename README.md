@@ -22,7 +22,7 @@
 
 O uso passa por exportação e importação na Plataforma Lattes. Você exporta o XML, o lattes-toolkit lê os campos, altera o que você indicar e grava o arquivo. A importação do XML, com login, é feita por você na Plataforma Lattes.
 
-Identificação, formação, atuação, produção bibliográfica e técnica, dados complementares, prêmios e orientações entram no modelo tipado e saem no XML no formato da Plataforma Lattes (XSD de 12/09/2022). O que ainda não tem campo tipado permanece no arquivo. Cada gravação por cima de um XML existente deixa uma cópia em `.lattes-backup/`.
+Identificação, formação, atuação, produção bibliográfica e técnica, dados complementares, prêmios e orientações entram no modelo tipado e saem no XML no formato da Plataforma Lattes (XSD de 12/09/2022). O que ainda não tem campo tipado permanece no arquivo. Cada gravação por cima de um XML existente deixa uma cópia em `.lattes-backup/`. Um `lattes.config.json` opcional muda a pasta e quantos snapshots guardar.
 
 ## Instalação
 

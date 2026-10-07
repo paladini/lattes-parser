@@ -27,8 +27,19 @@ Layout:
 
 ## Configuração
 
-- **`LATTES_TOOLKIT_BACKUP_DIR`**: caminho absoluto ou relativo para a raiz dos snapshots, no lugar de `.lattes-backup` ao lado do arquivo. Se essa variável não existir, `LATTES_PARSER_BACKUP_DIR` ainda é lida.
-- Retenção padrão: **20** snapshots mais recentes por raiz de backup (`DEFAULT_RETENTION` na API).
+Arquivo opcional `lattes.config.json`, procurado a partir da pasta do XML e subindo até a raiz do disco. Sem rede e sem download.
+
+```json
+{
+  "backupDir": "snapshots",
+  "retention": 20
+}
+```
+
+- `backupDir`: absoluto, ou relativo à pasta do XML. Sem config, continua `.lattes-backup/` ao lado do arquivo.
+- `retention`: quantos snapshots daquele XML guardar. Ao passar do limite, os mais antigos **daquele arquivo** são apagados. Snapshots de outro XML no mesmo diretório ficam.
+- Quem não tem o arquivo mantém o padrão: `.lattes-backup/` e 20 snapshots.
+- **`LATTES_TOOLKIT_BACKUP_DIR`** ainda vence o `backupDir` do config. Se essa variável não existir, `LATTES_PARSER_BACKUP_DIR` ainda é lida. Um `backupDir` passado na API vence os dois.
 
 ## Comandos CLI
 

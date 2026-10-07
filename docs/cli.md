@@ -50,7 +50,7 @@ Converte JSON `Curriculum` (com `document`) em XML. Backup se `saida.xml` já ex
 
 ### `lattes-toolkit backup list [dir]`
 
-Lista manifests em `.lattes-backup/`.
+Lista manifests no diretório de backup do workspace. Sem `lattes.config.json`, é `.lattes-backup/` dentro de `dir` (ou do diretório atual). Com config, usa o `backupDir` de lá. `restore` lê o mesmo lugar.
 
 ### `lattes-toolkit validate <arquivo.xml> [--dtd [arquivo.dtd]]`
 
@@ -94,6 +94,6 @@ lattes-toolkit set meu.xml identification.summary "Texto atualizado"
 
 | Variável | Efeito |
 | --- | --- |
-| `LATTES_TOOLKIT_BACKUP_DIR` | Raiz customizada para snapshots. `LATTES_PARSER_BACKUP_DIR` ainda vale se a variável nova não existir. |
+| `LATTES_TOOLKIT_BACKUP_DIR` | Raiz customizada para snapshots. Vence `backupDir` do `lattes.config.json`. `LATTES_PARSER_BACKUP_DIR` ainda vale se a variável nova não existir. |
 
 Mais: [Backups](./backups.md), [Ciclo de trabalho](./ciclo-de-trabalho.md).
