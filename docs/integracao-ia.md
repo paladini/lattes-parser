@@ -54,4 +54,4 @@ Fluxo recomendado com validação:
 
 Schema e campos: [schema-xsd.md](./schema-xsd.md), [cobertura-campos.md](./cobertura-campos.md).
 
-Skill de edição para agentes: `.cursor/skills/lattes-curriculum-edit/` (`SKILL.md` e `fields.md`).
+Skill de edição para agentes: `.cursor/skills/lattes-curriculum-edit/` (`SKILL.md`, `fields.md`, `examples.md` e `playbooks.md`). A skill cobre atuação (incluindo projetos), formação, produção bibliográfica e técnica, com allowlist em `fields.md`.
